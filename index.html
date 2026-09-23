@@ -266,10 +266,22 @@ async function loadLibrary() {
       const m = t.type === "blob" && t.path.match(/^musicas\/([^/]+)\/([^/]+\.(mp3|m4a|wav|aac|ogg))$/i);
       if (!m || !FOLDERS[m[1]]) continue;
       songs.push({
-        id: t.sha, cat: FOLDERS[m[1]], title: titleFrom(m[2]),
+        id: t.sha, cat: FOLDERS[m[1]], title: titleFrom(m[2]), fileName: m[2],
         file: `https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${t.path.split("/").map(encodeURIComponent).join("/")}`,
       });
     }
+    // Nomes editáveis: musicas/nomes.txt, uma linha por música -> arquivo.mp3 = Nome que aparece
+    try {
+      const nr = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/musicas/nomes.txt`, { cache: "no-store", headers: { Accept: "application/vnd.github.raw" } });
+      if (nr.ok) {
+        const names = {};
+        for (const line of (await nr.text()).split(/\r?\n/)) {
+          const i = line.indexOf("=");
+          if (i > 0 && !line.trim().startsWith("#")) names[line.slice(0, i).trim().normalize("NFC").toLowerCase()] = line.slice(i + 1).trim();
+        }
+        for (const s of songs) { const n = names[s.fileName.normalize("NFC").toLowerCase()]; if (n) s.title = n; }
+      }
+    } catch {}
     songs.sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
     LIB = { songs };
     try { localStorage.setItem(cacheKey, JSON.stringify(LIB)); } catch {}
