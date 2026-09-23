@@ -248,17 +248,20 @@ let LIB = { songs: [] };
 async function loadLibrary() {
   const cacheKey = "estante:lib2";
   try {
-    let r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/biblioteca.json`, { cache: "no-store", headers: { Accept: "application/vnd.github.raw" } });
-    if (r.status === 403 || r.status === 429) r = await fetch("biblioteca.json", { cache: "no-store" }); // limite da API: usa a cópia do site
+    // Primeiro a cópia do próprio site (sem limite de acessos); se falhar, a API do GitHub.
+    let r = await fetch("biblioteca.json?t=" + Date.now(), { cache: "no-store" }).catch(() => null);
+    if (!r || !r.ok) r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/biblioteca.json`, { cache: "no-store", headers: { Accept: "application/vnd.github.raw" } });
     if (r.status === 404) { LIB = { songs: [] }; return; }
     if (!r.ok) throw new Error("biblioteca " + r.status);
     const data = await r.json();
     const songs = [];
     for (const s of data.songs || []) {
+      if (s.size === 0) continue; // envio que chegou vazio
       for (const cat of s.cats || []) {
         songs.push({
           id: s.id, cat, title: s.title, artist: s.artist || "", album: s.album || "", dur: s.dur,
-          file: `https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${s.file.split("/").map(encodeURIComponent).join("/")}`,
+          file: s.file.split("/").map(encodeURIComponent).join("/"),
+          alt: `https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${s.file.split("/").map(encodeURIComponent).join("/")}`,
         });
       }
     }
@@ -432,7 +435,7 @@ function computePeaks(buf) {
 }
 async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) {
   const token = ++loadToken;
-  playing = false; syncPlayBtn(); filter = null; buffer = null; peaks = null;
+  playing = false; syncPlayBtn(); filter = null; st = null; buffer = null; peaks = null; // libera a memória da música anterior
   songKey = key;
   Object.assign(S, { tempo: 100, A: null, B: null, loop: false }, store.get(key) || {}, { semi: 0 });
   $("pTitle").textContent = title; $("pSub").textContent = sub; $("pSub").hidden = !sub; $("pCat").textContent = catLabel; $("backLabel").textContent = backLabel;
@@ -441,10 +444,11 @@ async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) 
   renderControls(); show("player"); sizeCanvas();
   if (!ST) { fail("O motor de áudio não carregou. Verifique a internet e abra a página de novo."); return; }
   ensureCtx();
+  let stage = "download";
   try {
     const data = await getData(token);
     if (token !== loadToken) return;
-    $("loadMsg").textContent = "Preparando…";
+    $("loadMsg").textContent = "Preparando…"; stage = "decode";
     const buf = await ctx.decodeAudioData(data);
     if (token !== loadToken) return;
     buffer = buf; sr = buf.sampleRate;
@@ -458,7 +462,9 @@ async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) 
   } catch (e) {
     if (token !== loadToken || e.message === "cancelled") return;
     console.error(e);
-    fail("Não foi possível abrir este áudio. Confira se o arquivo é MP3, M4A ou WAV e tente de novo.");
+    fail(stage === "download"
+      ? "Não foi possível baixar a música. Verifique a internet, volte e abra de novo."
+      : "O celular não conseguiu abrir este áudio. Feche outros apps, volte e abra de novo.");
   }
 }
 function fail(msg) { $("loading").hidden = true; $("err").textContent = msg; $("err").hidden = false; }
@@ -466,7 +472,8 @@ function fail(msg) { $("loading").hidden = true; $("err").textContent = msg; $("
 function openSong(s) {
   loadSong({
     key: "song:" + s.id, title: s.title, sub: [s.artist, s.album].filter(Boolean).join(" · "), catLabel: CAT_INFO[s.cat]?.name || "", backLabel: CAT_INFO[s.cat]?.name || "Voltar",
-    getData: token => fetchWithProgress(s.file, token),
+    // Tenta o site; se falhar, o endereço direto do GitHub.
+    getData: token => fetchWithProgress(s.file, token).catch(e => { if (e.message === "cancelled") throw e; return fetchWithProgress(s.alt, token); }),
   });
 }
 $("backList").onclick = () => {
