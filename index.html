@@ -3,41 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0C1020">
+<meta name="theme-color" content="#0F2E78">
+<link rel="icon" href="icone.png">
+<link rel="apple-touch-icon" href="icone.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Estante">
+<meta name="apple-mobile-web-app-title" content="Banda PMBA">
 <meta name="robots" content="noindex">
-<title>Estante da Banda</title>
+<title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 :root{color-scheme:light;
-  --bg:#EEF0F5; --surface:#FFFFFF; --surface-2:#F6F7FA; --ink:#131A2E; --muted:#586079;
-  --line:#D9DDE7; --wave:#C4CAD8; --brass:#B07F22; --brass-ink:#7E5710; --brass-soft:#F4E8CF;
-  --on-brass:#1B1405; --loop:rgba(176,127,34,.16);
-  --c-dobrados:#B07F22; --c-populares:#C0512F; --c-cancoes:#2B7A68; --c-hinos:#4652A3;
-  --shadow:0 1px 2px rgba(19,26,46,.06),0 6px 20px rgba(19,26,46,.06);
+  --bg:#EEF1F7; --surface:#FFFFFF; --surface-2:#F3F5FA; --ink:#0E1A3A; --muted:#55607D;
+  --line:#D6DCE8; --wave:#C3CBDD; --brass:#0F2E78; --brass-ink:#0F2E78; --brass-soft:#E3E9F6;
+  --on-brass:#FFFFFF; --loop:rgba(15,46,120,.12); --gold:#C99A2E; --red:#B3202A;
+  --band:#0F2E78; --band-ink:#FFFFFF; --band-muted:#C9D3EC;
+  --c-dobrados:#B3202A; --c-populares:#B8871F; --c-cancoes:#1F5FAE; --c-hinos:#5B6478;
+  --shadow:0 1px 2px rgba(14,26,58,.06),0 6px 20px rgba(14,26,58,.07); --play-shadow:0 8px 22px rgba(15,46,120,.35);
   --display:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   color-scheme:dark;
-  --bg:#0C1020; --surface:#151B2F; --surface-2:#1B223A; --ink:#EDEFF6; --muted:#9BA2BA;
-  --line:#2A3252; --wave:#3A4366; --brass:#E0AE4C; --brass-ink:#EFC46F; --brass-soft:#2E2715;
-  --on-brass:#1B1405; --loop:rgba(224,174,76,.18);
-  --c-dobrados:#E0AE4C; --c-populares:#EE7D5B; --c-cancoes:#4FBFA4; --c-hinos:#8E98F0;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --bg:#07122C; --surface:#0E1F47; --surface-2:#132857; --ink:#EEF2FB; --muted:#A3AFCF;
+  --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
+  --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
+  --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
+  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
 }}
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#0C1020; --surface:#151B2F; --surface-2:#1B223A; --ink:#EDEFF6; --muted:#9BA2BA;
-  --line:#2A3252; --wave:#3A4366; --brass:#E0AE4C; --brass-ink:#EFC46F; --brass-soft:#2E2715;
-  --on-brass:#1B1405; --loop:rgba(224,174,76,.18);
-  --c-dobrados:#E0AE4C; --c-populares:#EE7D5B; --c-cancoes:#4FBFA4; --c-hinos:#8E98F0;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+  --bg:#07122C; --surface:#0E1F47; --surface-2:#132857; --ink:#EEF2FB; --muted:#A3AFCF;
+  --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
+  --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
+  --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
+  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -54,9 +59,13 @@ h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 /* Home */
-.masthead{display:grid;gap:6px;padding-block:10px 20px}
-.masthead h1{font-size:clamp(34px,9vw,46px);font-weight:800;line-height:.98;letter-spacing:-.02em}
-.masthead p{margin:4px 0 0;color:var(--muted);max-width:40ch}
+.masthead{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:16px;margin:-18px -16px 20px;padding:22px 16px 20px;
+  background:var(--band);color:var(--band-ink);border-bottom:4px solid var(--gold);border-radius:0 0 22px 22px}
+.masthead img{width:96px;height:96px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--gold),0 6px 18px rgba(0,0,0,.3)}
+.masthead .eyebrow{color:var(--gold)}
+.masthead h1{font-size:clamp(22px,6vw,30px);font-weight:800;line-height:1.05;letter-spacing:-.01em;margin-top:6px}
+.masthead p{margin:6px 0 0;color:var(--band-muted);font-size:14px;max-width:40ch}
+@media (max-width:360px){.masthead img{width:76px;height:76px}}
 .cats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cat{position:relative;display:grid;align-content:space-between;gap:26px;min-height:150px;padding:16px;border:1px solid var(--line);
   border-radius:18px;background:var(--surface);text-align:left;box-shadow:var(--shadow);overflow:hidden;transition:transform .15s}
@@ -110,7 +119,7 @@ canvas{display:block;width:100%;height:100%}
 .transport{display:flex;align-items:center;justify-content:center;gap:22px;margin:18px 0 6px}
 .round{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font:700 12px/1 var(--mono)}
 .round svg{width:24px;height:24px}
-.play{width:78px;height:78px;border:0;background:var(--brass);color:var(--on-brass);box-shadow:0 8px 22px rgba(176,127,34,.35)}
+.play{width:78px;height:78px;border:0;background:var(--brass);color:var(--on-brass);box-shadow:var(--play-shadow)}
 .play svg{width:32px;height:32px}
 .round:disabled{opacity:.4}
 
@@ -152,19 +161,14 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
   <!-- HOME -->
   <section id="home">
     <header class="masthead">
-      <span class="eyebrow">Repertório de estudo</span>
-      <h1>Estante da Banda</h1>
-      <p>Escolha a categoria, abra a música e estude no seu ritmo: mude o tom, o andamento e repita o trecho que quiser.</p>
+      <img src="brasao.png" alt="Brasão da Banda de Música Maestro ST Morais, Polícia Militar da Bahia" width="96" height="96">
+      <div>
+        <span class="eyebrow">Polícia Militar da Bahia</span>
+        <h1>Banda de Música Maestro ST Morais</h1>
+        <p>Repertório de estudo: escolha a categoria, ajuste o andamento e repita o trecho que quiser.</p>
+      </div>
     </header>
     <div class="cats" id="cats"></div>
-    <div class="local">
-      <label class="btn-line" for="fileIn" tabindex="0">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>
-        Abrir uma música do meu celular
-      </label>
-      <input class="sr" type="file" id="fileIn" accept="audio/*,.mp3,.m4a,.wav,.aac,.ogg">
-      <p class="hint">O arquivo abre no mesmo player e não é enviado para ninguém.</p>
-    </div>
   </section>
 
   <!-- LIST -->
@@ -214,24 +218,12 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
     </div>
 
     <div class="panel">
-      <div class="panel-h"><h3>Tom</h3><button class="reset" id="semiReset">Original</button></div>
-      <div class="stepper">
-        <button class="step" id="semiDown" aria-label="Descer meio tom">−</button>
-        <div class="readout"><b id="semiVal">0</b><span id="semiTxt">tom original</span></div>
-        <button class="step" id="semiUp" aria-label="Subir meio tom">+</button>
-      </div>
-    </div>
-
-    <div class="panel">
       <div class="panel-h"><h3>Andamento</h3><button class="reset" id="tempoReset">100%</button></div>
       <div class="stepper">
         <button class="step" id="tempoDown" aria-label="Mais lento 5%">−</button>
         <div class="readout"><b id="tempoVal">100%</b><span id="tempoTxt">velocidade original</span></div>
         <button class="step" id="tempoUp" aria-label="Mais rápido 5%">+</button>
       </div>
-      <label class="sr" for="tempo">Andamento em porcentagem</label>
-      <input type="range" id="tempo" min="40" max="150" step="1" value="100">
-      <div class="ticks"><span>40%</span><span>70%</span><span>100%</span><span>125%</span><span>150%</span></div>
       <div class="chips" id="tempoChips"></div>
     </div>
   </section>
@@ -244,8 +236,8 @@ try { ST = await import("https://cdn.jsdelivr.net/npm/soundtouchjs@0.3.0/dist/so
 const $ = id => document.getElementById(id);
 const CAT_INFO = {
   dobrados:  { name: "Dobrados",  folder: "Dobrados", desc: "Marchas de banda", clef: "𝄞" },
-  populares: { name: "Populares", folder: "Populares", desc: "MPB e música popular", clef: "♫" },
-  cancoes:   { name: "Canções",   folder: "Cancoes", desc: "Canções e melodias", clef: "♪" },
+  populares: { name: "Populares", folder: "Populares", desc: "MPB e música popular", clef: "♫︎" },
+  cancoes:   { name: "Canções",   folder: "Cancoes", desc: "Canções e melodias", clef: "♪︎" },
   hinos:     { name: "Hinos",     folder: "Hinos", desc: "Hinos e louvores", clef: "𝄐" },
 };
 const ORDER = ["dobrados", "populares", "cancoes", "hinos"];
@@ -442,7 +434,7 @@ async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) 
   const token = ++loadToken;
   playing = false; syncPlayBtn(); filter = null; buffer = null; peaks = null;
   songKey = key;
-  Object.assign(S, { semi: 0, tempo: 100, A: null, B: null, loop: false }, store.get(key) || {});
+  Object.assign(S, { tempo: 100, A: null, B: null, loop: false }, store.get(key) || {}, { semi: 0 });
   $("pTitle").textContent = title; $("pSub").textContent = sub; $("pSub").hidden = !sub; $("pCat").textContent = catLabel; $("backLabel").textContent = backLabel;
   $("err").hidden = true; $("loading").hidden = false; $("loadMsg").textContent = "Carregando música…"; $("loadBar").style.width = "0";
   $("tNow").textContent = "0:00"; $("tDur").textContent = "0:00";
@@ -477,15 +469,6 @@ function openSong(s) {
     getData: token => fetchWithProgress(s.file, token),
   });
 }
-$("fileIn").onchange = e => {
-  const f = e.target.files[0]; if (!f) return;
-  curCat = null;
-  loadSong({
-    key: "file:" + f.name + ":" + f.size, title: f.name.replace(/\.[^.]+$/, ""), catLabel: "Arquivo do celular", backLabel: "Início",
-    getData: async () => { $("loadBar").style.width = "100%"; return await f.arrayBuffer(); },
-  });
-  e.target.value = "";
-};
 $("backList").onclick = () => {
   loadToken++; setPlaying(false);
   if (curCat) { renderList(); show("list"); } else { renderHome(); show("home"); }
@@ -546,18 +529,9 @@ $("waveWrap").addEventListener("keydown", e => {
 });
 
 /* ---------- Controls ---------- */
-function semiText(n) {
-  if (n === 0) return "tom original";
-  const tons = Math.abs(n) / 2, whole = Math.floor(tons), half = tons % 1 ? "½" : "";
-  const t = (whole ? whole : "") + half || "0";
-  return `${n > 0 ? "sobe" : "desce"} ${t} ${tons <= 1 ? "tom" : "tons"}`;
-}
 function renderControls() {
-  $("semiVal").textContent = (S.semi > 0 ? "+" : "") + S.semi;
-  $("semiTxt").textContent = semiText(S.semi);
   $("tempoVal").textContent = S.tempo + "%";
   $("tempoTxt").textContent = S.tempo === 100 ? "velocidade original" : S.tempo < 100 ? "mais lento" : "mais rápido";
-  $("tempo").value = S.tempo;
   for (const c of $("tempoChips").children) c.setAttribute("aria-pressed", +c.dataset.v === S.tempo);
   $("tA").textContent = S.A == null ? "—" : fmt(S.A, true);
   $("tB").textContent = S.B == null ? "—" : fmt(S.B, true);
@@ -575,13 +549,9 @@ for (const v of [50, 60, 70, 75, 80, 90, 100]) {
   c.onclick = () => { S.tempo = v; changed(); }; $("tempoChips").append(c);
 }
 const clampT = v => Math.max(40, Math.min(150, v));
-$("semiDown").onclick = () => { S.semi = Math.max(-12, S.semi - 1); changed(); };
-$("semiUp").onclick = () => { S.semi = Math.min(12, S.semi + 1); changed(); };
-$("semiReset").onclick = () => { S.semi = 0; changed(); };
 $("tempoDown").onclick = () => { S.tempo = clampT(S.tempo - 5); changed(); };
 $("tempoUp").onclick = () => { S.tempo = clampT(S.tempo + 5); changed(); };
 $("tempoReset").onclick = () => { S.tempo = 100; changed(); };
-$("tempo").oninput = e => { S.tempo = +e.target.value; changed(); };
 
 function fixOrder() { if (S.A != null && S.B != null && S.B < S.A) [S.A, S.B] = [S.B, S.A]; }
 const round1 = t => Math.round(t * 10) / 10;
