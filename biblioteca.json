@@ -25,6 +25,19 @@
    "dur": 300.6,
    "size": 12024685,
    "added": "2026-09-23"
+  },
+  {
+   "id": "saudades-de-minha-terra-8jhan",
+   "file": "musicas/arquivos/saudades-de-minha-terra-8jhan.mp3",
+   "title": "Saudades De Minha Terra",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "dobrados"
+   ],
+   "dur": 243.3,
+   "size": 9732179,
+   "added": "2026-09-23"
   }
  ]
 }
