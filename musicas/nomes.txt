@@ -1,0 +1,7 @@
+# NOMES DAS MÚSICAS — como aparecem para os músicos
+# Uma linha por música:   nome-do-arquivo.mp3 = Nome que aparece no app
+# Músicas que não estiverem aqui usam o próprio nome do arquivo.
+# Linhas que começam com # são ignoradas.
+#
+# Exemplo:
+# dobrado 220.mp3 = Dobrado 220 (Antônio Manoel do Espírito Santo)
