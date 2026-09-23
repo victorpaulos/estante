@@ -100,7 +100,13 @@ h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
 .song .t{display:block;font-weight:600;overflow-wrap:anywhere}
 .song .a{display:block;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .song .a:empty{display:none}
-.song .d{font:500 13px/1 var(--mono);color:var(--muted)}
+.song .d{display:grid;justify-items:end;gap:4px;font:500 13px/1 var(--mono);color:var(--muted)}
+.song .ok{font:700 11px/1 var(--body);color:var(--c-cancoes);white-space:nowrap}
+.song.off{opacity:.45}
+.dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-bottom:10px;padding:0 14px;border-radius:12px;border:1.5px solid var(--brass);background:transparent;color:var(--brass-ink);font-weight:700;text-align:center}
+.dl:disabled{border-color:var(--line);color:var(--muted);cursor:default}
+.dl svg{width:20px;height:20px;flex:none}
+.offline{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--brass-soft);color:var(--ink);font-size:14px}
 .empty{padding:22px 18px;border:1.5px dashed var(--line);border-radius:16px;color:var(--muted);font-size:15px}
 .empty code{font-family:var(--mono);font-size:13px;color:var(--ink);overflow-wrap:anywhere}
 
@@ -141,6 +147,8 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
 .chip[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:var(--on-brass)}
 
 .loop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.loop-grid>*{min-width:0}
+.mark .row button{width:36px;flex:none}
 .mark{display:grid;gap:6px;padding:10px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2)}
 .mark button.set{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700}
 .mark .row{display:flex;align-items:center;justify-content:space-between;gap:6px}
@@ -175,6 +183,8 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
   <section id="list" hidden>
     <div class="bar"><button class="back" id="backHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>Categorias</button></div>
     <div class="list-head"><span class="eyebrow" id="listCount"></span><h2 id="listTitle"></h2></div>
+    <p class="offline" id="offMsg" hidden>Sem internet: só as músicas salvas no celular (✓) podem tocar.</p>
+    <button class="dl" id="dlAll" hidden></button>
     <input class="search" id="search" type="search" placeholder="Buscar música ou artista…" autocomplete="off">
     <div id="songsBox"></div>
   </section>
@@ -259,7 +269,7 @@ async function loadLibrary() {
       if (s.size === 0) continue; // envio que chegou vazio
       for (const cat of s.cats || []) {
         songs.push({
-          id: s.id, cat, title: s.title, artist: s.artist || "", album: s.album || "", dur: s.dur,
+          id: s.id, cat, title: s.title, artist: s.artist || "", album: s.album || "", dur: s.dur, size: s.size || 0,
           file: s.file.split("/").map(encodeURIComponent).join("/"),
           alt: `https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${s.file.split("/").map(encodeURIComponent).join("/")}`,
         });
@@ -274,6 +284,55 @@ async function loadLibrary() {
   }
 }
 await loadLibrary();
+
+/* ---------- Sem internet: app e músicas guardados no celular ---------- */
+const AUDIO_CACHE = "estante-audio-v1";
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+try { navigator.storage?.persist?.(); } catch {}
+const absUrl = s => new URL(s.file, location.href).href;
+let saved = new Set();
+async function refreshSaved() {
+  try {
+    const c = await caches.open(AUDIO_CACHE), keys = await c.keys();
+    saved = new Set(keys.map(r => r.url));
+    const valid = new Set(LIB.songs.map(absUrl));
+    if (LIB.songs.length) for (const k of keys) if (!valid.has(k.url)) { c.delete(k); saved.delete(k.url); } // música removida da estante
+  } catch {}
+}
+async function saveAudio(s, bytes) {
+  try {
+    const c = await caches.open(AUDIO_CACHE);
+    await c.put(absUrl(s), new Response(bytes, { headers: { "Content-Type": "audio/mpeg", "Content-Length": String(bytes.byteLength) } }));
+    saved.add(absUrl(s));
+  } catch {}
+}
+async function savedBytes(s) {
+  try { const hit = await caches.match(absUrl(s), { ignoreSearch: true }); return hit ? await hit.arrayBuffer() : null; } catch { return null; }
+}
+await refreshSaved();
+addEventListener("online", () => { if (!$("list").hidden) renderList(); });
+addEventListener("offline", () => { if (!$("list").hidden) renderList(); });
+
+let downloading = false;
+async function downloadAll() {
+  if (downloading) return;
+  const seen = new Set();
+  const todo = LIB.songs.filter(s => s.cat === curCat && !saved.has(absUrl(s)) && !seen.has(s.file) && seen.add(s.file));
+  downloading = true; let ok = 0;
+  for (let i = 0; i < todo.length; i++) {
+    $("dlAll").textContent = `Baixando ${i + 1} de ${todo.length}…`;
+    try {
+      let r = await fetch(todo[i].file).catch(() => null);
+      if (!r || !r.ok) r = await fetch(todo[i].alt);
+      if (!r.ok) throw new Error();
+      await saveAudio(todo[i], await r.arrayBuffer()); ok++;
+    } catch {}
+  }
+  downloading = false;
+  renderList();
+  if (ok < todo.length) $("dlAll").textContent = `${todo.length - ok} não baixaram. Toque para tentar de novo.`;
+}
+$("dlAll").onclick = downloadAll;
 
 const store = {
   get(k) { try { return JSON.parse(localStorage.getItem("estante:" + k)); } catch { return null; } },
@@ -314,6 +373,17 @@ function renderList() {
   const songs = all.filter(s => !q || [s.title, s.artist, s.album].join(" ").toLowerCase().includes(q));
   $("listCount").textContent = `${all.length} ${all.length === 1 ? "música" : "músicas"}`;
   $("search").hidden = all.length < 7;
+  const online = navigator.onLine !== false;
+  $("offMsg").hidden = online;
+  const missing = [...new Map(all.filter(s => !saved.has(absUrl(s))).map(s => [s.file, s])).values()];
+  const mbTotal = Math.round(missing.reduce((t, s) => t + (s.size || 0), 0) / 1048576);
+  $("dlAll").hidden = !all.length || (!online && missing.length > 0);
+  if (!downloading) {
+    $("dlAll").disabled = !missing.length;
+    $("dlAll").innerHTML = missing.length
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Baixar ${missing.length === all.length ? "todas" : "as " + missing.length + " que faltam"} para ouvir sem internet${mbTotal ? ` (${mbTotal} MB)` : ""}`
+      : "✓ Todas salvas no celular";
+  }
   const box = $("songsBox"); box.innerHTML = "";
   if (!all.length) {
     box.innerHTML = `<div class="empty">Nenhuma música nesta categoria ainda. Assim que forem adicionadas, elas aparecem aqui.</div>`;
@@ -323,8 +393,9 @@ function renderList() {
   const ul = document.createElement("ul"); ul.className = "songs";
   songs.forEach((s, i) => {
     const li = document.createElement("li");
-    const b = document.createElement("button"); b.className = "song";
-    b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span><span class="t"></span><span class="a"></span></span><span class="d">${s.dur ? fmt(s.dur) : ""}</span>`;
+    const b = document.createElement("button"); const has = saved.has(absUrl(s));
+    b.className = "song" + (!has && navigator.onLine === false ? " off" : "");
+    b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span><span class="t"></span><span class="a"></span></span><span class="d">${s.dur ? fmt(s.dur) : ""}${has ? '<span class="ok">✓ no celular</span>' : ""}</span>`;
     b.querySelector(".t").textContent = s.title;
     b.querySelector(".a").textContent = [s.artist, s.album].filter(Boolean).join(" · ");
     b.onclick = () => openSong(s);
@@ -472,8 +543,14 @@ function fail(msg) { $("loading").hidden = true; $("err").textContent = msg; $("
 function openSong(s) {
   loadSong({
     key: "song:" + s.id, title: s.title, sub: [s.artist, s.album].filter(Boolean).join(" · "), catLabel: CAT_INFO[s.cat]?.name || "", backLabel: CAT_INFO[s.cat]?.name || "Voltar",
-    // Tenta o site; se falhar, o endereço direto do GitHub.
-    getData: token => fetchWithProgress(s.file, token).catch(e => { if (e.message === "cancelled") throw e; return fetchWithProgress(s.alt, token); }),
+    getData: async token => {
+      const local = await savedBytes(s); // já está no celular: toca sem internet
+      if (local) { $("loadBar").style.width = "100%"; return local; }
+      // Tenta o site; se falhar, o endereço direto do GitHub.
+      const data = await fetchWithProgress(s.file, token).catch(e => { if (e.message === "cancelled") throw e; return fetchWithProgress(s.alt, token); });
+      saveAudio(s, data.slice(0)); // guarda uma cópia para a próxima vez
+      return data;
+    },
   });
 }
 $("backList").onclick = () => {
