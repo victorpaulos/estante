@@ -145,6 +145,14 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .chip{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);font:600 13px/1 var(--mono)}
 .chip[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:var(--on-brass)}
+.m-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 10px;margin-top:12px;font-size:14px;font-weight:600;color:var(--muted)}
+.m-row .chips{margin:0}
+.m-note{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.beat{width:12px;height:12px;border-radius:50%;background:currentColor;opacity:.25;transition:opacity .05s}
+.beat.on{opacity:1}
+.sync{display:flex;align-items:center;gap:8px}
+.sync button{width:40px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);font:700 15px/1 var(--mono)}
+.sync b{min-width:64px;text-align:center;font:700 14px/1 var(--mono);color:var(--ink)}
 
 .loop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .loop-grid>*{min-width:0}
@@ -235,6 +243,15 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
         <button class="step" id="tempoUp" aria-label="Mais rápido 5%">+</button>
       </div>
       <div class="chips" id="tempoChips"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-h"><h3>Metrônomo</h3><span class="val" id="bpmVal">— BPM</span></div>
+      <button class="toggle" id="metroBtn" aria-pressed="false" style="width:100%"><span class="beat" id="beatDot"></span><span id="metroLabel">Ligar metrônomo</span></button>
+      <p class="m-note" id="metroStatus">Detectando o andamento…</p>
+      <div class="m-row"><span>Volume do clique</span><div class="chips" id="volChips"></div></div>
+      <div class="m-row"><span>Pulsação</span><div class="chips" id="multChips"></div></div>
+      <div class="m-row"><span>Sincronia</span><div class="sync"><button id="offMinus" aria-label="Clique mais cedo">‹</button><b id="offVal">0 ms</b><button id="offPlus" aria-label="Clique mais tarde">›</button></div></div>
     </div>
   </section>
 </div>
@@ -406,11 +423,122 @@ function renderList() {
 $("search").oninput = renderList;
 $("backHome").onclick = () => { renderHome(); show("home"); };
 
+/* ---------- Metrônomo: detecção das batidas na gravação ---------- */
+// Detector de batidas (fluxo espectral + programação dinâmica, à la Ellis 2007).
+// Entrada: canais Float32Array e taxa; saída: { bpm, beats: [segundos] }.
+async function detectBeats(channels, rate, yieldFn = () => Promise.resolve()) {
+  // 1) mono reduzido para ~11 kHz
+  const f = Math.max(1, Math.round(rate / 11025)), fsr = rate / f;
+  const len = Math.floor(channels[0].length / f), mono = new Float32Array(len);
+  for (let i = 0; i < len; i++) {
+    let s = 0; const o = i * f;
+    for (let c = 0; c < channels.length; c++) { const ch = channels[c]; for (let j = 0; j < f; j++) s += ch[o + j] || 0; }
+    mono[i] = s / (f * channels.length);
+  }
+  // 2) fluxo espectral (FFT 512, passo 128)
+  const N = 512, H = 128, frames = Math.max(0, Math.floor((len - N) / H));
+  const win = new Float32Array(N); for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
+  const re = new Float32Array(N), im = new Float32Array(N), prev = new Float32Array(N / 2), cur = new Float32Array(N / 2);
+  const rev = new Uint16Array(N); for (let i = 0, j = 0; i < N; i++) { rev[i] = j; let b = N >> 1; while (j & b) { j ^= b; b >>= 1; } j |= b; }
+  const cosT = new Float32Array(N / 2), sinT = new Float32Array(N / 2);
+  for (let i = 0; i < N / 2; i++) { cosT[i] = Math.cos(-2 * Math.PI * i / N); sinT[i] = Math.sin(-2 * Math.PI * i / N); }
+  const flux = new Float32Array(frames);
+  for (let t = 0; t < frames; t++) {
+    const o = t * H;
+    for (let i = 0; i < N; i++) { re[rev[i]] = mono[o + i] * win[i]; im[rev[i]] = 0; }
+    for (let size = 2; size <= N; size <<= 1) {
+      const half = size >> 1, step = N / size;
+      for (let s = 0; s < N; s += size) for (let k = 0; k < half; k++) {
+        const a = s + k, b = a + half, c = cosT[k * step], d = sinT[k * step];
+        const tr = re[b] * c - im[b] * d, ti = re[b] * d + im[b] * c;
+        re[b] = re[a] - tr; im[b] = im[a] - ti; re[a] += tr; im[a] += ti;
+      }
+    }
+    let sum = 0;
+    for (let k = 1; k < N / 2; k++) { cur[k] = Math.log1p(100 * Math.hypot(re[k], im[k])); const dlt = cur[k] - prev[k]; if (dlt > 0) sum += dlt; }
+    prev.set(cur); flux[t] = sum;
+    if ((t & 4095) === 4095) await yieldFn();
+  }
+  const fr = fsr / H; // quadros por segundo
+  // 3) realce: tira a média local e normaliza
+  const onset = new Float32Array(frames), W = Math.round(fr * 0.5);
+  let acc = 0; const pre = new Float64Array(frames + 1);
+  for (let t = 0; t < frames; t++) { acc += flux[t]; pre[t + 1] = acc; }
+  for (let t = 0; t < frames; t++) {
+    const a = Math.max(0, t - W), b = Math.min(frames, t + W + 1);
+    onset[t] = Math.max(0, flux[t] - (pre[b] - pre[a]) / (b - a));
+  }
+  let sd = 0; for (let t = 0; t < frames; t++) sd += onset[t] * onset[t]; sd = Math.sqrt(sd / Math.max(1, frames)) || 1;
+  for (let t = 0; t < frames; t++) onset[t] /= sd;
+  // 4) andamento global: autocorrelação com preferência por ~115 BPM
+  const minLag = Math.floor(fr * 60 / 220), maxLag = Math.ceil(fr * 60 / 50);
+  let bestLag = 0, bestV = -1;
+  const ac = new Float32Array(maxLag + 2);
+  for (let lag = minLag; lag <= maxLag + 1; lag++) { let s = 0; for (let t = lag; t < frames; t++) s += onset[t] * onset[t - lag]; ac[lag] = s; }
+  for (let lag = minLag; lag <= maxLag; lag++) {
+    const bpm = 60 * fr / lag, w = Math.exp(-0.5 * Math.pow(Math.log2(bpm / 115) / 0.9, 2));
+    const v = ac[lag] * w; if (v > bestV) { bestV = v; bestLag = lag; }
+  }
+  if (!bestLag) return { bpm: 0, beats: [] };
+  const a0 = ac[bestLag - 1], a1 = ac[bestLag], a2 = ac[bestLag + 1], den = a0 - 2 * a1 + a2;
+  const P = bestLag + (den ? 0.5 * (a0 - a2) / den : 0);
+  // 5) programação dinâmica das batidas
+  const gs = P / 32, gw = Math.ceil(gs * 3), local = new Float32Array(frames);
+  const g = []; for (let i = -gw; i <= gw; i++) g.push(Math.exp(-0.5 * (i / gs) ** 2));
+  for (let t = 0; t < frames; t++) { let s = 0; for (let i = -gw; i <= gw; i++) { const u = t + i; if (u >= 0 && u < frames) s += onset[u] * g[i + gw]; } local[t] = s; }
+  const score = new Float32Array(frames), back = new Int32Array(frames).fill(-1);
+  const lo = Math.round(P / 2), hi = Math.round(2 * P), tight = 100;
+  for (let t = 0; t < frames; t++) {
+    let best = -Infinity, arg = -1;
+    for (let p = t - hi; p <= t - lo; p++) {
+      if (p < 0) continue;
+      const v = score[p] - tight * Math.log((t - p) / P) ** 2;
+      if (v > best) { best = v; arg = p; }
+    }
+    score[t] = local[t] + (arg >= 0 && best > 0 ? best : 0);
+    back[t] = arg >= 0 && best > 0 ? arg : -1;
+  }
+  let end = frames - 1, m = -Infinity;
+  for (let t = Math.max(0, frames - hi); t < frames; t++) if (score[t] > m) { m = score[t]; end = t; }
+  const idx = []; for (let t = end; t >= 0; t = back[t]) idx.push(t);
+  idx.reverse();
+  // tira batidas fracas no começo e no fim (silêncio)
+  const mean = idx.reduce((s, t) => s + local[t], 0) / Math.max(1, idx.length);
+  while (idx.length && local[idx[0]] < 0.3 * mean) idx.shift();
+  while (idx.length && local[idx[idx.length - 1]] < 0.3 * mean) idx.pop();
+  const beats = idx.map(t => (t * H + N / 2) / fsr);
+  const d = []; for (let i = 1; i < beats.length; i++) d.push(beats[i] - beats[i - 1]); d.sort((a, b) => a - b);
+  const bpm = d.length ? 60 / d[Math.floor(d.length / 2)] : 60 * fr / P;
+  return { bpm, beats };
+}
+
+let BEAT = { base: null, bpm: 0 }, beatsCur = [], clicks = [];
+const M = Object.assign({ on: false, vol: 0.5 }, store.get("metro") || {});
+function buildBeats() {
+  const b = BEAT.base || [];
+  if (S.mult === 2) { beatsCur = []; for (let i = 0; i < b.length; i++) { beatsCur.push(b[i]); if (i + 1 < b.length) beatsCur.push((b[i] + b[i + 1]) / 2); } }
+  else if (S.mult === 0.5) beatsCur = b.filter((_, i) => i % 2 === 0);
+  else beatsCur = b.slice();
+}
+function lowerBound(a, x) { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < x) lo = m + 1; else hi = m; } return lo; }
+let CLICK = null;
+function clickSound() {
+  if (CLICK && CLICK.sr === sr) return CLICK.data;
+  const n = Math.round(sr * 0.03), d = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const t = i / sr; d[i] = Math.sin(2 * Math.PI * 2000 * t) * Math.exp(-t / 0.006) * 0.8 + Math.sin(2 * Math.PI * 1000 * t) * Math.exp(-t / 0.012) * 0.5; }
+  CLICK = { sr, data: d }; return d;
+}
+// Relógio da saída: qual ponto da gravação cada amostra tocada representa (medido com o SoundTouch).
+let outCount = 0, anRaw = 0, anOut = 0, anK = 1;
+const stBias = k => -0.0077 + 0.052 * (k - 1);
+function srcAt(o) { return anRaw + (o - anOut) * anK / sr - stBias(anK); }
+function anchor(t) { anRaw = t; anOut = outCount; anK = S.tempo / 100; clicks = []; }
+
 /* ---------- Audio engine (SoundTouch: tom e andamento independentes) ---------- */
 const BUF = 4096;
 let ctx = null, node = null, st = null, filter = null, buffer = null, sr = 44100;
 let playing = false, seekedTo = 0, inAudio = false, endedFlag = false;
-const S = { semi: 0, tempo: 100, A: null, B: null, loop: false };
+const S = { semi: 0, tempo: 100, A: null, B: null, loop: false, mult: 1, metroOff: 0 };
 let songKey = null, peaks = null, wakeLock = null, loadToken = 0;
 const samples = new Float32Array(BUF * 2);
 
@@ -436,6 +564,20 @@ function render(e) {
   const n = filter.extract(samples, BUF);
   for (let i = 0; i < n; i++) { L[i] = samples[2 * i]; R[i] = samples[2 * i + 1]; }
   for (let i = n; i < BUF; i++) { L[i] = 0; R[i] = 0; }
+  if (M.on && beatsCur.length && n) {
+    const t0 = srcAt(outCount), t1 = srcAt(outCount + n), off = S.metroOff / 1000;
+    for (let j = lowerBound(beatsCur, t0 - off); j < beatsCur.length && beatsCur[j] + off < t1; j++)
+      clicks.push(outCount + Math.max(0, Math.round((beatsCur[j] + off - t0) / (t1 - t0) * n)));
+  }
+  if (clicks.length) {
+    const c = clickSound(), g = M.vol;
+    for (let q = clicks.length - 1; q >= 0; q--) {
+      const start = clicks[q] - outCount;
+      for (let i = Math.max(0, start); i < n && i - start < c.length; i++) { const v = c[i - start] * g; L[i] += v; R[i] += v; }
+      if (start + c.length <= n) clicks.splice(q, 1);
+    }
+  }
+  outCount += n;
   if (n === 0) { playing = false; endedFlag = true; }
 }
 // Posição que está soando agora: o SoundTouch lê o arquivo adiantado, então desconta o que ainda está nos buffers.
@@ -450,12 +592,14 @@ function seek(t) {
   if (!filter) return;
   t = Math.max(0, Math.min(t, buffer.duration - 0.05));
   filter.sourcePosition = Math.floor(t * sr);
-  seekedTo = t;
+  seekedTo = t; anchor(t);
   if (!inAudio) draw();
 }
 function applyFx() {
   if (!st) return;
-  st.tempo = S.tempo / 100;
+  const k = S.tempo / 100;
+  if (k !== anK) { const cur = srcAt(outCount); anRaw = cur + stBias(k); anOut = outCount; anK = k; clicks = []; }
+  st.tempo = k;
   st.pitchSemitones = S.semi;
 }
 async function setPlaying(on) {
@@ -507,8 +651,9 @@ function computePeaks(buf) {
 async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) {
   const token = ++loadToken;
   playing = false; syncPlayBtn(); filter = null; st = null; buffer = null; peaks = null; // libera a memória da música anterior
+  BEAT = { base: null, bpm: 0 }; beatsCur = []; clicks = [];
   songKey = key;
-  Object.assign(S, { tempo: 100, A: null, B: null, loop: false }, store.get(key) || {}, { semi: 0 });
+  Object.assign(S, { tempo: 100, A: null, B: null, loop: false, mult: 1, metroOff: 0 }, store.get(key) || {}, { semi: 0 });
   $("pTitle").textContent = title; $("pSub").textContent = sub; $("pSub").hidden = !sub; $("pCat").textContent = catLabel; $("backLabel").textContent = backLabel;
   $("err").hidden = true; $("loading").hidden = false; $("loadMsg").textContent = "Carregando música…"; $("loadBar").style.width = "0";
   $("tNow").textContent = "0:00"; $("tDur").textContent = "0:00";
@@ -525,8 +670,20 @@ async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) 
     buffer = buf; sr = buf.sampleRate;
     st = new ST.SoundTouch();
     filter = new ST.SimpleFilter(new ST.WebAudioBufferSource(buf), st, () => {});
-    applyFx(); seekedTo = 0;
+    applyFx(); seekedTo = 0; anchor(0);
     peaks = computePeaks(buf);
+    const cachedBeats = store.get("beats:" + key);
+    if (cachedBeats && cachedBeats.v === 1) { BEAT = { base: cachedBeats.b.map(x => x / 1000), bpm: cachedBeats.bpm }; buildBeats(); }
+    else setTimeout(async () => {
+      try {
+        const chans = []; for (let c = 0; c < buf.numberOfChannels; c++) chans.push(buf.getChannelData(c));
+        const r = await detectBeats(chans, buf.sampleRate, () => new Promise(res => setTimeout(res, 0)));
+        if (token !== loadToken) return;
+        BEAT = { base: r.beats, bpm: r.bpm };
+        store.set("beats:" + key, { v: 1, bpm: r.bpm, b: r.beats.map(x => Math.round(x * 1000)) });
+      } catch (err) { console.error(err); if (token === loadToken) BEAT = { base: [], bpm: 0 }; }
+      buildBeats(); renderMetro();
+    }, 60);
     $("tDur").textContent = fmt(buf.duration);
     $("loading").hidden = true;
     renderControls(); draw();
@@ -596,6 +753,10 @@ function tick() {
   if (!$("player").hidden) {
     if (endedFlag) { endedFlag = false; setPlaying(false); seek(0); }
     if (playing) draw();
+    if (M.on && playing && beatsCur.length) {
+      const p = audible() - S.metroOff / 1000, j = lowerBound(beatsCur, p) - 1;
+      $("beatDot").classList.toggle("on", j >= 0 && p - beatsCur[j] < 0.1);
+    } else $("beatDot").classList.remove("on");
   }
   requestAnimationFrame(tick);
 }
@@ -613,7 +774,22 @@ $("waveWrap").addEventListener("keydown", e => {
 });
 
 /* ---------- Controls ---------- */
+function renderMetro() {
+  const ready = !!(BEAT.base && BEAT.base.length), bpm0 = Math.round(BEAT.bpm * (S.mult || 1));
+  $("metroBtn").disabled = !ready;
+  $("metroBtn").setAttribute("aria-pressed", M.on && ready);
+  $("metroLabel").textContent = M.on && ready ? "Metrônomo ligado" : "Ligar metrônomo";
+  $("bpmVal").textContent = ready ? Math.round(bpm0 * S.tempo / 100) + " BPM" : "— BPM";
+  $("metroStatus").textContent = !buffer ? "" : BEAT.base == null ? "Detectando o andamento da gravação…"
+    : !ready ? "Não foi possível detectar o andamento desta música."
+    : S.tempo !== 100 ? `Original: ${bpm0} BPM · tocando a ${S.tempo}%.`
+    : "Andamento detectado na gravação. Se o clique estiver no dobro ou na metade, ajuste a pulsação.";
+  for (const c of $("volChips").children) c.setAttribute("aria-pressed", +c.dataset.v === M.vol);
+  for (const c of $("multChips").children) c.setAttribute("aria-pressed", +c.dataset.v === (S.mult || 1));
+  $("offVal").textContent = (S.metroOff > 0 ? "+" : "") + S.metroOff + " ms";
+}
 function renderControls() {
+  renderMetro();
   $("tempoVal").textContent = S.tempo + "%";
   $("tempoTxt").textContent = S.tempo === 100 ? "velocidade original" : S.tempo < 100 ? "mais lento" : "mais rápido";
   for (const c of $("tempoChips").children) c.setAttribute("aria-pressed", +c.dataset.v === S.tempo);
@@ -660,6 +836,18 @@ document.addEventListener("visibilitychange", async () => {
 });
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", draw);
 new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+for (const [v, label] of [[0.25, "Baixo"], [0.5, "Médio"], [0.9, "Alto"]]) {
+  const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = label;
+  c.onclick = () => { M.vol = v; store.set("metro", M); renderMetro(); }; $("volChips").append(c);
+}
+for (const [v, label] of [[0.5, "Metade"], [1, "Normal"], [2, "Dobro"]]) {
+  const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = label;
+  c.onclick = () => { S.mult = v; buildBeats(); clicks = []; changed(); }; $("multChips").append(c);
+}
+$("metroBtn").onclick = () => { M.on = !M.on; clicks = []; store.set("metro", M); renderMetro(); };
+$("offMinus").onclick = () => { S.metroOff = Math.max(-300, S.metroOff - 10); clicks = []; changed(); };
+$("offPlus").onclick = () => { S.metroOff = Math.min(300, S.metroOff + 10); clicks = []; changed(); };
 
 renderHome();
 renderControls();
