@@ -522,10 +522,22 @@ function buildBeats() {
 }
 function lowerBound(a, x) { let lo = 0, hi = a.length; while (lo < hi) { const m = (lo + hi) >> 1; if (a[m] < x) lo = m + 1; else hi = m; } return lo; }
 let CLICK = null;
+// Som de cowbell (estilo Roland 808): duas ondas quadradas de 540 e 800 Hz, filtro passa-faixa e decaimento curto.
 function clickSound() {
   if (CLICK && CLICK.sr === sr) return CLICK.data;
-  const n = Math.round(sr * 0.03), d = new Float32Array(n);
-  for (let i = 0; i < n; i++) { const t = i / sr; d[i] = Math.sin(2 * Math.PI * 2000 * t) * Math.exp(-t / 0.006) * 0.8 + Math.sin(2 * Math.PI * 1000 * t) * Math.exp(-t / 0.012) * 0.5; }
+  const n = Math.round(sr * 0.22), d = new Float32Array(n);
+  const w0 = 2 * Math.PI * 2640 / sr, q = 1.2, al = Math.sin(w0) / (2 * q), a0 = 1 + al;
+  const b0 = al / a0, b2 = -al / a0, a1 = -2 * Math.cos(w0) / a0, a2 = (1 - al) / a0;
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0, peak = 0;
+  for (let i = 0; i < n; i++) {
+    const t = i / sr;
+    const x = (Math.sin(2 * Math.PI * 540 * t) >= 0 ? 1 : -1) + (Math.sin(2 * Math.PI * 800 * t) >= 0 ? 1 : -1);
+    const y = b0 * x + b2 * x2 - a1 * y1 - a2 * y2;
+    x2 = x1; x1 = x; y2 = y1; y1 = y;
+    const env = Math.min(1, t / 0.0015) * (0.65 * Math.exp(-t / 0.018) + 0.35 * Math.exp(-t / 0.075));
+    d[i] = y * env; peak = Math.max(peak, Math.abs(d[i]));
+  }
+  for (let i = 0; i < n; i++) d[i] *= 0.95 / (peak || 1);
   CLICK = { sr, data: d }; return d;
 }
 // Relógio da saída: qual ponto da gravação cada amostra tocada representa (medido com o SoundTouch).
@@ -616,7 +628,7 @@ async function setPlaying(on) {
   syncPlayBtn();
 }
 function syncPlayBtn() {
-  $("icPlay").hidden = playing; $("icPause").hidden = !playing;
+  $("icPlay").toggleAttribute("hidden", playing); $("icPause").toggleAttribute("hidden", !playing); // ícones SVG não têm .hidden
   $("playBtn").setAttribute("aria-label", playing ? "Pausar" : "Tocar");
 }
 
