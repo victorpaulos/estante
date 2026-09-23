@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0C1020">
+<title>Estante · Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{color-scheme:light;
+  --bg:#EEF0F5; --surface:#FFFFFF; --surface-2:#F6F7FA; --ink:#131A2E; --muted:#586079;
+  --line:#D9DDE7; --brass:#B07F22; --brass-ink:#7E5710; --brass-soft:#F4E8CF; --on-brass:#1B1405;
+  --bad:#B3261E; --bad-soft:#FBE3E1; --good:#2B7A68;
+  --c-dobrados:#B07F22; --c-populares:#C0512F; --c-cancoes:#2B7A68; --c-hinos:#4652A3;
+  --display:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;
+  --bg:#0C1020; --surface:#151B2F; --surface-2:#1B223A; --ink:#EDEFF6; --muted:#9BA2BA;
+  --line:#2A3252; --brass:#E0AE4C; --brass-ink:#EFC46F; --brass-soft:#2E2715;
+  --bad:#FF8A80; --bad-soft:#3A1A1A; --good:#4FBFA4;
+  --c-dobrados:#E0AE4C; --c-populares:#EE7D5B; --c-cancoes:#4FBFA4; --c-hinos:#8E98F0;
+}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg)}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{color:var(--ink);font:400 16px/1.45 var(--body)}
+main{max-width:680px;margin:0 auto;padding-inline:16px;padding-block:20px 60px}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+h1{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1}
+h2{font-size:20px;font-weight:700}
+.eyebrow{font:600 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.head a{color:var(--brass-ink);font-weight:600;font-size:15px}
+.card{padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);margin-bottom:14px;display:grid;gap:12px}
+label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--muted)}
+input[type=text],input[type=password],input[type=search]{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);color:var(--ink);font-size:16px}
+.btn{min-height:48px;padding:0 18px;border-radius:12px;border:0;background:var(--brass);color:var(--on-brass);font-weight:700}
+.btn:disabled{opacity:.45;cursor:default}
+.btn-2{min-height:42px;padding:0 14px;border-radius:11px;border:1px solid var(--line);background:transparent;font-weight:600;font-size:14px}
+.msg{font-size:14px;padding:10px 12px;border-radius:10px;background:var(--brass-soft)}
+.msg.bad{background:var(--bad-soft);color:var(--bad)}
+.muted{color:var(--muted);font-size:14px;margin:0}
+ol.steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
+ol.steps b{font-weight:700}
+code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:1px 5px;border-radius:5px}
+
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:14px}
+.tabs button{min-height:44px;border:0;border-radius:10px;background:transparent;font-weight:700}
+.tabs button[aria-selected="true"]{background:var(--brass);color:var(--on-brass)}
+
+.drop{display:grid;place-items:center;gap:4px;min-height:100px;padding:16px;border:1.5px dashed var(--line);border-radius:14px;text-align:center;cursor:pointer;font-weight:600}
+.drop.over{border-color:var(--brass);background:var(--brass-soft)}
+.drop small{font-weight:400;color:var(--muted)}
+.new{display:grid;gap:10px;padding:12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.new-top{display:flex;justify-content:space-between;gap:8px;align-items:center;font:500 12px/1.3 var(--mono);color:var(--muted)}
+.new-top span{overflow-wrap:anywhere}
+.x{width:36px;height:36px;flex:none;border-radius:9px;border:1px solid var(--line);background:transparent;font-size:18px}
+.grid3{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3 .full{grid-column:1/-1}
+.bar{height:4px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--brass);transition:width .2s}
+.catpick{display:flex;flex-wrap:wrap;gap:6px}
+.catpick label{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);font-size:14px;font-weight:600;cursor:pointer;background:var(--surface)}
+.catpick input{accent-color:var(--cc)}
+.catpick label:has(input:checked){border-color:var(--cc);background:color-mix(in srgb,var(--cc) 14%,var(--surface))}
+
+.lib{display:grid;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface)}
+.row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:11px 14px;align-items:center}
+.row+.row{border-top:1px solid var(--line)}
+.row .t{font-weight:700;overflow-wrap:anywhere}
+.row .s{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.chip{font:600 11px/1 var(--body);padding:4px 8px;border-radius:999px;color:#fff;background:var(--cc)}
+.edit{grid-column:1/-1;display:grid;gap:8px;padding-top:4px}
+.edit .acts{display:flex;gap:8px;flex-wrap:wrap}
+.danger{color:var(--bad)!important;border-color:var(--bad)!important}
+.empty{padding:18px;color:var(--muted);font-size:15px;text-align:center}
+
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg button{min-height:46px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);font-weight:700;font-size:14px;padding:0 4px}
+.seg button[aria-pressed="true"]{background:var(--cc);border-color:var(--cc);color:#fff}
+@media (max-width:440px){.seg{grid-template-columns:1fr 1fr}.grid3{grid-template-columns:1fr}}
+.pick{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;padding:10px 14px;cursor:pointer}
+.pick+.pick{border-top:1px solid var(--line)}
+.pick input{width:22px;height:22px;accent-color:var(--cc)}
+.sticky{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));display:grid}
+.sticky .btn{box-shadow:0 8px 24px rgba(0,0,0,.25)}
+</style>
+</head>
+<body>
+<main>
+  <div class="head">
+    <div><span class="eyebrow">Estante da Banda</span><h1>Painel</h1></div>
+    <a href="./" target="_blank" rel="noopener">Abrir a estante ↗</a>
+  </div>
+
+  <!-- Conectar -->
+  <section class="card" id="connect" hidden>
+    <h2>Conectar este aparelho</h2>
+    <p class="muted">O painel salva as músicas no seu GitHub. Para isso ele precisa de uma chave de acesso, criada uma vez só. Ela fica guardada só neste aparelho.</p>
+    <ol class="steps">
+      <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a></li>
+      <li><b>Token name:</b> <code>estante</code> · <b>Expiration:</b> a mais longa que houver</li>
+      <li><b>Repository access:</b> <i>Only select repositories</i> → <code>estante</code></li>
+      <li><b>Permissions → Repository → Contents:</b> <i>Read and write</i></li>
+      <li>Clique em <b>Generate token</b>, copie e cole abaixo</li>
+    </ol>
+    <label class="f" for="token">Chave de acesso<input type="password" id="token" autocomplete="off" placeholder="github_pat_…"></label>
+    <div class="msg bad" id="connectMsg" hidden></div>
+    <button class="btn" id="connectBtn">Conectar</button>
+  </section>
+
+  <div id="panel" hidden>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tabSongs" aria-selected="true">Músicas</button>
+      <button role="tab" id="tabCats" aria-selected="false">Categorias</button>
+    </div>
+
+    <!-- MÚSICAS -->
+    <div id="viewSongs">
+      <section class="card">
+        <h2>Enviar músicas</h2>
+        <label class="drop" id="drop" for="files" tabindex="0">
+          <span>Toque para escolher os arquivos</span>
+          <small>MP3, M4A ou WAV · até 50 MB cada · ou arraste para cá</small>
+        </label>
+        <input type="file" id="files" accept="audio/*,.mp3,.m4a,.wav,.aac,.ogg" multiple style="position:absolute;width:1px;height:1px;opacity:0">
+        <div id="newList" style="display:grid;gap:10px"></div>
+        <button class="btn" id="saveNew" hidden>Salvar</button>
+        <div class="msg" id="newMsg" hidden></div>
+      </section>
+
+      <section class="card">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><h2>Biblioteca</h2><span class="muted" id="libCount"></span></div>
+        <input type="search" id="libSearch" placeholder="Buscar por título, artista ou álbum…" aria-label="Buscar na biblioteca">
+        <div class="lib" id="lib"></div>
+      </section>
+    </div>
+
+    <!-- CATEGORIAS -->
+    <div id="viewCats" hidden>
+      <section class="card">
+        <h2>Escolha a categoria</h2>
+        <div class="seg" id="seg"></div>
+        <p class="muted" id="catInfo"></p>
+        <input type="search" id="catSearch" placeholder="Buscar música…" aria-label="Buscar música">
+        <div class="lib" id="pickList"></div>
+      </section>
+      <div class="sticky"><button class="btn" id="saveCat" disabled>Nada para salvar</button></div>
+      <div class="msg" id="catMsg" hidden style="margin-top:10px"></div>
+    </div>
+
+    <p style="margin-top:22px"><button class="btn-2" id="disconnect">Desconectar este aparelho</button></p>
+  </div>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const OWNER = location.hostname.endsWith(".github.io") ? location.hostname.split(".")[0] : "victorpaulos";
+const REPO = location.hostname.endsWith(".github.io") ? (location.pathname.split("/").filter(Boolean)[0] || OWNER + ".github.io") : "estante";
+const BRANCH = "main", LIB_PATH = "biblioteca.json", AUDIO_DIR = "musicas/arquivos";
+const CATS = [["dobrados", "Dobrados"], ["populares", "Populares"], ["cancoes", "Canções"], ["hinos", "Hinos"]];
+const CAT_NAME = Object.fromEntries(CATS);
+const MAX = 50 * 1048576;
+
+let token = "", lib = { songs: [] }, pending = [], editing = null, confirmDel = null, curCat = "dobrados", catDraft = null;
+
+const store = {
+  get() { try { return localStorage.getItem("estante-token") || ""; } catch { return ""; } },
+  set(v) { try { localStorage.setItem("estante-token", v); } catch {} },
+  clear() { try { localStorage.removeItem("estante-token"); } catch {} },
+};
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const fmt = s => { if (!s) return ""; const m = Math.floor(s / 60); return m + ":" + String(Math.floor(s % 60)).padStart(2, "0"); };
+const mb = b => (b / 1048576).toFixed(1).replace(".", ",") + " MB";
+const slug = s => (s || "musica").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "musica";
+function showMsg(el, text, bad) { el.textContent = text; el.className = "msg" + (bad ? " bad" : ""); el.hidden = !text; }
+
+/* ---------- GitHub ---------- */
+async function gh(path, opts = {}) {
+  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}${path}`, {
+    method: opts.method || "GET", cache: "no-store",
+    headers: { Authorization: "Bearer " + token, Accept: opts.accept || "application/vnd.github+json", ...(opts.body ? { "Content-Type": "application/json" } : {}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  if (r.status === 404 && opts.allow404) return null;
+  if (!r.ok) {
+    let m = ""; try { m = (await r.json()).message; } catch {}
+    const e = new Error(r.status === 401 ? "Chave inválida ou vencida." : r.status === 403 ? "A chave não tem permissão de escrita no repositório estante." : m || "Erro " + r.status);
+    e.status = r.status; throw e;
+  }
+  return opts.accept === "application/vnd.github.raw" ? r.text() : r.json();
+}
+function blobUpload(b64, onProgress) {
+  return new Promise((res, rej) => {
+    const x = new XMLHttpRequest();
+    x.open("POST", `https://api.github.com/repos/${OWNER}/${REPO}/git/blobs`);
+    x.setRequestHeader("Authorization", "Bearer " + token);
+    x.setRequestHeader("Accept", "application/vnd.github+json");
+    x.setRequestHeader("Content-Type", "application/json");
+    x.upload.onprogress = e => e.lengthComputable && onProgress(e.loaded / e.total);
+    x.onload = () => { let d = {}; try { d = JSON.parse(x.responseText); } catch {} x.status === 201 ? res(d.sha) : rej(new Error(d.message || "Erro " + x.status)); };
+    x.onerror = () => rej(new Error("Falha de conexão"));
+    x.send(JSON.stringify({ content: b64, encoding: "base64" }));
+  });
+}
+/** Grava tudo num único commit: arquivos novos (blobs já enviados), biblioteca.json e remoções. */
+async function commit({ blobs = [], deletes = [], message }) {
+  const ref = await gh(`/git/ref/heads/${BRANCH}`);
+  const head = await gh(`/git/commits/${ref.object.sha}`);
+  const tree = [
+    ...blobs.map(b => ({ path: b.path, mode: "100644", type: "blob", sha: b.sha })),
+    ...deletes.map(p => ({ path: p, mode: "100644", type: "blob", sha: null })),
+    { path: LIB_PATH, mode: "100644", type: "blob", content: JSON.stringify(lib, null, 1) + "\n" },
+  ];
+  const t = await gh("/git/trees", { method: "POST", body: { base_tree: head.tree.sha, tree } });
+  const c = await gh("/git/commits", { method: "POST", body: { message, tree: t.sha, parents: [ref.object.sha] } });
+  await gh(`/git/refs/heads/${BRANCH}`, { method: "PATCH", body: { sha: c.sha } });
+}
+async function loadLib() {
+  const txt = await gh(`/contents/${LIB_PATH}?ref=${BRANCH}`, { accept: "application/vnd.github.raw", allow404: true });
+  lib = txt ? JSON.parse(txt) : { songs: [] };
+  if (!Array.isArray(lib.songs)) lib.songs = [];
+}
+
+/* ---------- Conectar ---------- */
+async function connect(t) {
+  token = t.trim();
+  await gh(""); // testa a chave
+  await loadLib();
+  store.set(token);
+  $("connect").hidden = true; $("panel").hidden = false;
+  renderAll();
+}
+$("connectBtn").onclick = async () => {
+  showMsg($("connectMsg"), "");
+  $("connectBtn").disabled = true;
+  try { await connect($("token").value); $("token").value = ""; }
+  catch (e) { showMsg($("connectMsg"), e.message, true); }
+  $("connectBtn").disabled = false;
+};
+$("disconnect").onclick = () => { store.clear(); token = ""; $("panel").hidden = true; $("connect").hidden = false; };
+
+/* ---------- Abas ---------- */
+function tab(which) {
+  $("tabSongs").setAttribute("aria-selected", which === "songs"); $("tabCats").setAttribute("aria-selected", which === "cats");
+  $("viewSongs").hidden = which !== "songs"; $("viewCats").hidden = which !== "cats";
+  if (which === "cats") renderCats();
+}
+$("tabSongs").onclick = () => tab("songs");
+$("tabCats").onclick = () => tab("cats");
+
+/* ---------- Leitura das etiquetas do MP3 (ID3) ---------- */
+async function readTags(file) {
+  const out = {};
+  try {
+    const head = new Uint8Array(await file.slice(0, 10).arrayBuffer());
+    if (head[0] !== 0x49 || head[1] !== 0x44 || head[2] !== 0x33) return out;
+    const ver = head[3], size = (head[6] << 21) | (head[7] << 14) | (head[8] << 7) | head[9];
+    const b = new Uint8Array(await file.slice(10, 10 + Math.min(size, 2 * 1048576)).arrayBuffer());
+    const want = { TIT2: "title", TPE1: "artist", TALB: "album" };
+    let p = 0;
+    while (p + 10 < b.length) {
+      const id = String.fromCharCode(b[p], b[p + 1], b[p + 2], b[p + 3]);
+      if (!/^[A-Z0-9]{4}$/.test(id)) break;
+      const fs = ver === 4 ? (b[p + 4] << 21) | (b[p + 5] << 14) | (b[p + 6] << 7) | b[p + 7] : (b[p + 4] << 24) | (b[p + 5] << 16) | (b[p + 6] << 8) | b[p + 7];
+      if (fs <= 0 || p + 10 + fs > b.length) break;
+      if (want[id]) {
+        const d = b.subarray(p + 10, p + 10 + fs), enc = d[0], body = d.subarray(1);
+        const label = enc === 0 ? "latin1" : enc === 1 ? "utf-16" : enc === 2 ? "utf-16be" : "utf-8";
+        out[want[id]] = new TextDecoder(label).decode(body).replace(/\u0000/g, "").trim();
+      }
+      p += 10 + fs;
+    }
+  } catch {}
+  return out;
+}
+function titleFromName(name) {
+  return name.replace(/\.[^.]+$/, "").replace(/\((MP3|M4A)_\d+K\)/gi, "").replace(/^\d{1,3}\s*[-._)]\s*/, "").replace(/_/g, " ").replace(/\s+/g, " ").trim();
+}
+function readDuration(file) {
+  return new Promise(res => {
+    const a = new Audio(), url = URL.createObjectURL(file);
+    const done = v => { URL.revokeObjectURL(url); res(v); };
+    a.preload = "metadata"; a.onloadedmetadata = () => done(isFinite(a.duration) ? Math.round(a.duration * 10) / 10 : null); a.onerror = () => done(null);
+    setTimeout(() => done(null), 8000); a.src = url;
+  });
+}
+function toBase64(file) {
+  return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(",")[1]); r.onerror = () => rej(new Error("Não foi possível ler o arquivo")); r.readAsDataURL(file); });
+}
+
+/* ---------- Novas músicas ---------- */
+async function addFiles(list) {
+  for (const f of list) {
+    if (!/\.(mp3|m4a|wav|aac|ogg)$/i.test(f.name)) continue;
+    const item = { file: f, title: titleFromName(f.name), artist: "", album: "", cats: [], dur: null, pct: 0, state: "wait", err: "" };
+    pending.push(item);
+    readTags(f).then(t => { Object.assign(item, Object.fromEntries(Object.entries(t).filter(([, v]) => v))); renderNew(); });
+    readDuration(f).then(d => { item.dur = d; renderNew(); });
+  }
+  renderNew();
+}
+function catPicker(selected, name) {
+  return `<div class="catpick">${CATS.map(([id, n]) => `<label style="--cc:var(--c-${id})"><input type="checkbox" name="${name}" value="${id}" ${selected.includes(id) ? "checked" : ""}>${n}</label>`).join("")}</div>`;
+}
+function renderNew() {
+  const box = $("newList"); box.innerHTML = "";
+  pending.forEach((it, i) => {
+    const el = document.createElement("div"); el.className = "new";
+    const locked = it.state === "up" || it.state === "done";
+    const status = it.state === "up" ? `Enviando ${Math.round(it.pct * 100)}%` : it.state === "done" ? "Salva ✓" : it.state === "fail" ? it.err : it.file.size > MAX ? "Acima de 50 MB" : "";
+    el.innerHTML = `<div class="new-top"><span>${esc(it.file.name)} · ${mb(it.file.size)}${it.dur ? " · " + fmt(it.dur) : ""}</span><button class="x" aria-label="Tirar da lista" ${locked ? "disabled" : ""}>×</button></div>
+      <div class="grid3">
+        <label class="f full">Título<input type="text" data-k="title" value="${esc(it.title)}" ${locked ? "disabled" : ""}></label>
+        <label class="f">Artista / compositor<input type="text" data-k="artist" value="${esc(it.artist)}" ${locked ? "disabled" : ""}></label>
+        <label class="f">Álbum<input type="text" data-k="album" value="${esc(it.album)}" ${locked ? "disabled" : ""}></label>
+      </div>
+      <div><p class="muted" style="margin-bottom:6px">Categorias (opcional, dá para escolher depois)</p>${catPicker(it.cats, "nc" + i)}</div>
+      ${it.state !== "wait" ? `<div class="bar"><i style="width:${it.state === "done" ? 100 : Math.round(it.pct * 100)}%"></i></div>` : ""}
+      ${status ? `<p class="muted" style="${it.state === "fail" || it.file.size > MAX ? "color:var(--bad)" : ""}">${esc(status)}</p>` : ""}`;
+    el.querySelectorAll("input[data-k]").forEach(inp => inp.oninput = () => { it[inp.dataset.k] = inp.value; });
+    el.querySelectorAll(`input[name="nc${i}"]`).forEach(cb => cb.onchange = () => { it.cats = [...el.querySelectorAll(`input[name="nc${i}"]:checked`)].map(c => c.value); });
+    el.querySelector(".x").onclick = () => { pending.splice(i, 1); renderNew(); };
+    box.append(el);
+  });
+  const n = pending.filter(p => p.state === "wait" || p.state === "fail").length;
+  $("saveNew").hidden = !n;
+  $("saveNew").textContent = n === 1 ? "Salvar música" : `Salvar ${n} músicas`;
+}
+$("saveNew").onclick = async () => {
+  const todo = pending.filter(p => (p.state === "wait" || p.state === "fail") && p.file.size <= MAX);
+  if (!todo.length) return;
+  $("saveNew").disabled = true; showMsg($("newMsg"), "");
+  const blobs = [], added = [];
+  for (const it of todo) {
+    if (!it.title.trim()) it.title = titleFromName(it.file.name);
+    it.state = "up"; it.pct = 0; renderNew();
+    try {
+      const b64 = await toBase64(it.file);
+      const sha = await blobUpload(b64, p => { it.pct = p * 0.95; renderNew(); });
+      const ext = (it.file.name.match(/\.([^.]+)$/) || [, "mp3"])[1].toLowerCase();
+      const id = slug(it.title) + "-" + Math.random().toString(36).slice(2, 7);
+      const path = `${AUDIO_DIR}/${id}.${ext}`;
+      blobs.push({ path, sha });
+      added.push({ it, song: { id, file: path, title: it.title.trim(), artist: it.artist.trim(), album: it.album.trim(), cats: it.cats, dur: it.dur, size: it.file.size, added: new Date().toISOString().slice(0, 10) } });
+    } catch (e) { it.state = "fail"; it.err = e.message; renderNew(); }
+  }
+  if (added.length) {
+    const before = lib.songs.slice();
+    lib.songs.push(...added.map(a => a.song));
+    try {
+      await commit({ blobs, message: added.length === 1 ? `Adiciona "${added[0].song.title}"` : `Adiciona ${added.length} músicas` });
+      added.forEach(a => { a.it.state = "done"; a.it.pct = 1; });
+      showMsg($("newMsg"), `${added.length === 1 ? "Música salva" : added.length + " músicas salvas"}. Em alguns segundos já aparecem para os músicos.`);
+    } catch (e) {
+      lib.songs = before;
+      added.forEach(a => { a.it.state = "fail"; a.it.err = e.message; });
+    }
+  }
+  renderNew(); renderLib();
+  $("saveNew").disabled = false;
+  setTimeout(() => { pending = pending.filter(p => p.state !== "done"); renderNew(); }, 2500);
+};
+$("files").onchange = e => { addFiles(e.target.files); e.target.value = ""; };
+const drop = $("drop");
+drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", e => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); });
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("files").click(); } });
+
+/* ---------- Biblioteca ---------- */
+const sub = s => [s.artist, s.album].filter(Boolean).join(" · ");
+const sortT = (a, b) => a.title.localeCompare(b.title, "pt-BR");
+function renderLib() {
+  const q = $("libSearch").value.trim().toLowerCase();
+  const songs = lib.songs.slice().sort(sortT).filter(s => !q || [s.title, s.artist, s.album].join(" ").toLowerCase().includes(q));
+  $("libCount").textContent = `${lib.songs.length} ${lib.songs.length === 1 ? "música" : "músicas"}`;
+  const box = $("lib"); box.innerHTML = "";
+  if (!songs.length) { box.innerHTML = `<div class="empty">${lib.songs.length ? "Nada encontrado." : "Nenhuma música ainda. Envie a primeira acima."}</div>`; return; }
+  for (const s of songs) {
+    const row = document.createElement("div"); row.className = "row";
+    row.innerHTML = `<div><div class="t">${esc(s.title)}</div><div class="s">${esc(sub(s) || "Sem artista")}${s.dur ? " · " + fmt(s.dur) : ""}</div>
+      <div class="chips">${(s.cats || []).map(c => `<span class="chip" style="--cc:var(--c-${c})">${CAT_NAME[c] || c}</span>`).join("")}</div></div>
+      <button class="btn-2" data-a="edit">${editing === s.id ? "Fechar" : "Editar"}</button>`;
+    row.querySelector('[data-a="edit"]').onclick = () => { editing = editing === s.id ? null : s.id; confirmDel = null; renderLib(); };
+    if (editing === s.id) {
+      const ed = document.createElement("div"); ed.className = "edit";
+      ed.innerHTML = `<div class="grid3">
+          <label class="f full">Título<input type="text" data-k="title" value="${esc(s.title)}"></label>
+          <label class="f">Artista / compositor<input type="text" data-k="artist" value="${esc(s.artist)}"></label>
+          <label class="f">Álbum<input type="text" data-k="album" value="${esc(s.album)}"></label></div>
+        <div>${catPicker(s.cats || [], "ec")}</div>
+        <div class="acts"><button class="btn" data-a="save">Salvar alterações</button>
+          <button class="btn-2 danger" data-a="del">${confirmDel === s.id ? "Toque de novo para apagar de vez" : "Apagar música"}</button></div>
+        <div class="msg bad" hidden></div>`;
+      const err = ed.querySelector(".msg");
+      ed.querySelector('[data-a="save"]').onclick = async e => {
+        const next = { ...s };
+        ed.querySelectorAll("input[data-k]").forEach(i => next[i.dataset.k] = i.value.trim());
+        if (!next.title) next.title = s.title;
+        next.cats = [...ed.querySelectorAll('input[name="ec"]:checked')].map(c => c.value);
+        const idx = lib.songs.findIndex(x => x.id === s.id), prev = lib.songs[idx];
+        lib.songs[idx] = next; e.target.disabled = true; e.target.textContent = "Salvando…";
+        try { await commit({ message: `Edita "${next.title}"` }); editing = null; renderLib(); }
+        catch (x) { lib.songs[idx] = prev; showMsg(err, x.message, true); e.target.disabled = false; e.target.textContent = "Salvar alterações"; }
+      };
+      ed.querySelector('[data-a="del"]').onclick = async e => {
+        if (confirmDel !== s.id) { confirmDel = s.id; renderLib(); return; }
+        const before = lib.songs.slice();
+        lib.songs = lib.songs.filter(x => x.id !== s.id); e.target.disabled = true; e.target.textContent = "Apagando…";
+        try { await commit({ deletes: [s.file], message: `Remove "${s.title}"` }); editing = confirmDel = null; renderLib(); }
+        catch (x) { lib.songs = before; showMsg(err, x.message, true); e.target.disabled = false; }
+      };
+      row.append(ed);
+    }
+    box.append(row);
+  }
+}
+$("libSearch").oninput = renderLib;
+
+/* ---------- Categorias ---------- */
+function draftFor(cat) { return new Set(lib.songs.filter(s => (s.cats || []).includes(cat)).map(s => s.id)); }
+function dirty() {
+  if (!catDraft) return 0;
+  const cur = draftFor(curCat); let n = 0;
+  for (const id of catDraft) if (!cur.has(id)) n++;
+  for (const id of cur) if (!catDraft.has(id)) n++;
+  return n;
+}
+function renderCats() {
+  if (!catDraft) catDraft = draftFor(curCat);
+  $("seg").innerHTML = "";
+  for (const [id, name] of CATS) {
+    const b = document.createElement("button"); b.textContent = name; b.style.setProperty("--cc", `var(--c-${id})`);
+    b.setAttribute("aria-pressed", id === curCat);
+    b.onclick = () => { if (id === curCat) return; curCat = id; catDraft = draftFor(id); renderCats(); };
+    $("seg").append(b);
+  }
+  $("catInfo").textContent = `${catDraft.size} ${catDraft.size === 1 ? "música" : "músicas"} em ${CAT_NAME[curCat]}. Marque as que devem aparecer nesta categoria.`;
+  const q = $("catSearch").value.trim().toLowerCase();
+  const songs = lib.songs.slice().sort(sortT).filter(s => !q || [s.title, s.artist, s.album].join(" ").toLowerCase().includes(q));
+  const box = $("pickList"); box.innerHTML = ""; box.style.setProperty("--cc", `var(--c-${curCat})`);
+  if (!songs.length) box.innerHTML = `<div class="empty">${lib.songs.length ? "Nada encontrado." : "A biblioteca está vazia. Envie músicas na aba Músicas."}</div>`;
+  for (const s of songs) {
+    const l = document.createElement("label"); l.className = "pick";
+    l.innerHTML = `<input type="checkbox" ${catDraft.has(s.id) ? "checked" : ""}><span><span class="t" style="font-weight:700">${esc(s.title)}</span><br><span class="s" style="font-size:13px;color:var(--muted)">${esc(sub(s) || "Sem artista")}</span></span>`;
+    l.querySelector("input").onchange = e => { e.target.checked ? catDraft.add(s.id) : catDraft.delete(s.id); updateSaveCat(); $("catInfo").textContent = `${catDraft.size} ${catDraft.size === 1 ? "música" : "músicas"} em ${CAT_NAME[curCat]}. Marque as que devem aparecer nesta categoria.`; };
+    box.append(l);
+  }
+  updateSaveCat();
+}
+function updateSaveCat() {
+  const n = dirty();
+  $("saveCat").disabled = !n;
+  $("saveCat").textContent = n ? `Salvar ${CAT_NAME[curCat]} (${n} ${n === 1 ? "mudança" : "mudanças"})` : "Nada para salvar";
+}
+$("catSearch").oninput = renderCats;
+$("saveCat").onclick = async () => {
+  const before = JSON.stringify(lib.songs);
+  for (const s of lib.songs) {
+    const has = (s.cats || []).includes(curCat), want = catDraft.has(s.id);
+    if (want && !has) s.cats = [...(s.cats || []), curCat];
+    if (!want && has) s.cats = s.cats.filter(c => c !== curCat);
+  }
+  $("saveCat").disabled = true; $("saveCat").textContent = "Salvando…"; showMsg($("catMsg"), "");
+  try { await commit({ message: `Atualiza ${CAT_NAME[curCat]}` }); showMsg($("catMsg"), `${CAT_NAME[curCat]} salva. Os músicos já veem a nova lista.`); renderLib(); }
+  catch (e) { lib.songs = JSON.parse(before); showMsg($("catMsg"), e.message, true); }
+  updateSaveCat();
+};
+
+function renderAll() { renderNew(); renderLib(); catDraft = null; }
+
+(async () => {
+  const t = store.get();
+  if (!t) { $("connect").hidden = false; return; }
+  try { await connect(t); }
+  catch (e) { $("connect").hidden = false; showMsg($("connectMsg"), e.status === 401 ? "A chave salva venceu. Crie uma nova e cole abaixo." : e.message, true); }
+})();
+</script>
+</body>
+</html>

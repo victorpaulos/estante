@@ -88,7 +88,9 @@ h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
 .song{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;width:100%;min-height:62px;padding:10px 14px;border:0;background:transparent;text-align:left}
 .song:active{background:var(--surface-2)}
 .song .n{font:700 13px/1 var(--mono);color:var(--muted)}
-.song .t{font-weight:600;overflow-wrap:anywhere}
+.song .t{display:block;font-weight:600;overflow-wrap:anywhere}
+.song .a{display:block;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.song .a:empty{display:none}
 .song .d{font:500 13px/1 var(--mono);color:var(--muted)}
 .empty{padding:22px 18px;border:1.5px dashed var(--line);border-radius:16px;color:var(--muted);font-size:15px}
 .empty code{font-family:var(--mono);font-size:13px;color:var(--ink);overflow-wrap:anywhere}
@@ -96,6 +98,7 @@ h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
 /* Player */
 .p-title{display:grid;gap:4px;margin-bottom:16px}
 .p-title h2{font-size:clamp(24px,6.5vw,32px);font-weight:700;letter-spacing:-.015em;line-height:1.1;overflow-wrap:anywhere}
+.p-sub{margin:0;color:var(--muted);font-size:15px;overflow-wrap:anywhere}
 .stage{padding:14px 14px 10px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
 .wave-wrap{position:relative;height:118px;touch-action:none;cursor:pointer}
 canvas{display:block;width:100%;height:100%}
@@ -168,14 +171,14 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
   <section id="list" hidden>
     <div class="bar"><button class="back" id="backHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>Categorias</button></div>
     <div class="list-head"><span class="eyebrow" id="listCount"></span><h2 id="listTitle"></h2></div>
-    <input class="search" id="search" type="search" placeholder="Buscar música…" autocomplete="off">
+    <input class="search" id="search" type="search" placeholder="Buscar música ou artista…" autocomplete="off">
     <div id="songsBox"></div>
   </section>
 
   <!-- PLAYER -->
   <section id="player" hidden>
     <div class="bar"><button class="back" id="backList"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg><span id="backLabel">Voltar</span></button></div>
-    <div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2></div>
+    <div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2><p class="p-sub" id="pSub" hidden></p></div>
 
     <div class="stage">
       <div class="wave-wrap" id="waveWrap" aria-label="Posição na música: toque ou arraste para ir a qualquer ponto" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -246,42 +249,27 @@ const CAT_INFO = {
   hinos:     { name: "Hinos",     folder: "Hinos", desc: "Hinos e louvores", clef: "𝄐" },
 };
 const ORDER = ["dobrados", "populares", "cancoes", "hinos"];
-// As músicas são os arquivos das pastas musicas/<Categoria>/ do repositório no GitHub.
-const FOLDERS = { Dobrados: "dobrados", Populares: "populares", Cancoes: "cancoes", Hinos: "hinos" };
-const OWNER = location.hostname.endsWith(".github.io") ? location.hostname.split(".")[0] : "";
-const REPO = location.pathname.split("/").filter(Boolean)[0] || (OWNER + ".github.io");
+// As músicas vêm de biblioteca.json, mantida pelo painel (admin.html).
+const OWNER = location.hostname.endsWith(".github.io") ? location.hostname.split(".")[0] : "victorpaulos";
+const REPO = location.hostname.endsWith(".github.io") ? (location.pathname.split("/").filter(Boolean)[0] || OWNER + ".github.io") : "estante";
 let LIB = { songs: [] };
-function titleFrom(name) {
-  return name.replace(/\.[^.]+$/, "").replace(/\((MP3|M4A)_\d+K\)/gi, "").replace(/^\d{1,3}\s*[-._)]\s*/, "")
-    .replace(/_/g, " ").replace(/\s+/g, " ").trim();
-}
 async function loadLibrary() {
-  const cacheKey = "estante:lib";
+  const cacheKey = "estante:lib2";
   try {
-    const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/HEAD?recursive=1`, { cache: "no-store" });
-    if (!r.ok) throw new Error("github " + r.status);
-    const tree = (await r.json()).tree || [];
+    let r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/biblioteca.json`, { cache: "no-store", headers: { Accept: "application/vnd.github.raw" } });
+    if (r.status === 403 || r.status === 429) r = await fetch("biblioteca.json", { cache: "no-store" }); // limite da API: usa a cópia do site
+    if (r.status === 404) { LIB = { songs: [] }; return; }
+    if (!r.ok) throw new Error("biblioteca " + r.status);
+    const data = await r.json();
     const songs = [];
-    for (const t of tree) {
-      const m = t.type === "blob" && t.path.match(/^musicas\/([^/]+)\/([^/]+\.(mp3|m4a|wav|aac|ogg))$/i);
-      if (!m || !FOLDERS[m[1]]) continue;
-      songs.push({
-        id: t.sha, cat: FOLDERS[m[1]], title: titleFrom(m[2]), fileName: m[2],
-        file: `https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${t.path.split("/").map(encodeURIComponent).join("/")}`,
-      });
-    }
-    // Nomes editáveis: musicas/nomes.txt, uma linha por música -> arquivo.mp3 = Nome que aparece
-    try {
-      const nr = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/musicas/nomes.txt`, { cache: "no-store", headers: { Accept: "application/vnd.github.raw" } });
-      if (nr.ok) {
-        const names = {};
-        for (const line of (await nr.text()).split(/\r?\n/)) {
-          const i = line.indexOf("=");
-          if (i > 0 && !line.trim().startsWith("#")) names[line.slice(0, i).trim().normalize("NFC").toLowerCase()] = line.slice(i + 1).trim();
-        }
-        for (const s of songs) { const n = names[s.fileName.normalize("NFC").toLowerCase()]; if (n) s.title = n; }
+    for (const s of data.songs || []) {
+      for (const cat of s.cats || []) {
+        songs.push({
+          id: s.id, cat, title: s.title, artist: s.artist || "", album: s.album || "", dur: s.dur,
+          file: `https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${s.file.split("/").map(encodeURIComponent).join("/")}`,
+        });
       }
-    } catch {}
+    }
     songs.sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
     LIB = { songs };
     try { localStorage.setItem(cacheKey, JSON.stringify(LIB)); } catch {}
@@ -328,7 +316,7 @@ function openList(id) {
 function renderList() {
   const q = $("search").value.trim().toLowerCase();
   const all = LIB.songs.filter(s => s.cat === curCat);
-  const songs = all.filter(s => !q || s.title.toLowerCase().includes(q));
+  const songs = all.filter(s => !q || [s.title, s.artist, s.album].join(" ").toLowerCase().includes(q));
   $("listCount").textContent = `${all.length} ${all.length === 1 ? "música" : "músicas"}`;
   $("search").hidden = all.length < 7;
   const box = $("songsBox"); box.innerHTML = "";
@@ -341,8 +329,9 @@ function renderList() {
   songs.forEach((s, i) => {
     const li = document.createElement("li");
     const b = document.createElement("button"); b.className = "song";
-    b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span class="t"></span><span class="d">${s.dur ? fmt(s.dur) : ""}</span>`;
+    b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span><span class="t"></span><span class="a"></span></span><span class="d">${s.dur ? fmt(s.dur) : ""}</span>`;
     b.querySelector(".t").textContent = s.title;
+    b.querySelector(".a").textContent = [s.artist, s.album].filter(Boolean).join(" · ");
     b.onclick = () => openSong(s);
     li.append(b); ul.append(li);
   });
@@ -449,12 +438,12 @@ function computePeaks(buf) {
   if (max > 0) for (let i = 0; i < N; i++) p[i] /= max;
   return p;
 }
-async function loadSong({ key, title, catLabel, backLabel, getData }) {
+async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) {
   const token = ++loadToken;
   playing = false; syncPlayBtn(); filter = null; buffer = null; peaks = null;
   songKey = key;
   Object.assign(S, { semi: 0, tempo: 100, A: null, B: null, loop: false }, store.get(key) || {});
-  $("pTitle").textContent = title; $("pCat").textContent = catLabel; $("backLabel").textContent = backLabel;
+  $("pTitle").textContent = title; $("pSub").textContent = sub; $("pSub").hidden = !sub; $("pCat").textContent = catLabel; $("backLabel").textContent = backLabel;
   $("err").hidden = true; $("loading").hidden = false; $("loadMsg").textContent = "Carregando música…"; $("loadBar").style.width = "0";
   $("tNow").textContent = "0:00"; $("tDur").textContent = "0:00";
   renderControls(); show("player"); sizeCanvas();
@@ -484,7 +473,7 @@ function fail(msg) { $("loading").hidden = true; $("err").textContent = msg; $("
 
 function openSong(s) {
   loadSong({
-    key: "song:" + s.id, title: s.title, catLabel: CAT_INFO[s.cat]?.name || "", backLabel: CAT_INFO[s.cat]?.name || "Voltar",
+    key: "song:" + s.id, title: s.title, sub: [s.artist, s.album].filter(Boolean).join(" · "), catLabel: CAT_INFO[s.cat]?.name || "", backLabel: CAT_INFO[s.cat]?.name || "Voltar",
     getData: token => fetchWithProgress(s.file, token),
   });
 }
