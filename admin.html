@@ -304,6 +304,7 @@ function toBase64(file) {
 async function addFiles(list) {
   for (const f of list) {
     if (!/\.(mp3|m4a|wav|aac|ogg)$/i.test(f.name)) continue;
+    if (!f.size) { pending.push({ file: f, title: titleFromName(f.name), artist: "", album: "", cats: [], dur: null, pct: 0, state: "empty", err: "Arquivo vazio. Se ele estiver no iCloud ou Google Drive, baixe para o aparelho e escolha de novo." }); continue; }
     const item = { file: f, title: titleFromName(f.name), artist: "", album: "", cats: [], dur: null, pct: 0, state: "wait", err: "" };
     pending.push(item);
     readTags(f).then(t => { Object.assign(item, Object.fromEntries(Object.entries(t).filter(([, v]) => v))); renderNew(); });
@@ -319,7 +320,7 @@ function renderNew() {
   pending.forEach((it, i) => {
     const el = document.createElement("div"); el.className = "new";
     const locked = it.state === "up" || it.state === "done";
-    const status = it.state === "up" ? `Enviando ${Math.round(it.pct * 100)}%` : it.state === "done" ? "Salva ✓" : it.state === "fail" ? it.err : it.file.size > MAX ? "Acima de 50 MB" : "";
+    const status = it.state === "empty" ? it.err : it.state === "up" ? `Enviando ${Math.round(it.pct * 100)}%` : it.state === "done" ? "Salva ✓" : it.state === "fail" ? it.err : it.file.size > MAX ? "Acima de 50 MB" : "";
     el.innerHTML = `<div class="new-top"><span>${esc(it.file.name)} · ${mb(it.file.size)}${it.dur ? " · " + fmt(it.dur) : ""}</span><button class="x" aria-label="Tirar da lista" ${locked ? "disabled" : ""}>×</button></div>
       <div class="grid3">
         <label class="f full">Título<input type="text" data-k="title" value="${esc(it.title)}" ${locked ? "disabled" : ""}></label>
@@ -328,7 +329,7 @@ function renderNew() {
       </div>
       <div><p class="muted" style="margin-bottom:6px">Categorias (opcional, dá para escolher depois)</p>${catPicker(it.cats, "nc" + i)}</div>
       ${it.state !== "wait" ? `<div class="bar"><i style="width:${it.state === "done" ? 100 : Math.round(it.pct * 100)}%"></i></div>` : ""}
-      ${status ? `<p class="muted" style="${it.state === "fail" || it.file.size > MAX ? "color:var(--bad)" : ""}">${esc(status)}</p>` : ""}`;
+      ${status ? `<p class="muted" style="${it.state === "fail" || it.state === "empty" || it.file.size > MAX ? "color:var(--bad)" : ""}">${esc(status)}</p>` : ""}`;
     el.querySelectorAll("input[data-k]").forEach(inp => inp.oninput = () => { it[inp.dataset.k] = inp.value; });
     el.querySelectorAll(`input[name="nc${i}"]`).forEach(cb => cb.onchange = () => { it.cats = [...el.querySelectorAll(`input[name="nc${i}"]:checked`)].map(c => c.value); });
     el.querySelector(".x").onclick = () => { pending.splice(i, 1); renderNew(); };
@@ -362,7 +363,7 @@ $("saveNew").onclick = async () => {
     try {
       await commit({ blobs, message: added.length === 1 ? `Adiciona "${added[0].song.title}"` : `Adiciona ${added.length} músicas` });
       added.forEach(a => { a.it.state = "done"; a.it.pct = 1; });
-      showMsg($("newMsg"), `${added.length === 1 ? "Música salva" : added.length + " músicas salvas"}. Em alguns segundos já aparecem para os músicos.`);
+      showMsg($("newMsg"), `${added.length === 1 ? "Música salva" : added.length + " músicas salvas"}. Em cerca de 1 minuto já aparecem para os músicos.`);
     } catch (e) {
       lib.songs = before;
       added.forEach(a => { a.it.state = "fail"; a.it.err = e.message; });
