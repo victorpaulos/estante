@@ -610,8 +610,9 @@ function seek(t) {
 function applyFx() {
   if (!st) return;
   const k = S.tempo / 100;
-  if (k !== anK) { const cur = srcAt(outCount); anRaw = cur + stBias(k); anOut = outCount; anK = k; clicks = []; }
   st.tempo = k;
+  // Mudou o andamento: reposiciona no mesmo ponto, para o metrônomo não acumular atraso a cada mudança.
+  if (k !== anK) { const cur = srcAt(outCount); seek(Math.max(0, cur + stBias(k))); }
   st.pitchSemitones = S.semi;
 }
 async function setPlaying(on) {
@@ -682,7 +683,7 @@ async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) 
     buffer = buf; sr = buf.sampleRate;
     st = new ST.SoundTouch();
     filter = new ST.SimpleFilter(new ST.WebAudioBufferSource(buf), st, () => {});
-    applyFx(); seekedTo = 0; anchor(0);
+    anchor(0); applyFx(); seekedTo = 0;
     peaks = computePeaks(buf);
     const cachedBeats = store.get("beats:" + key);
     if (cachedBeats && cachedBeats.v === 1) { BEAT = { base: cachedBeats.b.map(x => x / 1000), bpm: cachedBeats.bpm }; buildBeats(); }
