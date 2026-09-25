@@ -20,7 +20,7 @@
   --line:#D6DCE8; --wave:#C3CBDD; --brass:#0F2E78; --brass-ink:#0F2E78; --brass-soft:#E3E9F6;
   --on-brass:#FFFFFF; --loop:rgba(15,46,120,.12); --gold:#C99A2E; --red:#B3202A;
   --band:#0F2E78; --band-ink:#FFFFFF; --band-muted:#C9D3EC;
-  --c-dobrados:#B3202A; --c-populares:#B8871F; --c-cancoes:#1F5FAE; --c-hinos:#5B6478;
+  --c-dobrados:#B3202A; --c-populares:#B8871F; --c-cancoes:#1F5FAE; --c-hinos:#5B6478; --in-tune:#1E8E5A;
   --shadow:0 1px 2px rgba(14,26,58,.06),0 6px 20px rgba(14,26,58,.07); --play-shadow:0 8px 22px rgba(15,46,120,.35);
   --display:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -32,7 +32,7 @@
   --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
   --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
   --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
-  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6;
+  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --in-tune:#4FD08A;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
 }}
 :root[data-theme="dark"]{
@@ -41,7 +41,7 @@
   --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
   --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
   --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
-  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6;
+  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --in-tune:#4FD08A;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
 }
 *{box-sizing:border-box}
@@ -128,6 +128,28 @@ canvas{display:block;width:100%;height:100%}
 .play{width:78px;height:78px;border:0;background:var(--brass);color:var(--on-brass);box-shadow:var(--play-shadow)}
 .play svg{width:32px;height:32px}
 .round:disabled{opacity:.4}
+.tuner-btn{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;width:100%;margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);text-align:left}
+.tuner-btn:active{transform:scale(.99)}
+.tuner-btn > svg{width:34px;height:34px;color:var(--gold)}
+.tuner-btn b{display:block;font:700 21px/1.1 var(--display)}
+.tuner-btn small{display:block;margin-top:3px;font-size:13px;color:var(--muted)}
+.tuner-btn .chev{width:20px;height:20px;color:var(--muted)}
+.tn-gauge svg{display:block;width:100%;max-width:420px;margin:0 auto}
+.g-zone{fill:none;stroke:var(--in-tune);stroke-width:10;stroke-linecap:round;opacity:.3;transition:opacity .2s}
+.g-tick{stroke:var(--muted);stroke-width:1.5}
+.g-tick.big{stroke-width:2.5}
+.g-lab{fill:var(--muted);font:600 11px var(--mono);text-anchor:middle}
+.g-needle{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.g-hub{fill:var(--ink)}
+.tn-note{margin-top:-6px;text-align:center;font:800 clamp(60px,20vw,92px)/1 var(--display);letter-spacing:-.02em}
+.tn-note small{font-size:.38em;font-weight:700;color:var(--muted);margin-left:4px}
+.tn-sub{margin-top:8px;text-align:center;font:500 13px/1.4 var(--mono);color:var(--muted)}
+.tn-state{margin-top:10px;text-align:center;font-weight:700;min-height:1.4em}
+.tn-stage[data-state="in"] .g-needle{stroke:var(--in-tune)}
+.tn-stage[data-state="in"] .g-hub,.tn-stage[data-state="in"] .tn-note{fill:var(--in-tune);color:var(--in-tune)}
+.tn-stage[data-state="in"] .g-zone{opacity:.95}
+.tn-stage[data-state="in"] .tn-state{color:var(--in-tune)}
+.tn-stage[data-state="low"] .tn-state,.tn-stage[data-state="high"] .tn-state{color:var(--c-dobrados)}
 
 .panel{margin-top:14px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
 .panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
@@ -185,6 +207,43 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
       </div>
     </header>
     <div class="cats" id="cats"></div>
+    <button class="tuner-btn" id="openTuner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v8a3 3 0 0 0 6 0V2M12 13v9M9 22h6"/></svg>
+      <span><b>Afinador</b><small>Cromático · para Si♭, Mi♭, Fá e Dó</small></span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
+    </button>
+  </section>
+
+  <!-- AFINADOR -->
+  <section id="tuner" hidden>
+    <div class="bar"><button class="back" id="backTuner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>Início</button></div>
+    <div class="p-title"><span class="eyebrow">Ferramenta</span><h2>Afinador</h2></div>
+    <div class="stage tn-stage" id="tnStage">
+      <div class="tn-gauge"><svg viewBox="0 0 300 165" id="gauge" aria-hidden="true"></svg></div>
+      <div class="tn-note" id="tnNote" aria-live="polite">—</div>
+      <div class="tn-sub" id="tnSub">Ligue o microfone e toque uma nota longa</div>
+      <div class="tn-state" id="tnState"></div>
+    </div>
+    <button class="toggle" id="micBtn" aria-pressed="false" style="width:100%;margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span id="micLabel">Ligar microfone</span></button>
+    <div class="err" id="tnErr" hidden></div>
+    <div class="panel">
+      <div class="panel-h"><h3>Meu instrumento</h3></div>
+      <div class="chips" id="trChips" style="margin-top:0"></div>
+      <p class="m-note" id="trNote"></p>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Referência do Lá</h3><button class="reset" id="a4Reset">440 Hz</button></div>
+      <div class="stepper">
+        <button class="step" id="a4Down" aria-label="Diminuir 1 Hz">−</button>
+        <div class="readout"><b id="a4Val">440</b><span>Hz</span></div>
+        <button class="step" id="a4Up" aria-label="Aumentar 1 Hz">+</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Nota de referência</h3></div>
+      <div class="chips" id="refChips" style="margin-top:0"></div>
+      <p class="m-note">Toca a nota (som real, de concerto) para afinar de ouvido. Toque de novo para parar.</p>
+    </div>
   </section>
 
   <!-- LIST -->
@@ -360,7 +419,7 @@ const fmt = (s, dec) => {
   const m = Math.floor(s / 60), r = s - m * 60;
   return dec ? `${m}:${r.toFixed(1).padStart(4, "0")}` : `${m}:${String(Math.floor(r)).padStart(2, "0")}`;
 };
-function show(id) { for (const s of ["home", "list", "player"]) $(s).hidden = s !== id; window.scrollTo(0, 0); }
+function show(id) { for (const s of ["home", "list", "player", "tuner"]) $(s).hidden = s !== id; window.scrollTo(0, 0); }
 
 /* ---------- Home ---------- */
 function renderHome() {
@@ -861,6 +920,147 @@ for (const [v, label] of [[0.5, "Metade"], [1, "Normal"], [2, "Dobro"]]) {
 $("metroBtn").onclick = () => { M.on = !M.on; clicks = []; store.set("metro", M); renderMetro(); };
 $("offMinus").onclick = () => { S.metroOff = Math.max(-300, S.metroOff - 10); clicks = []; changed(); };
 $("offPlus").onclick = () => { S.metroOff = Math.min(300, S.metroOff + 10); clicks = []; changed(); };
+
+/* ---------- Afinador cromático ---------- */
+// Detector de altura YIN (de Cheveigné & Kawahara, 2002) com interpolação parabólica.
+function makeYin(sr, W = 2048, fMin = 38, fMax = 2100) {
+  const tauMin = Math.max(2, Math.floor(sr / fMax)), tauMax = Math.min(Math.ceil(sr / fMin), W - 2);
+  const d = new Float32Array(tauMax + 2);
+  return function yin(x) { // x: pelo menos W + tauMax amostras
+    let rms = 0; for (let i = 0; i < W; i++) rms += x[i] * x[i]; rms = Math.sqrt(rms / W);
+    if (rms < 0.004) return null;
+    // diferença
+    for (let tau = 1; tau <= tauMax + 1; tau++) {
+      let s = 0; for (let i = 0; i < W; i++) { const v = x[i] - x[i + tau]; s += v * v; } d[tau] = s;
+    }
+    // diferença normalizada pela média acumulada
+    d[0] = 1; let run = 0;
+    for (let tau = 1; tau <= tauMax + 1; tau++) { run += d[tau]; d[tau] = run ? d[tau] * tau / run : 1; }
+    let tau = -1;
+    for (let t = tauMin; t <= tauMax; t++) {
+      if (d[t] < 0.12) { while (t + 1 <= tauMax && d[t + 1] < d[t]) t++; tau = t; break; }
+    }
+    if (tau < 0) { // sem mínimo abaixo do limiar: pega o mínimo global se for razoável
+      let best = 1; for (let t = tauMin; t <= tauMax; t++) if (d[t] < best) { best = d[t]; tau = t; }
+      if (best > 0.3) return null;
+    }
+    const a = d[tau - 1], b = d[tau], c = d[tau + 1], den = a - 2 * b + c;
+    const shift = den ? 0.5 * (a - c) / den : 0;
+    return { freq: sr / (tau + shift), clarity: 1 - b, rms };
+  };
+}
+
+const NOTE_PT = ["Dó", "Dó♯", "Ré", "Mi♭", "Mi", "Fá", "Fá♯", "Sol", "Lá♭", "Lá", "Si♭", "Si"];
+const NOTE_EN = ["C", "C♯", "D", "E♭", "E", "F", "F♯", "G", "A♭", "A", "B♭", "B"];
+const TRANSP = [
+  ["C", "Dó (concerto)", 0, "Flauta, flautim, oboé, fagote, trombone, tuba e bombardino em clave de fá, percussão e voz."],
+  ["Bb", "Si♭", 2, "Clarinete, trompete, cornet, flugel, sax soprano e tenor, bombardino e tuba em clave de sol."],
+  ["Eb", "Mi♭", 9, "Requinta, sax alto e barítono, sax-horn e trompa em Mi♭."],
+  ["F", "Fá", 7, "Trompa em Fá."],
+];
+const T = Object.assign({ tr: "C", a4: 440 }, store.get("tuner") || {});
+let mic = null, analyser = null, tnBuf = null, yin = null, tnTimer = null, hist = [], needle = 0, quiet = 0, refNodes = null, tnLock = null;
+function gaugeBuild() {
+  const cx = 150, cy = 150, R = 118, pt = (a, r) => [cx + r * Math.sin(a * Math.PI / 180), cy - r * Math.cos(a * Math.PI / 180)];
+  const [x1, y1] = pt(-6, R), [x2, y2] = pt(6, R);
+  let h = `<path class="g-zone" d="M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}"/>`;
+  for (let c = -50; c <= 50; c += 5) {
+    const a = c * 1.2, big = c % 10 === 0, [ax, ay] = pt(a, R - (big ? 14 : 8)), [bx, by] = pt(a, R);
+    h += `<line class="g-tick${big ? " big" : ""}" x1="${ax.toFixed(1)}" y1="${ay.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}"/>`;
+    if (c % 25 === 0) { const [lx, ly] = pt(a, R + 14); h += `<text class="g-lab" x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}">${c > 0 ? "+" + c : c}</text>`; }
+  }
+  h += `<g id="needle"><line class="g-needle" x1="150" y1="150" x2="150" y2="46"/><circle class="g-hub" cx="150" cy="150" r="7"/></g>`;
+  $("gauge").innerHTML = h;
+}
+function tnSetNeedle(c) { needle += (c - needle) * 0.35; $("needle").setAttribute("transform", `rotate(${(Math.max(-50, Math.min(50, needle)) * 1.2).toFixed(2)} 150 150)`); }
+function tnIdle(msg) { $("tnStage").dataset.state = ""; $("tnNote").textContent = "—"; $("tnSub").textContent = msg; $("tnState").textContent = ""; needle = 0; tnSetNeedle(0); }
+function renderTuner() {
+  $("trChips").innerHTML = "";
+  for (const [id, label] of TRANSP) {
+    const c = document.createElement("button"); c.className = "chip"; c.textContent = label; c.setAttribute("aria-pressed", id === T.tr);
+    c.onclick = () => { T.tr = id; store.set("tuner", T); hist = []; renderTuner(); };
+    $("trChips").append(c);
+  }
+  const tr = TRANSP.find(x => x[0] === T.tr);
+  $("trNote").textContent = (tr[2] ? "A nota aparece como na sua partitura. " : "A nota aparece no som real (de concerto). ") + tr[3];
+  $("a4Val").textContent = T.a4;
+  $("micBtn").setAttribute("aria-pressed", !!mic);
+  $("micLabel").textContent = mic ? "Desligar microfone" : "Ligar microfone";
+  $("refChips").innerHTML = "";
+  for (const [label, midi] of [["Si♭ 3 · afinação da banda", 58], ["Fá 4", 65], ["Lá 4", 69]]) {
+    const c = document.createElement("button"); c.className = "chip"; c.textContent = label;
+    c.setAttribute("aria-pressed", !!(refNodes && refNodes.midi === midi));
+    c.onclick = () => { refNodes && refNodes.midi === midi ? stopRef() : playRef(midi); renderTuner(); };
+    $("refChips").append(c);
+  }
+}
+function tnTick() {
+  if (!analyser) return;
+  analyser.getFloatTimeDomainData(tnBuf);
+  const r = yin(tnBuf);
+  if (!r || r.clarity < 0.85) { if (++quiet > 14) { hist = []; tnIdle("Toque uma nota longa perto do celular"); } return; }
+  quiet = 0;
+  if (hist.length) { const last = hist[hist.length - 1]; if (Math.abs(12 * Math.log2(r.freq / last)) > 0.6) hist = []; }
+  hist.push(r.freq); if (hist.length > 5) hist.shift();
+  const f = [...hist].sort((a, b) => a - b)[hist.length >> 1];
+  const m = 69 + 12 * Math.log2(f / T.a4), midi = Math.round(m), cents = (m - midi) * 100;
+  const tr = TRANSP.find(x => x[0] === T.tr), wm = midi + tr[2], pc = ((wm % 12) + 12) % 12, cpc = ((midi % 12) + 12) % 12;
+  $("tnNote").innerHTML = `${NOTE_PT[pc]}<small>${Math.floor(wm / 12) - 1}</small>`;
+  $("tnSub").textContent = `${f.toFixed(1)} Hz · ${cents >= 0 ? "+" : "−"}${Math.abs(cents).toFixed(0)} cents` + (tr[2] ? ` · som real: ${NOTE_PT[cpc]} ${Math.floor(midi / 12) - 1}` : ` · ${NOTE_EN[cpc]}${Math.floor(midi / 12) - 1}`);
+  const st = Math.abs(cents) <= 5 ? "in" : cents < 0 ? "low" : "high";
+  $("tnStage").dataset.state = st;
+  $("tnState").textContent = st === "in" ? "✓ Afinado" : st === "low" ? "▼ Baixo · suba a afinação" : "▲ Alto · desça a afinação";
+  tnSetNeedle(cents);
+}
+async function startMic() {
+  $("tnErr").hidden = true;
+  if (!navigator.mediaDevices?.getUserMedia) { $("tnErr").textContent = "Este navegador não permite usar o microfone. Abra o app no Safari (iPhone) ou no Chrome (Android)."; $("tnErr").hidden = false; return; }
+  ensureCtx();
+  try { if (navigator.audioSession) navigator.audioSession.type = "play-and-record"; } catch {}
+  try { mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }
+  catch (e) {
+    mic = null; try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch {}
+    $("tnErr").textContent = "Não consegui usar o microfone. Permita o acesso ao microfone para este site nas configurações do navegador e toque em “Ligar microfone” de novo.";
+    $("tnErr").hidden = false; renderTuner(); return;
+  }
+  const src = ctx.createMediaStreamSource(mic);
+  analyser = ctx.createAnalyser(); analyser.fftSize = 4096; src.connect(analyser);
+  tnBuf = new Float32Array(analyser.fftSize); yin = makeYin(ctx.sampleRate); hist = []; quiet = 0;
+  clearInterval(tnTimer); tnTimer = setInterval(tnTick, 50);
+  try { tnLock = await navigator.wakeLock?.request("screen"); } catch {}
+  tnIdle("Toque uma nota longa perto do celular"); renderTuner();
+}
+function stopMic() {
+  clearInterval(tnTimer); tnTimer = null;
+  if (mic) mic.getTracks().forEach(t => t.stop());
+  mic = null; analyser = null; hist = [];
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch {}
+  try { tnLock?.release(); } catch {} tnLock = null;
+  tnIdle("Ligue o microfone e toque uma nota longa"); renderTuner();
+}
+function playRef(midi) {
+  stopRef(); ensureCtx();
+  const f = T.a4 * 2 ** ((midi - 69) / 12), g = ctx.createGain(), o1 = ctx.createOscillator(), o2 = ctx.createOscillator();
+  o1.type = "sine"; o1.frequency.value = f; o2.type = "triangle"; o2.frequency.value = f * 2;
+  const g2 = ctx.createGain(); g2.gain.value = 0.25;
+  o1.connect(g); o2.connect(g2).connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(0, ctx.currentTime); g.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.05);
+  o1.start(); o2.start(); refNodes = { midi, g, o1, o2 };
+}
+function stopRef() {
+  if (!refNodes) return;
+  const { g, o1, o2 } = refNodes, t = ctx.currentTime;
+  g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0, t + 0.06);
+  o1.stop(t + 0.08); o2.stop(t + 0.08); refNodes = null;
+}
+const setA4 = v => { T.a4 = Math.max(415, Math.min(466, v)); store.set("tuner", T); hist = []; if (refNodes) playRef(refNodes.midi); renderTuner(); };
+$("a4Down").onclick = () => setA4(T.a4 - 1);
+$("a4Up").onclick = () => setA4(T.a4 + 1);
+$("a4Reset").onclick = () => setA4(440);
+$("micBtn").onclick = () => mic ? stopMic() : startMic();
+$("openTuner").onclick = () => { setPlaying(false); show("tuner"); renderTuner(); if (!mic) startMic(); };
+$("backTuner").onclick = () => { stopMic(); stopRef(); renderTuner(); renderHome(); show("home"); };
+gaugeBuild(); tnSetNeedle(0);
 
 renderHome();
 renderControls();
