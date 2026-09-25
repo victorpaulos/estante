@@ -429,6 +429,19 @@
    "dur": 432.4,
    "size": 6917641,
    "added": "2026-09-25"
+  },
+  {
+   "id": "um-milagre-senhor-xs3dx",
+   "file": "musicas/arquivos/um-milagre-senhor-xs3dx.mp3",
+   "title": "Um milagre Senhor",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "hinos"
+   ],
+   "dur": 288.6,
+   "size": 4617612,
+   "added": "2026-09-25"
   }
  ]
 }
