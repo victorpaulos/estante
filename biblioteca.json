@@ -468,6 +468,19 @@
    "dur": 357.9,
    "size": 14315102,
    "added": "2026-09-25"
+  },
+  {
+   "id": "oscar-guerreiro-nbyfw",
+   "file": "musicas/arquivos/oscar-guerreiro-nbyfw.mp3",
+   "title": "Oscar Guerreiro",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "dobrados"
+   ],
+   "dur": 401.5,
+   "size": 16059036,
+   "added": "2026-09-25"
   }
  ]
 }
