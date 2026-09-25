@@ -103,6 +103,201 @@
    "dur": 171.3,
    "size": 2740139,
    "added": "2026-09-24"
+  },
+  {
+   "id": "a-vontade-7k0ti",
+   "file": "musicas/arquivos/a-vontade-7k0ti.mp3",
+   "title": "À Vontade",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 4.8,
+   "size": 76760,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "alto-53knl",
+   "file": "musicas/arquivos/alto-53knl.mp3",
+   "title": "Alto",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 2.4,
+   "size": 38715,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "apresentar-arma-culy9",
+   "file": "musicas/arquivos/apresentar-arma-culy9.mp3",
+   "title": "Apresentar Arma",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 5.1,
+   "size": 81369,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "arma-suspensa-m5ike",
+   "file": "musicas/arquivos/arma-suspensa-m5ike.mp3",
+   "title": "Arma Suspensa",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 3.5,
+   "size": 55870,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "avancar-06r7f",
+   "file": "musicas/arquivos/avancar-06r7f.mp3",
+   "title": "Avançar",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 5.9,
+   "size": 94310,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "cessar-463m9",
+   "file": "musicas/arquivos/cessar-463m9.mp3",
+   "title": "Cessar",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 4.8,
+   "size": 77589,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "cobrir-2j6ty",
+   "file": "musicas/arquivos/cobrir-2j6ty.mp3",
+   "title": "Cobrir",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 4.6,
+   "size": 73410,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "cruzar-arma-pd9nm",
+   "file": "musicas/arquivos/cruzar-arma-pd9nm.mp3",
+   "title": "Cruzar Arma",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 2.8,
+   "size": 44163,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "descansar-arma-fhkoy",
+   "file": "musicas/arquivos/descansar-arma-fhkoy.mp3",
+   "title": "Descansar Arma",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 2.2,
+   "size": 35392,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "descansar-6rv6t",
+   "file": "musicas/arquivos/descansar-6rv6t.mp3",
+   "title": "Descansar",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 5.9,
+   "size": 95150,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "em-frente-e41ak",
+   "file": "musicas/arquivos/em-frente-e41ak.mp3",
+   "title": "Em Frente",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 4.2,
+   "size": 67146,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "firme-5bid2",
+   "file": "musicas/arquivos/firme-5bid2.mp3",
+   "title": "Firme",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 2.3,
+   "size": 37463,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "marcar-passo-5c8zg",
+   "file": "musicas/arquivos/marcar-passo-5c8zg.mp3",
+   "title": "Marcar Passo",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 3.6,
+   "size": 57957,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "ombro-arma-k02n8",
+   "file": "musicas/arquivos/ombro-arma-k02n8.mp3",
+   "title": "Ombro Arma",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 2.8,
+   "size": 45415,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "sentido-lsi03",
+   "file": "musicas/arquivos/sentido-lsi03.mp3",
+   "title": "Sentido",
+   "artist": "PMBA · corneta",
+   "album": "Toques de corneta da PMBA",
+   "cats": [
+    "toques"
+   ],
+   "dur": 3.8,
+   "size": 60455,
+   "added": "2026-09-25"
   }
  ]
 }
