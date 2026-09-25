@@ -442,6 +442,19 @@
    "dur": 288.6,
    "size": 4617612,
    "added": "2026-09-25"
+  },
+  {
+   "id": "dobrado-bombardeio-da-bahia-26ioc",
+   "file": "musicas/arquivos/dobrado-bombardeio-da-bahia-26ioc.mp3",
+   "title": "Dobrado Bombardeio da Bahia",
+   "artist": "Antonio Manoel do Espirito Santo",
+   "album": "",
+   "cats": [
+    "dobrados"
+   ],
+   "dur": 321.2,
+   "size": 12849110,
+   "added": "2026-09-25"
   }
  ]
 }
