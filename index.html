@@ -20,7 +20,7 @@
   --line:#D6DCE8; --wave:#C3CBDD; --brass:#0F2E78; --brass-ink:#0F2E78; --brass-soft:#E3E9F6;
   --on-brass:#FFFFFF; --loop:rgba(15,46,120,.12); --gold:#C99A2E; --red:#B3202A;
   --band:#0F2E78; --band-ink:#FFFFFF; --band-muted:#C9D3EC;
-  --c-dobrados:#B3202A; --c-populares:#B8871F; --c-cancoes:#1F5FAE; --c-hinos:#5B6478; --in-tune:#1E8E5A;
+  --c-dobrados:#B3202A; --c-populares:#B8871F; --c-cancoes:#1F5FAE; --c-hinos:#5B6478; --c-toques:#8C6A12; --in-tune:#1E8E5A;
   --shadow:0 1px 2px rgba(14,26,58,.06),0 6px 20px rgba(14,26,58,.07); --play-shadow:0 8px 22px rgba(15,46,120,.35);
   --display:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
   --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -32,7 +32,7 @@
   --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
   --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
   --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
-  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --in-tune:#4FD08A;
+  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --c-toques:#F0C866; --in-tune:#4FD08A;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
 }}
 :root[data-theme="dark"]{
@@ -41,7 +41,7 @@
   --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
   --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
   --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
-  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --in-tune:#4FD08A;
+  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --c-toques:#F0C866; --in-tune:#4FD08A;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
 }
 *{box-sizing:border-box}
@@ -70,6 +70,7 @@ h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
 .cat{position:relative;display:grid;align-content:space-between;gap:26px;min-height:150px;padding:16px;border:1px solid var(--line);
   border-radius:18px;background:var(--surface);text-align:left;box-shadow:var(--shadow);overflow:hidden;transition:transform .15s}
 .cat:active{transform:scale(.98)}
+.cat:nth-child(odd):last-child{grid-column:1/-1;min-height:118px}
 .cat .staff{position:absolute;inset:auto 0 18px 0;height:34px;opacity:.5;
   background:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px 8px)}
 .cat .name{position:relative;font:700 22px/1.05 var(--display);letter-spacing:-.01em}
@@ -325,8 +326,9 @@ const CAT_INFO = {
   populares: { name: "Populares", folder: "Populares", desc: "MPB e música popular", clef: "♫︎" },
   cancoes:   { name: "Canções",   folder: "Cancoes", desc: "Canções e melodias", clef: "♪︎" },
   hinos:     { name: "Hinos",     folder: "Hinos", desc: "Hinos e louvores", clef: "𝄐" },
+  toques:    { name: "Toques de Corneta", folder: "Toques", desc: "Toques regulamentares de clarim e corneta", clef: "𝄆" },
 };
-const ORDER = ["dobrados", "populares", "cancoes", "hinos"];
+const ORDER = ["dobrados", "populares", "cancoes", "hinos", "toques"];
 // As músicas vêm de biblioteca.json, mantida pelo painel (admin.html).
 const OWNER = location.hostname.endsWith(".github.io") ? location.hostname.split(".")[0] : "victorpaulos";
 const REPO = location.hostname.endsWith(".github.io") ? (location.pathname.split("/").filter(Boolean)[0] || OWNER + ".github.io") : "estante";
