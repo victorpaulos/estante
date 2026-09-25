@@ -384,7 +384,8 @@
    "artist": "",
    "album": "",
    "cats": [
-    "populares"
+    "populares",
+    "hinos"
    ],
    "dur": 343.1,
    "size": 5489057,
@@ -436,7 +437,8 @@
    "artist": "",
    "album": "",
    "cats": [
-    "populares"
+    "populares",
+    "hinos"
    ],
    "dur": 432.4,
    "size": 6917641,
