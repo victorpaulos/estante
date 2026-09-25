@@ -604,90 +604,162 @@ function clickSound() {
   for (let i = 0; i < n; i++) d[i] *= 0.95 / (peak || 1);
   CLICK = { sr, data: d }; return d;
 }
-// Relógio da saída: qual ponto da gravação cada amostra tocada representa (medido com o SoundTouch).
-let outCount = 0, anRaw = 0, anOut = 0, anK = 1;
+// Relógio da saída: qual ponto da gravação cada amostra produzida representa (medido com o SoundTouch).
+// Cada salto do loop abre um novo trecho linear; um reposicionamento recomeça a lista.
+let outCount = 0, anchors = [{ out: 0, raw: 0, k: 1 }], anK = 1;
 const stBias = k => -0.0077 + 0.052 * (k - 1);
-function srcAt(o) { return anRaw + (o - anOut) * anK / sr - stBias(anK); }
-function anchor(t) { anRaw = t; anOut = outCount; anK = S.tempo / 100; clicks = []; }
+function srcAt(o) { let a = anchors[0]; for (const x of anchors) { if (x.out <= o) a = x; else break; } return a.raw + (o - a.out) * a.k / sr - stBias(a.k); }
+function anchor(t, keep) {
+  const a = { out: outCount, raw: t, k: S.tempo / 100 };
+  anchors = keep ? anchors.filter(x => x.out < outCount).concat(a) : [a];
+  anK = a.k; if (!keep) clicks = [];
+}
 
-/* ---------- Audio engine (SoundTouch: tom e andamento independentes) ---------- */
-const BUF = 4096;
-let ctx = null, node = null, st = null, filter = null, buffer = null, sr = 44100;
-let playing = false, seekedTo = 0, inAudio = false, endedFlag = false;
+/* ---------- Motor de áudio ----------
+   O SoundTouch (andamento) roda na página e deixa ~1,5 s de áudio pronto numa fila;
+   a fila toca numa linha de áudio própria do navegador (AudioWorklet), então engasgos
+   da tela não picotam o som. Pausar, pular ou mudar o andamento descarta a fila na hora. */
+const CH = 2048, LEAD = 1.5;
+let ctx = null, player = null, playerReady = null, st = null, filter = null, buffer = null, sr = 44100;
+let playing = false, endedFlag = false, producedEnd = false, producing = false;
 const S = { semi: 0, tempo: 100, A: null, B: null, loop: false, mult: 1, metroOff: 0 };
 let songKey = null, peaks = null, wakeLock = null, loadToken = 0;
-const samples = new Float32Array(BUF * 2);
+let playedIdx = 0, playedAt = 0, floorIdx = 0, underruns = 0;
+const chunk = new Float32Array(CH * 2), inScratch = new Float32Array(16384 * 2);
+window.__estanteAudio = () => ({ motor: player && player.kind, falhas: underruns, fila: +((outCount - playedIdx) / sr).toFixed(2) });
+
+const FILA_WORKLET = `class Fila extends AudioWorkletProcessor {
+  constructor() { super(); this.q = []; this.o = 0; this.i = 0; this.n = 0; this.u = 0; this.on = false; this.h = false;
+    this.port.onmessage = e => { const d = e.data; if (d.t === "c") this.q.push(d); else if (d.t === "f") { this.q = []; this.o = 0; this.h = false; } else if (d.t === "p") this.on = d.v; }; }
+  process(_, out) {
+    const L = out[0][0], R = out[0][1] || L, N = L.length; let i = 0;
+    while (i < N && this.q.length) {
+      const c = this.q[0], k = Math.min(N - i, c.L.length - this.o);
+      L.set(c.L.subarray(this.o, this.o + k), i); if (R !== L) R.set(c.R.subarray(this.o, this.o + k), i);
+      this.o += k; i += k; this.i = c.s + this.o; this.h = true;
+      if (this.o >= c.L.length) { this.q.shift(); this.o = 0; }
+    }
+    if (i < N) { L.fill(0, i); if (R !== L) R.fill(0, i); if (this.on && this.h) this.u++; } // falha = faltou áudio no meio da música
+    if (++this.n % 4 === 0) { let f = -this.o; for (const c of this.q) f += c.L.length; this.port.postMessage({ i: this.i, f, u: this.u }); }
+    return true;
+  }
+}
+registerProcessor("estante-fila", Fila);`;
 
 function ensureCtx() {
   if (!ctx) {
     const AC = window.AudioContext || window.webkitAudioContext;
     ctx = new AC({ latencyHint: "playback" });
     try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch {}
-    node = ctx.createScriptProcessor(BUF, 2, 2);
-    node.onaudioprocess = process;
-    node.connect(ctx.destination);
+    playerReady = setupPlayer();
   }
   if (ctx.state !== "running") ctx.resume().catch(() => {});
+  return playerReady;
 }
-function process(e) { inAudio = true; try { render(e); } finally { inAudio = false; } }
-function render(e) {
-  const L = e.outputBuffer.getChannelData(0), R = e.outputBuffer.getChannelData(1);
-  if (!playing || !filter) { L.fill(0); R.fill(0); return; }
-  if (S.loop && S.A != null && S.B != null) {
-    const p = audible();
-    if (p >= S.B && p - S.B < 1.5) seek(S.A);
-  }
-  const n = filter.extract(samples, BUF);
-  for (let i = 0; i < n; i++) { L[i] = samples[2 * i]; R[i] = samples[2 * i + 1]; }
-  for (let i = n; i < BUF; i++) { L[i] = 0; R[i] = 0; }
-  if (M.on && beatsCur.length && n) {
+async function setupPlayer() {
+  try {
+    if (!ctx.audioWorklet || typeof AudioWorkletNode === "undefined") throw new Error("sem AudioWorklet");
+    const url = URL.createObjectURL(new Blob([FILA_WORKLET], { type: "text/javascript" }));
+    await ctx.audioWorklet.addModule(url);
+    const node = new AudioWorkletNode(ctx, "estante-fila", { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2] });
+    node.port.onmessage = e => onPlayerMsg(e.data);
+    node.connect(ctx.destination);
+    player = { kind: "worklet", send: (m, tr) => node.port.postMessage(m, tr || []) };
+  } catch (e) { console.warn("Áudio no modo compatível:", e); player = fallbackPlayer(); }
+}
+// Navegadores antigos: a mesma fila, tocada pelo ScriptProcessor (com folga grande).
+function fallbackPlayer() {
+  const F = { q: [], o: 0, i: 0, on: false, u: 0, h: false }, node = ctx.createScriptProcessor(8192, 2, 2);
+  node.onaudioprocess = e => {
+    produce();
+    const L = e.outputBuffer.getChannelData(0), R = e.outputBuffer.getChannelData(1), N = L.length; let i = 0;
+    while (i < N && F.q.length) {
+      const c = F.q[0], k = Math.min(N - i, c.L.length - F.o);
+      L.set(c.L.subarray(F.o, F.o + k), i); R.set(c.R.subarray(F.o, F.o + k), i);
+      F.o += k; i += k; F.i = c.s + F.o; F.h = true;
+      if (F.o >= c.L.length) { F.q.shift(); F.o = 0; }
+    }
+    if (i < N) { L.fill(0, i); R.fill(0, i); if (F.on && F.h) F.u++; }
+    let f = -F.o; for (const c of F.q) f += c.L.length;
+    onPlayerMsg({ i: F.i, f, u: F.u });
+  };
+  node.connect(ctx.destination);
+  return { kind: "script", send(m) { if (m.t === "c") F.q.push(m); else if (m.t === "f") { F.q = []; F.o = 0; F.h = false; } else if (m.t === "p") F.on = m.v; } };
+}
+function onPlayerMsg(d) {
+  playedIdx = Math.max(d.i, floorIdx); playedAt = ctx.currentTime; underruns = d.u;
+  while (anchors.length > 1 && anchors[1].out <= playedIdx) anchors.shift();
+  if (!playing) return;
+  if (producedEnd && d.f <= 0) endedFlag = true; else produce();
+}
+function mixClicks(L, R, n) {
+  if (M.on && beatsCur.length) {
     const t0 = srcAt(outCount), t1 = srcAt(outCount + n), off = S.metroOff / 1000;
     for (let j = lowerBound(beatsCur, t0 - off); j < beatsCur.length && beatsCur[j] + off < t1; j++)
       clicks.push(outCount + Math.max(0, Math.round((beatsCur[j] + off - t0) / (t1 - t0) * n)));
   }
-  if (clicks.length) {
-    const c = clickSound(), g = M.vol;
-    for (let q = clicks.length - 1; q >= 0; q--) {
-      const start = clicks[q] - outCount;
-      for (let i = Math.max(0, start); i < n && i - start < c.length; i++) { const v = c[i - start] * g; L[i] += v; R[i] += v; }
-      if (start + c.length <= n) clicks.splice(q, 1);
-    }
+  if (!clicks.length) return;
+  const c = clickSound(), g = M.vol;
+  for (let q = clicks.length - 1; q >= 0; q--) {
+    const start = clicks[q] - outCount;
+    for (let i = Math.max(0, start); i < n && i - start < c.length; i++) { const v = c[i - start] * g; L[i] += v; R[i] += v; }
+    if (start + c.length <= n) clicks.splice(q, 1);
   }
-  outCount += n;
-  if (n === 0) { playing = false; endedFlag = true; }
 }
-// Posição que está soando agora: o SoundTouch lê o arquivo adiantado, então desconta o que ainda está nos buffers.
-function audible() {
-  if (!filter) return 0;
-  const k = S.tempo / 100;
-  const pending = filter.inputBuffer.frameCount + (filter.outputBuffer.frameCount - filter.outputBufferPosition) * k + (playing ? BUF * k : 0);
-  return Math.max(seekedTo, (filter.sourcePosition - pending) / sr);
+// Prepara áudio até ter ~1,5 s na fila (no máximo ~0,5 s por chamada, para não travar a tela).
+function produce() {
+  if (!playing || !filter || !player || producing || producedEnd) return;
+  producing = true;
+  try {
+    for (let guard = 0; guard < 12 && outCount - playedIdx < LEAD * sr; guard++) {
+      if (S.loop && S.A != null && S.B != null) { const p = srcAt(outCount); if (p >= S.B && p - S.B < 1.5) jump(S.A); }
+      const n = filter.extract(chunk, CH);
+      if (n === 0) { producedEnd = true; break; }
+      const L = new Float32Array(n), R = new Float32Array(n);
+      for (let i = 0; i < n; i++) { L[i] = chunk[2 * i]; R[i] = chunk[2 * i + 1]; }
+      mixClicks(L, R, n);
+      player.send({ t: "c", s: outCount, L, R }, [L.buffer, R.buffer]);
+      outCount += n;
+    }
+  } finally { producing = false; }
 }
-function position() { return filter ? Math.max(0, Math.min(audible(), buffer.duration)) : 0; }
+function clampPos(t) { return Math.max(0, Math.min(t, buffer.duration - 0.05)); }
+// Salto do loop: continua a fila sem cortes.
+function jump(t) { t = clampPos(t); filter.sourcePosition = Math.floor(t * sr); anchor(t, true); }
+// Reposicionar (toque na onda, −5 s, +5 s, pausa, andamento): descarta a fila e recomeça dali.
 function seek(t) {
   if (!filter) return;
-  t = Math.max(0, Math.min(t, buffer.duration - 0.05));
+  t = clampPos(t);
   filter.sourcePosition = Math.floor(t * sr);
-  seekedTo = t; anchor(t);
-  if (!inAudio) draw();
+  if (player) player.send({ t: "f" });
+  anchor(t); floorIdx = playedIdx = outCount; playedAt = ctx ? ctx.currentTime : 0; producedEnd = false;
+  if (playing) produce();
+  draw();
 }
+function playIdxNow() {
+  if (!playing || !ctx) return playedIdx;
+  return Math.min(outCount, playedIdx + Math.max(0, ctx.currentTime - playedAt) * sr);
+}
+function position() { return filter ? Math.max(0, Math.min(srcAt(playIdxNow()), buffer.duration)) : 0; }
 function applyFx() {
   if (!st) return;
   const k = S.tempo / 100;
-  st.tempo = k;
-  // Mudou o andamento: reposiciona no mesmo ponto, para o metrônomo não acumular atraso a cada mudança.
-  if (k !== anK) { const cur = srcAt(outCount); seek(Math.max(0, cur + stBias(k))); }
+  // Mudou o andamento: recomeça do ponto que está soando, já na nova velocidade.
+  if (k !== anK) { const p = position(); st.tempo = k; seek(p + stBias(k)); } else st.tempo = k;
   st.pitchSemitones = S.semi;
 }
 async function setPlaying(on) {
   if (!filter) return;
   if (on) {
-    ensureCtx();
+    await ensureCtx();
+    if (!filter) return;
     if (position() >= buffer.duration - 0.1) seek(S.loop && S.A != null ? S.A : 0);
-    playing = true;
+    playing = true; player.send({ t: "p", v: true }); produce();
     try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {}
   } else {
-    playing = false;
+    const p = position();
+    playing = false; if (player) player.send({ t: "p", v: false });
+    seek(p); // para exatamente onde está soando
     try { wakeLock?.release(); } catch {} wakeLock = null;
   }
   syncPlayBtn();
@@ -728,6 +800,7 @@ function computePeaks(buf) {
 async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) {
   const token = ++loadToken;
   playing = false; syncPlayBtn(); filter = null; st = null; buffer = null; peaks = null; // libera a memória da música anterior
+  if (player) { player.send({ t: "p", v: false }); player.send({ t: "f" }); }
   BEAT = { base: null, bpm: 0 }; beatsCur = []; clicks = [];
   songKey = key;
   Object.assign(S, { tempo: 100, A: null, B: null, loop: false, mult: 1, metroOff: 0 }, store.get(key) || {}, { semi: 0 });
@@ -747,7 +820,13 @@ async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) 
     buffer = buf; sr = buf.sampleRate;
     st = new ST.SoundTouch();
     filter = new ST.SimpleFilter(new ST.WebAudioBufferSource(buf), st, () => {});
-    anchor(0); applyFx(); seekedTo = 0;
+    // Reaproveita a memória de leitura do SoundTouch (a original cria um bloco novo a cada pedaço e força pausas de limpeza de memória).
+    filter.fillInputBuffer = function (numFrames = 0) {
+      const b = numFrames * 2 <= inScratch.length ? inScratch.subarray(0, numFrames * 2) : new Float32Array(numFrames * 2);
+      const got = this.sourceSound.extract(b, numFrames, this._sourcePosition);
+      this._sourcePosition += got; this.inputBuffer.putSamples(b, 0, got);
+    };
+    anchor(0); applyFx(); floorIdx = playedIdx = outCount; producedEnd = false;
     peaks = computePeaks(buf);
     const cachedBeats = store.get("beats:" + key);
     if (cachedBeats && cachedBeats.v === 1) { BEAT = { base: cachedBeats.b.map(x => x / 1000), bpm: cachedBeats.bpm }; buildBeats(); }
@@ -801,37 +880,48 @@ function sizeCanvas() {
 }
 new ResizeObserver(sizeCanvas).observe($("waveWrap"));
 function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+let colors = null, waveCache = null;
+function readColors() { colors = { wave: css("--wave"), brass: css("--brass"), loop: css("--loop"), ink: css("--ink"), onBrass: css("--on-brass"), mono: css("--mono") || "monospace" }; waveCache = null; }
+// A onda é desenhada uma vez em duas camadas (normal e já tocada); a cada quadro só se recorta e cola.
+function buildWave(W, H, d) {
+  const layer = color => {
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const g = c.getContext("2d"), N = peaks.length, bw = W / N, mid = H / 2; g.fillStyle = color;
+    for (let i = 0; i < N; i++) { const h = Math.max(1.5 * d, peaks[i] * (H * 0.86)); g.fillRect(i * bw + bw * 0.15, mid - h / 2, Math.max(1, bw * 0.7), h); }
+    return c;
+  };
+  waveCache = { W, H, peaks, base: layer(colors.wave), played: layer(colors.brass) };
+}
+let lastTimeTxt = "";
 function draw() {
   const W = cv.width, H = cv.height, d = window.devicePixelRatio || 1;
   cx.clearRect(0, 0, W, H);
   if (!peaks || !buffer) return;
-  const dur = buffer.duration, pos = position(), px = t => t / dur * W;
-  const cWave = css("--wave"), cBrass = css("--brass"), cLoop = css("--loop"), cInk = css("--ink");
-  if (S.A != null && S.B != null) { cx.fillStyle = cLoop; cx.fillRect(px(S.A), 0, px(S.B) - px(S.A), H); }
-  const N = peaks.length, bw = W / N, mid = H / 2, playX = px(pos);
-  for (let i = 0; i < N; i++) {
-    const x = i * bw, h = Math.max(1.5 * d, peaks[i] * (H * 0.86));
-    cx.fillStyle = x < playX ? cBrass : cWave;
-    cx.fillRect(x + bw * 0.15, mid - h / 2, Math.max(1, bw * 0.7), h);
-  }
-  cx.fillStyle = cBrass;
-  cx.font = `700 ${11 * d}px ${css("--mono") || "monospace"}`;
+  if (!colors) readColors();
+  if (!waveCache || waveCache.W !== W || waveCache.H !== H || waveCache.peaks !== peaks) buildWave(W, H, d);
+  const dur = buffer.duration, pos = position(), px = t => t / dur * W, playX = Math.max(0, Math.min(W, px(pos)));
+  if (S.A != null && S.B != null) { cx.fillStyle = colors.loop; cx.fillRect(px(S.A), 0, px(S.B) - px(S.A), H); }
+  cx.drawImage(waveCache.base, 0, 0);
+  if (playX >= 1) cx.drawImage(waveCache.played, 0, 0, playX, H, 0, 0, playX, H);
+  cx.fillStyle = colors.brass;
+  cx.font = `700 ${11 * d}px ${colors.mono}`;
   for (const [t, lab] of [[S.A, "A"], [S.B, "B"]]) {
     if (t == null) continue;
     const x = px(t); cx.fillRect(x - d, 0, 2 * d, H);
     cx.fillRect(x - (lab === "A" ? 0 : 16 * d), 0, 16 * d, 16 * d);
-    cx.fillStyle = css("--on-brass"); cx.fillText(lab, x - (lab === "A" ? -4 * d : 12 * d), 12 * d); cx.fillStyle = cBrass;
+    cx.fillStyle = colors.onBrass; cx.fillText(lab, x - (lab === "A" ? -4 * d : 12 * d), 12 * d); cx.fillStyle = colors.brass;
   }
-  cx.fillStyle = cInk; cx.fillRect(playX - d, 0, 2 * d, H);
-  $("tNow").textContent = fmt(pos);
-  $("waveWrap").setAttribute("aria-valuenow", Math.round(pos / dur * 100));
+  cx.fillStyle = colors.ink; cx.fillRect(playX - d, 0, 2 * d, H);
+  const tt = fmt(pos);
+  if (tt !== lastTimeTxt) { lastTimeTxt = tt; $("tNow").textContent = tt; $("waveWrap").setAttribute("aria-valuenow", Math.round(pos / dur * 100)); }
 }
-function tick() {
+let lastDraw = 0;
+function tick(now) {
   if (!$("player").hidden) {
-    if (endedFlag) { endedFlag = false; setPlaying(false); seek(0); }
-    if (playing) draw();
+    if (endedFlag) { endedFlag = false; setPlaying(false).then(() => seek(0)); }
+    if (playing && now - lastDraw > 33) { lastDraw = now; draw(); } // ~30 quadros/s bastam
     if (M.on && playing && beatsCur.length) {
-      const p = audible() - S.metroOff / 1000, j = lowerBound(beatsCur, p) - 1;
+      const p = position() - S.metroOff / 1000, j = lowerBound(beatsCur, p) - 1;
       $("beatDot").classList.toggle("on", j >= 0 && p - beatsCur[j] < 0.1);
     } else $("beatDot").classList.remove("on");
   }
@@ -880,7 +970,9 @@ function renderControls() {
   for (const id of ["bMinus", "bPlus"]) $(id).disabled = S.B == null;
   for (const id of ["playBtn", "back5", "fwd5", "setA", "setB"]) $(id).disabled = !buffer;
 }
-function changed() { applyFx(); renderControls(); draw(); if (songKey) store.set(songKey, S); }
+// A fila já tem ~1,5 s preparado; ao mexer no loop ou no metrônomo, refaz a fila a partir do que está soando.
+function resync() { if (playing && filter) seek(position()); }
+function changed() { applyFx(); resync(); renderControls(); draw(); if (songKey) store.set(songKey, S); }
 for (const v of [50, 60, 70, 75, 80, 90, 100]) {
   const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = v + "%";
   c.onclick = () => { S.tempo = v; changed(); }; $("tempoChips").append(c);
@@ -911,18 +1003,18 @@ document.addEventListener("keydown", e => {
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible" && playing) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });
-matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", draw);
-new MutationObserver(draw).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { colors = null; draw(); });
+new MutationObserver(() => { colors = null; draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
 for (const [v, label] of [[0.25, "Baixo"], [0.5, "Médio"], [0.9, "Alto"]]) {
   const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = label;
-  c.onclick = () => { M.vol = v; store.set("metro", M); renderMetro(); }; $("volChips").append(c);
+  c.onclick = () => { M.vol = v; store.set("metro", M); resync(); renderMetro(); }; $("volChips").append(c);
 }
 for (const [v, label] of [[0.5, "Metade"], [1, "Normal"], [2, "Dobro"]]) {
   const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = label;
   c.onclick = () => { S.mult = v; buildBeats(); clicks = []; changed(); }; $("multChips").append(c);
 }
-$("metroBtn").onclick = () => { M.on = !M.on; clicks = []; store.set("metro", M); renderMetro(); };
+$("metroBtn").onclick = () => { M.on = !M.on; clicks = []; store.set("metro", M); resync(); renderMetro(); };
 $("offMinus").onclick = () => { S.metroOff = Math.max(-300, S.metroOff - 10); clicks = []; changed(); };
 $("offPlus").onclick = () => { S.metroOff = Math.min(300, S.metroOff + 10); clicks = []; changed(); };
 
