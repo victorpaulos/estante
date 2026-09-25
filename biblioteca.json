@@ -298,6 +298,149 @@
    "dur": 3.8,
    "size": 60455,
    "added": "2026-09-25"
+  },
+  {
+   "id": "she-made-me-cry-pholhas-sxxu3",
+   "file": "musicas/arquivos/she-made-me-cry-pholhas-sxxu3.mp3",
+   "title": "She Made me Cry - Pholhas",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 183.1,
+   "size": 2929474,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "tragedy-fuw7r",
+   "file": "musicas/arquivos/tragedy-fuw7r.mp3",
+   "title": "TRAGEDY",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 268.1,
+   "size": 4289932,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "dancing-queen-novo-9iwdf",
+   "file": "musicas/arquivos/dancing-queen-novo-9iwdf.mp3",
+   "title": "DANCING QUEEN NOVO",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 226.3,
+   "size": 3620361,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "theme-from-swat-1wbio",
+   "file": "musicas/arquivos/theme-from-swat-1wbio.mp3",
+   "title": "THEME FROM SWAT",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 244.2,
+   "size": 3906663,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "suspicious-minds-pdtov",
+   "file": "musicas/arquivos/suspicious-minds-pdtov.mp3",
+   "title": "SUSPICIOUS MINDS",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 217.1,
+   "size": 3473239,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "meu-bem-querer-k94cw",
+   "file": "musicas/arquivos/meu-bem-querer-k94cw.mp3",
+   "title": "MEU BEM QUERER",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 178.6,
+   "size": 2857586,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "o-amor-e-tudo-jegse",
+   "file": "musicas/arquivos/o-amor-e-tudo-jegse.mp3",
+   "title": "O amor é tudo",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 343.1,
+   "size": 5489057,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "a-desconhecida-97dkq",
+   "file": "musicas/arquivos/a-desconhecida-97dkq.mp3",
+   "title": "A DESCONHECIDA",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 264.7,
+   "size": 4234761,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "thor-the-dark-world-j1eua",
+   "file": "musicas/arquivos/thor-the-dark-world-j1eua.mp3",
+   "title": "THOR  (THE DARK WORLD)",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 126.5,
+   "size": 2023757,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "wind-of-change-in-concert-3z3tw",
+   "file": "musicas/arquivos/wind-of-change-in-concert-3z3tw.mp3",
+   "title": "Wind Of Change - In Concert",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 432.4,
+   "size": 6917641,
+   "added": "2026-09-25"
+  },
+  {
+   "id": "um-milagre-senhor-l4rih",
+   "file": "musicas/arquivos/um-milagre-senhor-l4rih.mp3",
+   "title": "Um Milagre Senhor",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 432.4,
+   "size": 6917641,
+   "added": "2026-09-25"
   }
  ]
 }
