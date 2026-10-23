@@ -14,7 +14,7 @@
 <title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=arrow_back_ios_new,auto_stories,campaign,check_circle,chevron_right,download,forward_5,graphic_eq,library_music,mic,military_tech,music_note,pause,piano,play_arrow,repeat,replay_5,search,speed,stop,timer,touch_app,tune&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=arrow_back_ios_new,auto_stories,campaign,check,check_circle,chevron_right,description,download,expand_more,forward_5,graphic_eq,library_music,mic,military_tech,music_note,pause,piano,play_arrow,repeat,replay_5,search,speed,star,stop,timer,touch_app,tune,zoom_in,zoom_out&display=block">
 <style>
 /* Banda PMBA — visual de app profissional (padrão iOS/Android): fonte do sistema, barras fixas com vidro,
    blocos de cor por categoria, listas agrupadas e interruptores. Sempre claro. */
@@ -306,6 +306,46 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 .mt-actions .primary,.mt-actions .wide{margin:0;min-height:48px}
 .mt-actions .wide{font-size:14px;line-height:1.15;padding:0 10px}
 
+/* Partituras */
+.np{grid-template-columns:64px 1fr auto}
+.score-btn{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px 0 10px;border:0;border-radius:999px;background:var(--brass-soft);color:var(--brand);font:600 14px/1 var(--font);white-space:nowrap}
+.score-btn .ms{font-size:20px}
+#score{padding-inline:0}
+#score > .nav{padding-inline:12px;margin:0;grid-template-columns:auto 1fr auto}
+.part-pick{justify-self:center;display:inline-flex;align-items:center;gap:2px;max-width:60vw;min-height:36px;padding:0 10px 0 14px;border:0;border-radius:999px;background:var(--fill);font:600 15px/1 var(--font);color:var(--ink)}
+.part-pick span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.part-pick .ms{font-size:22px;color:var(--muted)}
+.zoom{display:flex;gap:4px;justify-self:end}
+.zoom button{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:10px;background:var(--fill);color:var(--brand)}
+.zoom .ms{font-size:22px}
+.score-view{margin:0;padding:10px 8px;background:#E9ECF2;overflow:auto;touch-action:pan-x pan-y;position:relative}
+#scorePages{display:grid;gap:10px;justify-content:center}
+#scorePages canvas,#scorePages img{display:block;background:#fff;border-radius:4px;box-shadow:0 2px 10px rgba(11,18,32,.15);max-width:none}
+.score-msg{display:grid;place-items:center;align-content:center;gap:10px;min-height:50vh;color:var(--muted);font-size:15px;text-align:center;padding:20px}
+.mini{flex:none;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.94);border-top:.5px solid var(--sep);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
+.mini button{display:grid;place-items:center;border:0;background:none;color:var(--ink);min-width:40px;height:44px}
+.mini .ms{font-size:28px}
+.mini .mplay{width:48px;height:48px;border-radius:50%;background:var(--brand);color:#fff}
+.mini .mplay .ms{font-size:32px}
+.mini .mt{font:600 13px/1 var(--font);color:var(--ink-2);min-width:38px;text-align:center}
+.mini .mtempo{display:flex;align-items:center;gap:2px;padding:0 2px;border-radius:12px;background:var(--fill)}
+.mini .mtempo button{min-width:30px;height:36px;font:600 20px/1 var(--font);color:var(--brand)}
+.mini .mtempo b{font:600 13px/1 var(--font);min-width:38px;text-align:center}
+.mini .mloop[aria-pressed="true"]{color:var(--in-tune)}
+/* Folha de escolha da parte */
+.sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(11,18,32,.38);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:640px;max-height:78vh;display:flex;flex-direction:column;border-radius:20px 20px 0 0;background:#fff;padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+.sheet .grab{width:38px;height:5px;border-radius:3px;background:#D5D9E2;margin:2px auto 10px}
+.sheet h3{font:700 18px/1.2 var(--font);margin:0 4px 4px}
+.sheet p{margin:0 4px 10px;font-size:14px;color:var(--muted)}
+.sheet .list{overflow-y:auto;border-radius:14px;background:var(--fill)}
+.sheet .opt{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:50px;padding:0 14px;border:0;background:none;font:500 16px/1.2 var(--font);text-align:left}
+.sheet .opt + .opt::before{content:"";position:absolute;left:14px;right:0;top:0;height:.5px;background:var(--sep)}
+.sheet .opt .tag{font:600 12px/1 var(--font);color:var(--gold)}
+.sheet .opt .ms{font-size:20px;color:var(--brand)}
+.sheet .foot{display:flex;justify-content:space-between;gap:10px;margin-top:12px}
+.sheet .foot button{min-height:44px;padding:0 14px;border:0;border-radius:12px;background:var(--fill);color:var(--brand);font:600 15px/1 var(--font)}
+
 /* Celulares baixinhos (ex.: iPhone SE): aperta mais para continuar sem rolar */
 @media (max-height:760px){
   .large-title{padding:2px 0 10px} .large-title h1{font-size:28px}
@@ -430,7 +470,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
   <section id="player" hidden>
     <nav class="nav"><button class="back" id="backList"><span class="ms" aria-hidden="true">arrow_back_ios_new</span><span id="backLabel">Voltar</span></button><span class="nav-title">Tocando agora</span><span></span></nav>
     <div class="content">
-      <div class="np"><div class="art" id="pArt" aria-hidden="true"></div><div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2><p class="p-sub" id="pSub" hidden></p></div></div>
+      <div class="np"><div class="art" id="pArt" aria-hidden="true"></div><div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2><p class="p-sub" id="pSub" hidden></p></div><button class="score-btn" id="openScore" hidden><span class="ms" aria-hidden="true">description</span>Partitura</button></div>
 
       <div class="stage">
         <div class="wave-wrap" id="waveWrap" aria-label="Posição na música: toque ou arraste para ir a qualquer ponto" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -490,6 +530,24 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
       </div>
     </div>
   </section>
+
+  <!-- PARTITURA -->
+  <section id="score" hidden>
+    <nav class="nav">
+      <button class="back" id="backScore"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Música</button>
+      <button class="part-pick" id="partPick" aria-label="Escolher a parte"><span id="partName">—</span><span class="ms" aria-hidden="true">expand_more</span></button>
+      <div class="zoom"><button id="zoomOut" aria-label="Diminuir"><span class="ms" aria-hidden="true">zoom_out</span></button><button id="zoomIn" aria-label="Aumentar"><span class="ms" aria-hidden="true">zoom_in</span></button></div>
+    </nav>
+    <div class="content score-view" id="scoreView"><div id="scorePages"></div></div>
+    <div class="mini">
+      <button id="mBack5" aria-label="Voltar 5 segundos"><span class="ms" aria-hidden="true">replay_5</span></button>
+      <button class="mplay" id="mPlay" aria-label="Tocar"><span class="ms" id="mPlayIc" aria-hidden="true">play_arrow</span></button>
+      <button id="mFwd5" aria-label="Avançar 5 segundos"><span class="ms" aria-hidden="true">forward_5</span></button>
+      <span class="mt" id="mNow">0:00</span>
+      <div class="mtempo"><button id="mSlow" aria-label="Mais lento">−</button><b id="mTempo">100%</b><button id="mFast" aria-label="Mais rápido">+</button></div>
+      <button class="mloop" id="mLoop" aria-pressed="false" aria-label="Repetir trecho"><span class="ms" aria-hidden="true">repeat</span></button>
+    </div>
+  </section>
 </div>
 
 <nav class="tabbar" id="tabbar" aria-label="Navegação">
@@ -530,7 +588,7 @@ async function loadLibrary() {
       if (s.size === 0) continue; // envio que chegou vazio
       for (const cat of s.cats || []) {
         songs.push({
-          id: s.id, cat, title: s.title, artist: s.artist || "", album: s.album || "", dur: s.dur, size: s.size || 0,
+          id: s.id, cat, title: s.title, artist: s.artist || "", album: s.album || "", dur: s.dur, size: s.size || 0, parts: s.parts || [],
           file: s.file.split("/").map(encodeURIComponent).join("/"),
           alt: `https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${s.file.split("/").map(encodeURIComponent).join("/")}`,
         });
@@ -606,7 +664,7 @@ const fmt = (s, dec) => {
 };
 document.addEventListener("scroll", e => { if (e.target.classList && e.target.classList.contains("content")) document.body.classList.toggle("scrolled", e.target.scrollTop > 24); }, { passive: true, capture: true });
 function show(id) {
-  for (const s of ["home", "list", "player", "tuner", "metro"]) $(s).hidden = s !== id;
+  for (const s of ["home", "list", "player", "tuner", "metro", "score"]) $(s).hidden = s !== id;
   $("tabbar").hidden = !(id === "home" || id === "tuner" || id === "metro");
   for (const [tab, view] of [["tabRep", "home"], ["tabTun", "tuner"], ["tabMet", "metro"]]) {
     if (id === view) $(tab).setAttribute("aria-current", "page"); else $(tab).removeAttribute("aria-current");
@@ -1051,7 +1109,9 @@ async function loadSong({ key, title, sub = "", cat = "", catLabel, backLabel, g
 }
 function fail(msg) { $("loading").hidden = true; $("err").textContent = msg; $("err").hidden = false; }
 
+let curSong = null;
 function openSong(s) {
+  curSong = s; scoreSetup(s);
   loadSong({
     key: "song:" + s.id, cat: s.cat, title: s.title, sub: [s.artist, s.album].filter(Boolean).join(" · "), catLabel: CAT_INFO[s.cat]?.name || "", backLabel: CAT_INFO[s.cat]?.name || "Voltar",
     getData: async token => {
@@ -1115,8 +1175,8 @@ function draw() {
 }
 let lastDraw = 0;
 function tick(now) {
+  if (endedFlag) { endedFlag = false; setPlaying(false).then(() => seek(0)); } // vale também com a partitura aberta
   if (!$("player").hidden) {
-    if (endedFlag) { endedFlag = false; setPlaying(false).then(() => seek(0)); }
     if (playing && now - lastDraw > 33) { lastDraw = now; draw(); } // ~30 quadros/s bastam
     if (M.on && playing && beatsCur.length) {
       const p = position() - S.metroOff / 1000, j = lowerBound(beatsCur, p) - 1;
@@ -1453,6 +1513,135 @@ $("openMetro").onclick = openMetroTool;
 $("tabMet").onclick = () => { if ($("metro").hidden) openMetroTool(); };
 $("backMetro").onclick = () => { renderHome(); show("home"); };
 renderMetroTool();
+
+/* ---------- Partituras ----------
+   Cada música pode ter uma parte por instrumento (PDF ou imagem). O app abre direto a parte do músico
+   (guardada no celular) e deixa ver as outras; o player continua tocando embaixo. */
+const PART_ORDER = ["grade", "regente", "flautim", "flauta", "oboe", "fagote", "requinta", "clarinete", "clarone", "sax soprano", "sax alto", "sax tenor", "sax baritono", "sax", "trompa", "trompete", "cornet", "flugel", "trombone", "bombardino", "eufonio", "tuba", "baixo", "contrabaixo", "caixa", "bumbo", "prato", "percussao", "glockenspiel", "timpano"];
+const partNorm = t => (t || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/\s+/g, " ").trim();
+const partFamily = t => partNorm(t).replace(/\s*\(.*?\)\s*/g, " ").replace(/^(\d+|i{1,3}|iv)\s*[ºª°]?\s+/, "").replace(/\s+(\d+|i{1,3}|iv)\s*[ºª°]?\s*$/, "").replace(/\s+(em|in)\s+.*$/, "").trim();
+const partRank = t => { const n = partNorm(t); const i = PART_ORDER.findIndex(k => n.startsWith(k)); return i < 0 ? 999 : i; };
+const sortParts = parts => parts.slice().sort((a, b) => partRank(a.name) - partRank(b.name) || a.name.localeCompare(b.name, "pt-BR", { numeric: true }));
+let myPart = (() => { try { return localStorage.getItem("estante:meuInstrumento") || ""; } catch { return ""; } })();
+const saveMyPart = n => { myPart = n; try { localStorage.setItem("estante:meuInstrumento", n); } catch {} };
+let curPart = null, scoreDoc = null, scoreZoom = 1, scoreToken = 0, pdfjsP = null;
+function findMyPart(parts) {
+  if (!myPart) return null;
+  return parts.find(p => partNorm(p.name) === partNorm(myPart)) || parts.find(p => partFamily(p.name) && partFamily(p.name) === partFamily(myPart)) || null;
+}
+function scoreSetup(s) {
+  const parts = s.parts || [];
+  $("openScore").hidden = !parts.length;
+  const mine = findMyPart(parts);
+  $("openScore").innerHTML = `<span class="ms" aria-hidden="true">description</span>${mine ? mine.name : "Partitura"}`;
+}
+function loadPdfjs() {
+  return pdfjsP ||= new Promise((res, rej) => {
+    const sc = document.createElement("script");
+    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    sc.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; res(window.pdfjsLib); };
+    sc.onerror = () => { pdfjsP = null; rej(new Error("pdfjs")); };
+    document.head.append(sc);
+  });
+}
+const partUrl = p => p.file.split("/").map(encodeURIComponent).join("/");
+async function partBytes(p) {
+  const url = new URL(partUrl(p), location.href).href;
+  try { const hit = await caches.match(url, { ignoreSearch: true }); if (hit) return await hit.arrayBuffer(); } catch {}
+  let r = await fetch(partUrl(p)).catch(() => null);
+  if (!r || !r.ok) r = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/HEAD/${partUrl(p)}`);
+  if (!r.ok) throw new Error("download");
+  const b = await r.arrayBuffer();
+  try { const c = await caches.open(AUDIO_CACHE); await c.put(url, new Response(b.slice(0), { headers: { "Content-Type": /\.pdf$/i.test(p.file) ? "application/pdf" : "image/" + (p.file.split(".").pop() || "png") } })); } catch {}
+  return b;
+}
+function scoreMsg(html) { $("scorePages").innerHTML = `<div class="score-msg">${html}</div>`; }
+async function openPart(p) {
+  curPart = p; $("partName").textContent = p.name; scoreDoc = null;
+  const token = ++scoreToken;
+  scoreMsg("Abrindo a partitura…");
+  try {
+    const bytes = await partBytes(p);
+    if (token !== scoreToken) return;
+    if (/\.pdf$/i.test(p.file)) {
+      const lib = await loadPdfjs();
+      scoreDoc = await lib.getDocument({ data: new Uint8Array(bytes) }).promise;
+    } else {
+      scoreDoc = { image: URL.createObjectURL(new Blob([bytes])) };
+    }
+    if (token !== scoreToken) return;
+    await drawScore(token);
+  } catch (e) {
+    console.error(e);
+    if (token === scoreToken) scoreMsg("Não foi possível abrir esta partitura. Verifique a internet e tente de novo.");
+  }
+}
+async function drawScore(token = scoreToken) {
+  const box = $("scorePages"), view = $("scoreView");
+  if (!scoreDoc) return;
+  const cssW = Math.max(200, (view.clientWidth - 16) * scoreZoom), dpr = Math.min(2, window.devicePixelRatio || 1);
+  box.innerHTML = "";
+  if (scoreDoc.image) {
+    const img = new Image(); img.src = scoreDoc.image; img.alt = curPart.name; img.style.width = cssW + "px"; box.append(img); return;
+  }
+  for (let n = 1; n <= scoreDoc.numPages; n++) {
+    const page = await scoreDoc.getPage(n);
+    if (token !== scoreToken) return;
+    const base = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: cssW / base.width * dpr });
+    const cv = document.createElement("canvas"); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+    cv.style.width = cssW + "px"; cv.style.height = Math.round(vp.height / dpr) + "px";
+    box.append(cv);
+    await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
+  }
+}
+function partSheet(mode) {
+  const parts = sortParts(curSong?.parts || []);
+  const mine = findMyPart(parts);
+  const bg = document.createElement("div"); bg.className = "sheet-bg";
+  const title = mode === "mine" ? "Qual é a sua parte?" : "Ver outra parte";
+  const hint = mode === "mine" ? "O app vai abrir direto a sua parte nas próximas músicas." : (myPart && !mine ? `Esta música não tem parte de ${myPart}.` : "");
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-label="${title}"><div class="grab"></div><h3>${title}</h3>${hint ? `<p>${hint}</p>` : ""}<div class="list"></div>
+    <div class="foot">${mode === "mine" ? "" : `<button data-a="mine">Mudar meu instrumento</button>`}<button data-a="close">Fechar</button></div></div>`;
+  const list = bg.querySelector(".list");
+  for (const p of parts) {
+    const b = document.createElement("button"); b.className = "opt";
+    const isMine = mine && p.file === mine.file, isCur = curPart && p.file === curPart.file;
+    b.innerHTML = `<span>${p.name.replace(/</g, "&lt;")}</span><span>${isMine ? '<span class="tag">MINHA PARTE</span> ' : ""}${isCur ? '<span class="ms" aria-hidden="true">check</span>' : ""}</span>`;
+    b.onclick = () => { bg.remove(); if (mode === "mine") { saveMyPart(p.name); scoreSetup(curSong); } if (!$("score").hidden || mode === "mine") { show("score"); openPart(p); } };
+    list.append(b);
+  }
+  bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  bg.querySelector('[data-a="close"]').onclick = () => bg.remove();
+  bg.querySelector('[data-a="mine"]')?.addEventListener("click", () => { bg.remove(); partSheet("mine"); });
+  document.body.append(bg);
+}
+$("openScore").onclick = () => {
+  const parts = sortParts(curSong?.parts || []);
+  if (!parts.length) return;
+  const mine = findMyPart(parts);
+  if (!myPart) { partSheet("mine"); return; }
+  show("score"); openPart(mine || parts[0]);
+  if (!mine) partSheet("view");
+};
+$("partPick").onclick = () => partSheet("view");
+$("backScore").onclick = () => show("player");
+$("zoomIn").onclick = () => { scoreZoom = Math.min(2.5, +(scoreZoom + 0.25).toFixed(2)); drawScore(); };
+$("zoomOut").onclick = () => { scoreZoom = Math.max(0.75, +(scoreZoom - 0.25).toFixed(2)); drawScore(); };
+addEventListener("resize", () => { if (!$("score").hidden) drawScore(); });
+// Mini player da partitura: usa os mesmos controles do player
+$("mPlay").onclick = () => setPlaying(!playing).then(updateMini);
+$("mBack5").onclick = () => seek(position() - 5);
+$("mFwd5").onclick = () => seek(position() + 5);
+$("mSlow").onclick = () => { $("tempoDown").click(); updateMini(); };
+$("mFast").onclick = () => { $("tempoUp").click(); updateMini(); };
+$("mLoop").onclick = () => { if (!$("loopBtn").disabled) $("loopBtn").click(); updateMini(); };
+function updateMini() {
+  const t = fmt(position()); if ($("mNow").textContent !== t) $("mNow").textContent = t;
+  $("mPlayIc").textContent = playing ? "pause" : "play_arrow";
+  $("mTempo").textContent = S.tempo + "%";
+  $("mLoop").setAttribute("aria-pressed", !!(S.loop && S.A != null && S.B != null));
+}
+(function miniFrame() { if (!$("score").hidden) updateMini(); requestAnimationFrame(miniFrame); })();
 gaugeBuild(); tnSetNeedle(0);
 
 renderHome();
