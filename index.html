@@ -1261,6 +1261,15 @@ document.addEventListener("keydown", e => {
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible" && playing) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });
+// No iPhone o app fica aberto em segundo plano: ao voltar, busca a lista de novo (partituras e músicas novas)
+let libAt = Date.now();
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState !== "visible" || Date.now() - libAt < 30000) return;
+  libAt = Date.now();
+  await loadLibrary(); await refreshSaved();
+  if (curSong) { const n = LIB.songs.find(x => x.id === curSong.id); if (n) { curSong.parts = n.parts; scoreSetup(curSong); } }
+  if (!$("list").hidden) renderList(); else if (!$("home").hidden) renderHome();
+});
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { colors = null; draw(); });
 new MutationObserver(() => { colors = null; draw(); }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
