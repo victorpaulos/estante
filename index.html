@@ -319,7 +319,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 .zoom button{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:10px;background:var(--fill);color:var(--brand)}
 .zoom .ms{font-size:22px}
 .score-view{margin:0;padding:10px 8px;background:#E9ECF2;overflow:auto;touch-action:pan-x pan-y;position:relative}
-#scorePages{display:grid;gap:10px;justify-content:center}
+#scorePages{display:grid;gap:10px;width:max-content;margin-inline:auto;transform-origin:0 0}
 #scorePages canvas,#scorePages img{display:block;background:#fff;border-radius:4px;box-shadow:0 2px 10px rgba(11,18,32,.15);max-width:none}
 .score-msg{display:grid;place-items:center;align-content:center;gap:10px;min-height:50vh;color:var(--muted);font-size:15px;text-align:center;padding:20px}
 .mini{flex:none;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.94);border-top:.5px solid var(--sep);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px)}
@@ -1592,20 +1592,80 @@ async function openPart(p) {
 async function drawScore(token = scoreToken) {
   const box = $("scorePages"), view = $("scoreView");
   if (!scoreDoc) return;
-  const cssW = Math.max(200, (view.clientWidth - 16) * scoreZoom), dpr = Math.min(2, window.devicePixelRatio || 1);
-  box.innerHTML = "";
+  const gen = ++drawGen; // um zoom novo cancela o desenho anterior
+  const cssW = Math.max(200, (view.clientWidth - 16) * scoreZoom), dpr = Math.min(2, window.devicePixelRatio || 1, 4096 / cssW);
   if (scoreDoc.image) {
-    const img = new Image(); img.src = scoreDoc.image; img.alt = curPart.name; img.style.width = cssW + "px"; box.append(img); return;
+    const img = new Image(); img.src = scoreDoc.image; img.alt = curPart.name; img.style.width = cssW + "px"; box.replaceChildren(img); box.style.transform = ""; img.onload = () => { afterLayout?.(); afterLayout = null; }; return;
   }
+  // primeiro monta as páginas no tamanho certo (para o zoom manter o lugar), depois desenha uma a uma
+  const pages = [];
   for (let n = 1; n <= scoreDoc.numPages; n++) {
     const page = await scoreDoc.getPage(n);
-    if (token !== scoreToken) return;
+    if (token !== scoreToken || gen !== drawGen) return;
     const base = page.getViewport({ scale: 1 }), vp = page.getViewport({ scale: cssW / base.width * dpr });
     const cv = document.createElement("canvas"); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
     cv.style.width = cssW + "px"; cv.style.height = Math.round(vp.height / dpr) + "px";
-    box.append(cv);
+    pages.push([page, vp, cv]);
+  }
+  box.replaceChildren(...pages.map(p => p[2]));
+  box.style.transform = "";
+  afterLayout?.(); afterLayout = null;
+  for (const [page, vp, cv] of pages) {
+    if (token !== scoreToken || gen !== drawGen) return;
     await page.render({ canvasContext: cv.getContext("2d"), viewport: vp }).promise;
   }
+}
+// Zoom mantendo no lugar o ponto (fx, fy) da tela
+let afterLayout = null, drawGen = 0;
+const ZMIN = 0.75, ZMAX = 4;
+function zoomTo(z, fx, fy) {
+  const view = $("scoreView"), box = $("scorePages");
+  z = Math.min(ZMAX, Math.max(ZMIN, z));
+  const r = view.getBoundingClientRect();
+  if (fx == null) { fx = r.width / 2; fy = r.height / 2; }
+  const bx = box.offsetLeft, by = box.offsetTop;
+  const cx = (view.scrollLeft + fx - bx) / scoreZoom, cy = (view.scrollTop + fy - by) / scoreZoom;
+  scoreZoom = +z.toFixed(3);
+  afterLayout = () => { view.scrollLeft = box.offsetLeft + cx * scoreZoom - fx; view.scrollTop = box.offsetTop + cy * scoreZoom - fy; };
+  drawScore();
+}
+// Pinça com dois dedos (o zoom da página está desligado no app, então a partitura cuida disso)
+{
+  const view = $("scoreView"), box = $("scorePages");
+  let pinch = null, wheel = null, wheelT = 0;
+  const dist = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  view.addEventListener("touchstart", e => {
+    if (e.touches.length !== 2) return;
+    const r = view.getBoundingClientRect();
+    const fx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - r.left, fy = (e.touches[0].clientY + e.touches[1].clientY) / 2 - r.top;
+    pinch = { d: dist(e.touches), fx, fy, s: 1 };
+    box.style.transformOrigin = `${view.scrollLeft + fx - box.offsetLeft}px ${view.scrollTop + fy - box.offsetTop}px`;
+  }, { passive: true });
+  view.addEventListener("touchmove", e => {
+    if (!pinch || e.touches.length !== 2) return;
+    e.preventDefault();
+    const z = Math.min(ZMAX, Math.max(ZMIN, scoreZoom * dist(e.touches) / pinch.d));
+    pinch.s = z / scoreZoom;
+    box.style.transform = `scale(${pinch.s})`;
+  }, { passive: false });
+  const end = e => {
+    if (!pinch || e.touches.length) return;
+    const p = pinch; pinch = null;
+    if (Math.abs(p.s - 1) < 0.03) { box.style.transform = ""; return; }
+    zoomTo(scoreZoom * p.s, p.fx, p.fy);
+  };
+  view.addEventListener("touchend", end); view.addEventListener("touchcancel", end);
+  // no computador: Ctrl + rodinha ou pinça do trackpad
+  view.addEventListener("wheel", e => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    const r = view.getBoundingClientRect(), fx = e.clientX - r.left, fy = e.clientY - r.top;
+    if (!wheel) { wheel = { s: 1, fx, fy }; box.style.transformOrigin = `${view.scrollLeft + fx - box.offsetLeft}px ${view.scrollTop + fy - box.offsetTop}px`; }
+    wheel.s = Math.min(ZMAX, Math.max(ZMIN, scoreZoom * wheel.s * Math.exp(-e.deltaY / 200))) / scoreZoom;
+    box.style.transform = `scale(${wheel.s})`;
+    clearTimeout(wheelT);
+    wheelT = setTimeout(() => { const w = wheel; wheel = null; zoomTo(scoreZoom * w.s, w.fx, w.fy); }, 150);
+  }, { passive: false });
 }
 function partSheet(mode) {
   const parts = sortParts(curSong?.parts || []);
@@ -1638,8 +1698,8 @@ $("openScore").onclick = () => {
 };
 $("partPick").onclick = () => partSheet("view");
 $("backScore").onclick = () => show("player");
-$("zoomIn").onclick = () => { scoreZoom = Math.min(2.5, +(scoreZoom + 0.25).toFixed(2)); drawScore(); };
-$("zoomOut").onclick = () => { scoreZoom = Math.max(0.75, +(scoreZoom - 0.25).toFixed(2)); drawScore(); };
+$("zoomIn").onclick = () => zoomTo(scoreZoom * 1.25);
+$("zoomOut").onclick = () => zoomTo(scoreZoom / 1.25);
 addEventListener("resize", () => { if (!$("score").hidden) drawScore(); });
 // Mini player da partitura: usa os mesmos controles do player
 $("mPlay").onclick = () => setPlaying(!playing).then(updateMini);
