@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFFFFF">
 <meta name="color-scheme" content="light">
 <link rel="icon" href="icone.png">
@@ -243,6 +243,81 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .wide .ms{font-size:22px}
 #mtPlay[aria-pressed="true"]{background:var(--red);color:#fff}
 
+/* ---------- Telas fixas: cada tela cabe na altura do celular; só o conteúdo que não cabe rola ---------- */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+*{touch-action:manipulation}
+.wave-wrap{touch-action:none}
+#app{height:100%;padding:0;max-width:none}
+#app > section{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:640px;margin:0 auto;padding-inline:16px}
+#app > section > .nav{flex:none}
+.content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0 -16px;padding:0 16px}
+#home .content,#tuner .content,#metro .content{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+#list .content,#player .content{padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.large-title{padding:6px 0 14px}
+.large-title h1{font-size:32px}
+/* Player compacto */
+.np{grid-template-columns:64px 1fr;justify-items:start;align-items:center;text-align:left;gap:14px;padding:2px 0 12px}
+.np .art{width:64px;border-radius:16px;box-shadow:0 12px 22px -14px var(--cc,var(--brand))}
+.np .art .ms{font-size:34px}
+.p-title{gap:2px}
+.p-title h2{font-size:20px;line-height:1.15}
+.p-sub{font-size:13px}
+.stage{padding:10px 12px 8px}
+.wave-wrap{height:78px}
+.times{margin-top:6px}
+.transport{gap:30px;margin:10px 0 2px}
+.play{width:66px;height:66px}
+.play .ms{font-size:40px}
+.round{width:48px;height:48px}
+.round .ms{font-size:31px}
+.panel{margin-top:12px}
+.panel-h{margin:0 4px 6px}
+.hbtns{display:flex;gap:14px}
+.box{padding:10px 12px}
+#player .row{min-height:50px;padding:8px 12px}
+.loop-grid{gap:8px}
+.mark{gap:6px;padding:8px}
+.mark button.set{min-height:34px}
+.mark .row2 button{height:28px}
+.stepper{grid-template-columns:44px 1fr 44px}
+.step{height:40px;font-size:24px}
+.readout b{font-size:24px}
+.readout span{margin-top:2px;font-size:12px}
+.chips.one-line{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-top:10px;padding-bottom:2px}
+.chips.one-line::-webkit-scrollbar{display:none}
+.chips.one-line .chip{flex:none}
+/* Afinador compacto */
+.tn-stage{padding:10px 12px 12px}
+.tn-gauge svg{max-width:270px}
+.tn-note{font-size:clamp(50px,15vw,68px)}
+.tn-sub{margin-top:4px}
+.tn-state{margin-top:6px}
+#tuner .primary{margin-top:10px;min-height:46px}
+#tuner .m-note{margin-top:6px;font-size:12px;line-height:1.35}
+.inline-stepper{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.inline-stepper .stepper{flex:none;width:200px}
+/* Metrônomo compacto */
+.mt-stage{padding:14px 12px 12px}
+.mt-bpm{margin-top:10px;grid-template-columns:56px 1fr 56px}
+.mt-bpm .step{height:56px}
+.mt-bpm b{font-size:64px}
+.mt-name{margin-top:8px}
+.mt-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mt-actions .primary,.mt-actions .wide{margin:0;min-height:48px}
+.mt-actions .wide{font-size:14px;line-height:1.15;padding:0 10px}
+
+/* Celulares baixinhos (ex.: iPhone SE): aperta mais para continuar sem rolar */
+@media (max-height:760px){
+  .large-title{padding:2px 0 10px} .large-title h1{font-size:28px}
+  .cat{min-height:94px;padding:12px} .cat .name{margin-top:10px}
+  .row{min-height:50px} .tools .row{padding:8px 14px}
+  .np{padding-bottom:8px} .np .art{width:52px;border-radius:14px} .np .art .ms{font-size:28px}
+  .wave-wrap{height:60px} .transport{margin:6px 0 0} .play{width:58px;height:58px} .play .ms{font-size:36px}
+  .panel{margin-top:10px} .box{padding:8px 10px}
+  .tn-gauge svg{max-width:210px} .tn-note{font-size:46px}
+  .mt-bpm b{font-size:52px} .mt-bpm .step{height:48px}
+  #trNote{display:none} .cat{min-height:86px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -255,164 +330,163 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
       <img src="brasao.png" alt="Brasão da Banda de Música Maestro ST Morais, Polícia Militar da Bahia" width="34" height="34">
       <div><b>Banda de Música Maestro ST Morais</b><span>Polícia Militar da Bahia</span></div>
     </header>
-    <div class="large-title"><h1>Repertório</h1><p id="homeSub">Escolha uma categoria para estudar.</p></div>
-    <div class="cats" id="cats"></div>
-    <div class="group tools">
-      <button class="row" id="openTuner" style="--cc:var(--brand)">
-        <span class="row-ic"><span class="ms" aria-hidden="true">tune</span></span>
-        <span class="row-main"><span class="row-t">Afinador</span><span class="row-s">Cromático · para Si♭, Mi♭, Fá e Dó</span></span>
-        <span class="ms chev" aria-hidden="true">chevron_right</span>
-      </button>
-      <button class="row" id="openMetro" style="--cc:#C89418">
-        <span class="row-ic"><span class="ms" aria-hidden="true">timer</span></span>
-        <span class="row-main"><span class="row-t">Metrônomo</span><span class="row-s">BPM, compasso e toque no ritmo</span></span>
-        <span class="ms chev" aria-hidden="true">chevron_right</span>
-      </button>
+    <div class="content">
+      <div class="large-title"><h1>Repertório</h1><p id="homeSub">Escolha uma categoria para estudar.</p></div>
+      <div class="cats" id="cats"></div>
+      <div class="group tools">
+        <button class="row" id="openTuner" style="--cc:var(--brand)">
+          <span class="row-ic"><span class="ms" aria-hidden="true">tune</span></span>
+          <span class="row-main"><span class="row-t">Afinador</span><span class="row-s">Cromático · para Si♭, Mi♭, Fá e Dó</span></span>
+          <span class="ms chev" aria-hidden="true">chevron_right</span>
+        </button>
+        <button class="row" id="openMetro" style="--cc:#C89418">
+          <span class="row-ic"><span class="ms" aria-hidden="true">timer</span></span>
+          <span class="row-main"><span class="row-t">Metrônomo</span><span class="row-s">BPM, compasso e toque no ritmo</span></span>
+          <span class="ms chev" aria-hidden="true">chevron_right</span>
+        </button>
+      </div>
+      <div class="cats cats-solo" id="catsToques"></div>
     </div>
-    <div class="cats cats-solo" id="catsToques"></div>
   </section>
 
   <!-- AFINADOR -->
   <section id="tuner" hidden>
-    <nav class="nav"><button class="back" id="backTuner"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Início</button><span class="nav-title">Afinador</span><span></span></nav>
-    <div class="large-title"><h2>Afinador</h2><p>Toque uma nota longa perto do celular.</p></div>
-    <div class="tn-stage" id="tnStage">
-      <div class="tn-gauge"><svg viewBox="0 0 300 165" id="gauge" aria-hidden="true"></svg></div>
-      <div class="tn-note" id="tnNote" aria-live="polite">—</div>
-      <div class="tn-sub" id="tnSub">Ligue o microfone e toque uma nota longa</div>
-      <div class="tn-state" id="tnState"></div>
-    </div>
-    <button class="primary" id="micBtn" aria-pressed="false"><span class="ms" aria-hidden="true">mic</span><span id="micLabel">Ligar microfone</span></button>
-    <div class="err" id="tnErr" hidden></div>
-    <div class="panel">
-      <div class="panel-h"><h3>Meu instrumento</h3></div>
-      <div class="box"><div class="chips" id="trChips" style="margin-top:0"></div></div>
-      <p class="m-note" id="trNote"></p>
-    </div>
-    <div class="panel">
-      <div class="panel-h"><h3>Referência do Lá</h3><button class="reset" id="a4Reset">440 Hz</button></div>
-      <div class="box"><div class="stepper">
-        <button class="step" id="a4Down" aria-label="Diminuir 1 Hz">−</button>
-        <div class="readout"><b id="a4Val">440</b><span>Hz</span></div>
-        <button class="step" id="a4Up" aria-label="Aumentar 1 Hz">+</button>
-      </div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-h"><h3>Nota de referência</h3></div>
-      <div class="box"><div class="chips" id="refChips" style="margin-top:0"></div></div>
-      <p class="m-note">Toca a nota (som real, de concerto) para afinar de ouvido. Toque de novo para parar.</p>
+    <nav class="nav"><button class="back" id="backTuner"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Início</button><span class="nav-title" style="opacity:1">Afinador</span><span></span></nav>
+    <div class="content">
+      <div class="tn-stage" id="tnStage">
+        <div class="tn-gauge"><svg viewBox="0 0 300 165" id="gauge" aria-hidden="true"></svg></div>
+        <div class="tn-note" id="tnNote" aria-live="polite">—</div>
+        <div class="tn-sub" id="tnSub">Ligue o microfone e toque uma nota longa</div>
+        <div class="tn-state" id="tnState"></div>
+      </div>
+      <button class="primary" id="micBtn" aria-pressed="false"><span class="ms" aria-hidden="true">mic</span><span id="micLabel">Ligar microfone</span></button>
+      <div class="err" id="tnErr" hidden></div>
+      <div class="panel">
+        <div class="panel-h"><h3>Meu instrumento</h3></div>
+        <div class="box"><div class="chips" id="trChips" style="margin-top:0"></div></div>
+        <p class="m-note" id="trNote"></p>
+      </div>
+      <div class="panel">
+        <div class="box inline-stepper">
+          <span class="row-t">Lá de referência</span>
+          <div class="stepper">
+            <button class="step" id="a4Down" aria-label="Diminuir 1 Hz">−</button>
+            <div class="readout"><b id="a4Val">440</b><span>Hz</span></div>
+            <button class="step" id="a4Up" aria-label="Aumentar 1 Hz">+</button>
+          </div>
+        </div>
+        <button class="reset" id="a4Reset" hidden>440 Hz</button>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Tocar nota de referência</h3></div>
+        <div class="box"><div class="chips" id="refChips" style="margin-top:0"></div></div>
+      </div>
     </div>
   </section>
 
   <!-- METRÔNOMO -->
   <section id="metro" hidden>
-    <nav class="nav"><button class="back" id="backMetro"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Início</button><span class="nav-title">Metrônomo</span><span></span></nav>
-    <div class="large-title"><h2>Metrônomo</h2><p>Escolha o andamento e o compasso.</p></div>
-    <div class="mt-stage">
-      <div class="mt-dots" id="mtDots" aria-hidden="true"></div>
-      <div class="mt-bpm">
-        <button class="step" id="mtDown" aria-label="Diminuir BPM">−</button>
-        <div><b id="mtBpm" aria-live="polite">100</b><span>BPM</span></div>
-        <button class="step" id="mtUp" aria-label="Aumentar BPM">+</button>
+    <nav class="nav"><button class="back" id="backMetro"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Início</button><span class="nav-title" style="opacity:1">Metrônomo</span><span></span></nav>
+    <div class="content">
+      <div class="mt-stage">
+        <div class="mt-dots" id="mtDots" aria-hidden="true"></div>
+        <div class="mt-bpm">
+          <button class="step" id="mtDown" aria-label="Diminuir BPM">−</button>
+          <div><b id="mtBpm" aria-live="polite">100</b><span>BPM</span></div>
+          <button class="step" id="mtUp" aria-label="Aumentar BPM">+</button>
+        </div>
+        <div class="mt-name" id="mtName"></div>
       </div>
-      <div class="mt-name" id="mtName"></div>
-    </div>
-    <button class="primary" id="mtPlay" aria-pressed="false"><span class="ms" id="mtIc" aria-hidden="true">play_arrow</span><span id="mtLabel">Iniciar</span></button>
-    <button class="ghost wide" id="mtTap"><span class="ms" aria-hidden="true">touch_app</span><span id="mtTapLabel">Toque aqui no ritmo para medir o BPM</span></button>
-    <div class="panel">
-      <div class="panel-h"><h3>Andamentos</h3></div>
-      <div class="box"><div class="chips" id="mtPresets" style="margin-top:0"></div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-h"><h3>Compasso</h3></div>
-      <div class="box"><div class="chips" id="mtMeters" style="margin-top:0"></div></div>
-      <p class="m-note">O primeiro tempo de cada compasso soa mais forte.</p>
-    </div>
-    <div class="panel">
-      <div class="panel-h"><h3>Volume</h3></div>
-      <div class="box"><div class="chips" id="mtVols" style="margin-top:0"></div></div>
+      <div class="mt-actions">
+        <button class="primary" id="mtPlay" aria-pressed="false"><span class="ms" id="mtIc" aria-hidden="true">play_arrow</span><span id="mtLabel">Iniciar</span></button>
+        <button class="ghost wide" id="mtTap"><span class="ms" aria-hidden="true">touch_app</span><span id="mtTapLabel">Toque no ritmo</span></button>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Andamentos</h3></div>
+        <div class="box"><div class="chips" id="mtPresets" style="margin-top:0"></div></div>
+      </div>
+      <div class="panel">
+        <div class="box">
+          <div class="m-row" style="margin-top:0;padding-top:0;border-top:0"><span>Compasso</span><div class="chips" id="mtMeters"></div></div>
+          <div class="m-row"><span>Volume</span><div class="chips" id="mtVols"></div></div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- LIST -->
   <section id="list" hidden>
     <nav class="nav"><button class="back" id="backHome"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Repertório</button><span class="nav-title" id="navListTitle"></span><span></span></nav>
-    <div class="list-head"><h2 id="listTitle"></h2><span class="eyebrow" id="listCount"></span></div>
-    <div class="search-wrap" id="searchWrap"><span class="ms" aria-hidden="true">search</span><input class="search" id="search" type="search" placeholder="Buscar música ou artista" autocomplete="off" aria-label="Buscar música ou artista"></div>
-    <p class="offline" id="offMsg" hidden>Sem internet: só as músicas salvas no celular podem tocar.</p>
-    <button class="dl" id="dlAll" hidden></button>
-    <div id="songsBox"></div>
+    <div class="content">
+      <div class="list-head"><h2 id="listTitle"></h2><span class="eyebrow" id="listCount"></span></div>
+      <div class="search-wrap" id="searchWrap"><span class="ms" aria-hidden="true">search</span><input class="search" id="search" type="search" placeholder="Buscar música ou artista" autocomplete="off" aria-label="Buscar música ou artista"></div>
+      <p class="offline" id="offMsg" hidden>Sem internet: só as músicas salvas no celular podem tocar.</p>
+      <button class="dl" id="dlAll" hidden></button>
+      <div id="songsBox"></div>
+    </div>
   </section>
 
   <!-- PLAYER -->
   <section id="player" hidden>
     <nav class="nav"><button class="back" id="backList"><span class="ms" aria-hidden="true">arrow_back_ios_new</span><span id="backLabel">Voltar</span></button><span class="nav-title">Tocando agora</span><span></span></nav>
-    <div class="np"><div class="art" id="pArt" aria-hidden="true"></div><div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2><p class="p-sub" id="pSub" hidden></p></div></div>
+    <div class="content">
+      <div class="np"><div class="art" id="pArt" aria-hidden="true"></div><div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2><p class="p-sub" id="pSub" hidden></p></div></div>
 
-    <div class="stage">
-      <div class="wave-wrap" id="waveWrap" aria-label="Posição na música: toque ou arraste para ir a qualquer ponto" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-        <canvas id="wave"></canvas>
-        <div class="loading" id="loading"><span id="loadMsg">Carregando música…</span><div class="meter"><i id="loadBar"></i></div></div>
-      </div>
-      <div class="times"><b id="tNow">0:00</b><span id="tDur">0:00</span></div>
-    </div>
-
-    <div class="transport">
-      <button class="round" id="back5" aria-label="Voltar 5 segundos"><span class="ms" aria-hidden="true">replay_5</span></button>
-      <button class="round play" id="playBtn" aria-label="Tocar"><span class="ms" id="icPlay" aria-hidden="true">play_arrow</span><span class="ms" id="icPause" aria-hidden="true" hidden>pause</span></button>
-      <button class="round" id="fwd5" aria-label="Avançar 5 segundos"><span class="ms" aria-hidden="true">forward_5</span></button>
-    </div>
-    <div class="err" id="err" hidden></div>
-
-    <div class="panel">
-      <div class="panel-h"><h3>Andamento</h3><button class="reset" id="tempoReset">Original</button></div>
-      <div class="box">
-        <div class="stepper">
-          <button class="step" id="tempoDown" aria-label="Mais lento 5%">−</button>
-          <div class="readout"><b id="tempoVal">100%</b><span id="tempoTxt">velocidade original</span></div>
-          <button class="step" id="tempoUp" aria-label="Mais rápido 5%">+</button>
+      <div class="stage">
+        <div class="wave-wrap" id="waveWrap" aria-label="Posição na música: toque ou arraste para ir a qualquer ponto" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <canvas id="wave"></canvas>
+          <div class="loading" id="loading"><span id="loadMsg">Carregando música…</span><div class="meter"><i id="loadBar"></i></div></div>
         </div>
-        <div class="chips" id="tempoChips"></div>
+        <div class="times"><b id="tNow">0:00</b><span id="tDur">0:00</span></div>
       </div>
-    </div>
 
-    <div class="panel">
-      <div class="panel-h"><h3>Trecho em loop</h3><button class="reset" id="loopClear">Limpar</button></div>
-      <div class="box" style="padding:0">
-        <button class="row" id="loopBtn" aria-pressed="false" style="--cc:#16A34A">
-          <span class="row-ic"><span class="ms" aria-hidden="true">repeat</span></span>
-          <span class="row-main"><span class="row-t" id="loopLabel">Repetir trecho</span><span class="row-s">Marque o início (A) e o fim (B)</span></span>
-          <span class="sw" aria-hidden="true"></span>
-        </button>
+      <div class="transport">
+        <button class="round" id="back5" aria-label="Voltar 5 segundos"><span class="ms" aria-hidden="true">replay_5</span></button>
+        <button class="round play" id="playBtn" aria-label="Tocar"><span class="ms" id="icPlay" aria-hidden="true">play_arrow</span><span class="ms" id="icPause" aria-hidden="true" hidden>pause</span></button>
+        <button class="round" id="fwd5" aria-label="Avançar 5 segundos"><span class="ms" aria-hidden="true">forward_5</span></button>
       </div>
-      <div class="box">
-        <div class="loop-grid" style="margin-top:0">
-          <div class="mark">
-            <button class="set" id="setA">Marcar início (A)</button>
-            <div class="row2"><button id="aMinus" aria-label="Início meio segundo antes">‹</button><span class="t" id="tA">—</span><button id="aPlus" aria-label="Início meio segundo depois">›</button></div>
-          </div>
-          <div class="mark">
-            <button class="set" id="setB">Marcar fim (B)</button>
-            <div class="row2"><button id="bMinus" aria-label="Fim meio segundo antes">‹</button><span class="t" id="tB">—</span><button id="bPlus" aria-label="Fim meio segundo depois">›</button></div>
+      <div class="err" id="err" hidden></div>
+
+      <div class="panel">
+        <div class="panel-h"><h3>Trecho em loop</h3><div class="hbtns"><button class="reset" id="toA">Ir ao A</button><button class="reset" id="loopClear">Limpar</button></div></div>
+        <div class="box" style="padding:0">
+          <button class="row" id="loopBtn" aria-pressed="false" style="--cc:#16A34A">
+            <span class="row-ic"><span class="ms" aria-hidden="true">repeat</span></span>
+            <span class="row-main"><span class="row-t" id="loopLabel">Repetir trecho</span></span>
+            <span class="sw" aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="box">
+          <div class="loop-grid" style="margin-top:0">
+            <div class="mark">
+              <button class="set" id="setA">Marcar início (A)</button>
+              <div class="row2"><button id="aMinus" aria-label="Início meio segundo antes">‹</button><span class="t" id="tA">—</span><button id="aPlus" aria-label="Início meio segundo depois">›</button></div>
+            </div>
+            <div class="mark">
+              <button class="set" id="setB">Marcar fim (B)</button>
+              <div class="row2"><button id="bMinus" aria-label="Fim meio segundo antes">‹</button><span class="t" id="tB">—</span><button id="bPlus" aria-label="Fim meio segundo depois">›</button></div>
+            </div>
           </div>
         </div>
-        <div class="loop-actions"><button class="ghost" id="toA">Ir ao início do trecho</button></div>
       </div>
-    </div>
 
-    <div class="panel" hidden>
-      <div class="panel-h"><h3>Metrônomo</h3><span class="val" id="bpmVal">— BPM</span></div>
-      <div class="box" style="padding:0">
-        <button class="row" id="metroBtn" aria-pressed="false" style="--cc:#C89418">
-          <span class="row-ic"><span class="beat" id="beatDot"></span></span>
-          <span class="row-main"><span class="row-t" id="metroLabel">Ligar metrônomo</span><span class="row-s" id="metroStatus">Detectando o andamento…</span></span>
-          <span class="sw" aria-hidden="true"></span>
-        </button>
+      <div class="panel">
+        <div class="panel-h"><h3>Andamento</h3><button class="reset" id="tempoReset">Original</button></div>
+        <div class="box">
+          <div class="stepper">
+            <button class="step" id="tempoDown" aria-label="Mais lento 5%">−</button>
+            <div class="readout"><b id="tempoVal">100%</b><span id="tempoTxt">velocidade original</span></div>
+            <button class="step" id="tempoUp" aria-label="Mais rápido 5%">+</button>
+          </div>
+          <div class="chips one-line" id="tempoChips"></div>
+        </div>
       </div>
-      <div class="box">
-        <div class="m-row" style="margin-top:0;padding-top:0;border-top:0"><span>Volume do clique</span><div class="chips" id="volChips"></div></div>
-        <div class="m-row"><span>Pulsação</span><div class="chips" id="multChips"></div></div>
-        <div class="m-row"><span>Sincronia</span><div class="sync"><button id="offMinus" aria-label="Clique mais cedo">‹</button><b id="offVal">0 ms</b><button id="offPlus" aria-label="Clique mais tarde">›</button></div></div>
+
+      <div class="panel" hidden>
+        <div class="panel-h"><h3>Metrônomo</h3><span class="val" id="bpmVal">— BPM</span></div>
+        <button class="row" id="metroBtn" aria-pressed="false"><span class="row-ic"><span class="beat" id="beatDot"></span></span><span class="row-main"><span class="row-t" id="metroLabel"></span><span class="row-s" id="metroStatus"></span></span><span class="sw" aria-hidden="true"></span></button>
+        <div class="chips" id="volChips"></div><div class="chips" id="multChips"></div>
+        <div class="sync"><button id="offMinus">‹</button><b id="offVal">0 ms</b><button id="offPlus">›</button></div>
       </div>
     </div>
   </section>
@@ -530,7 +604,7 @@ const fmt = (s, dec) => {
   const m = Math.floor(s / 60), r = s - m * 60;
   return dec ? `${m}:${r.toFixed(1).padStart(4, "0")}` : `${m}:${String(Math.floor(r)).padStart(2, "0")}`;
 };
-addEventListener("scroll", () => document.body.classList.toggle("scrolled", scrollY > 24), { passive: true });
+document.addEventListener("scroll", e => { if (e.target.classList && e.target.classList.contains("content")) document.body.classList.toggle("scrolled", e.target.scrollTop > 24); }, { passive: true, capture: true });
 function show(id) {
   for (const s of ["home", "list", "player", "tuner", "metro"]) $(s).hidden = s !== id;
   $("tabbar").hidden = !(id === "home" || id === "tuner" || id === "metro");
@@ -538,7 +612,8 @@ function show(id) {
     if (id === view) $(tab).setAttribute("aria-current", "page"); else $(tab).removeAttribute("aria-current");
   }
   if (id !== "metro" && typeof mtStop === "function" && mtOn) mtStop();
-  window.scrollTo(0, 0);
+  const c = $(id).querySelector(".content"); if (c) c.scrollTop = 0;
+  document.body.classList.remove("scrolled");
 }
 
 /* ---------- Home ---------- */
@@ -1243,7 +1318,9 @@ async function startMic() {
     $("tnErr").textContent = "Não consegui usar o microfone. Permita o acesso ao microfone para este site nas configurações do navegador e toque em “Ligar microfone” de novo.";
     $("tnErr").hidden = false; renderTuner(); return;
   }
-  const src = ctx.createMediaStreamSource(mic);
+  let src;
+  try { src = ctx.createMediaStreamSource(mic); }
+  catch (e) { stopMic(); $("tnErr").textContent = "O microfone não enviou som. Feche outros apps que usam o microfone e toque em “Ligar microfone” de novo."; $("tnErr").hidden = false; return; }
   analyser = ctx.createAnalyser(); analyser.fftSize = 4096; src.connect(analyser);
   tnBuf = new Float32Array(analyser.fftSize); yin = makeYin(ctx.sampleRate); hist = []; quiet = 0;
   clearInterval(tnTimer); tnTimer = setInterval(tnTick, 50);
@@ -1367,11 +1444,11 @@ $("mtTap").onclick = () => {
   taps.push(t); if (taps.length > 6) taps.shift();
   if (taps.length >= 2) {
     const iv = (taps[taps.length - 1] - taps[0]) / (taps.length - 1);
-    mtSetBpm(60000 / iv); $("mtTapLabel").textContent = `Medido: ${MT.bpm} BPM · continue tocando para ajustar`;
-  } else $("mtTapLabel").textContent = "Continue tocando no ritmo…";
+    mtSetBpm(60000 / iv); $("mtTapLabel").textContent = `Medido: ${MT.bpm} BPM`;
+  } else $("mtTapLabel").textContent = "Continue tocando…";
 };
 $("mtPlay").onclick = () => mtOn ? mtStop() : mtStart();
-function openMetroTool() { stopMic(); stopRef(); setPlaying(false); show("metro"); taps = []; $("mtTapLabel").textContent = "Toque aqui no ritmo para medir o BPM"; renderMetroTool(); }
+function openMetroTool() { stopMic(); stopRef(); setPlaying(false); show("metro"); taps = []; $("mtTapLabel").textContent = "Toque no ritmo"; renderMetroTool(); }
 $("openMetro").onclick = openMetroTool;
 $("tabMet").onclick = () => { if ($("metro").hidden) openMetroTool(); };
 $("backMetro").onclick = () => { renderHome(); show("home"); };
