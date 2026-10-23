@@ -43,8 +43,8 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Músicas: se já estão no celular, tocam dali.
-  if (url.pathname.includes("/musicas/arquivos/")) {
+  // Músicas e partituras: se já estão no celular, abrem dali.
+  if (url.pathname.includes("/musicas/")) {
     e.respondWith(caches.open(AUDIO).then(c => c.match(req.url, { ignoreSearch: true })).then(hit => hit || fetch(req)));
     return;
   }
@@ -59,7 +59,7 @@ self.addEventListener("fetch", e => {
     return;
   }
   // Motor de áudio, fontes e imagens: guardados na primeira vez.
-  if (url.hostname === "cdn.jsdelivr.net" || url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com" ||
+  if (url.hostname === "cdn.jsdelivr.net" || url.hostname === "cdnjs.cloudflare.com" || url.hostname === "fonts.googleapis.com" || url.hostname === "fonts.gstatic.com" ||
       (url.origin === location.origin && /\.(png|js)$/.test(url.pathname))) {
     e.respondWith(cacheFirst(req));
   }
