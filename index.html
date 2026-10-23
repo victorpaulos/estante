@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0F2E78">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="color-scheme" content="light">
 <link rel="icon" href="icone.png">
 <link rel="apple-touch-icon" href="icone.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -13,187 +14,236 @@
 <title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=arrow_back_ios_new,auto_stories,campaign,check_circle,chevron_right,download,forward_5,graphic_eq,library_music,mic,military_tech,music_note,pause,piano,play_arrow,repeat,replay_5,search,speed,stop,timer,touch_app,tune&display=block">
 <style>
+/* Banda PMBA — visual de app profissional (padrão iOS/Android): fonte do sistema, barras fixas com vidro,
+   blocos de cor por categoria, listas agrupadas e interruptores. Sempre claro. */
 :root{color-scheme:light;
-  --bg:#EEF1F7; --surface:#FFFFFF; --surface-2:#F3F5FA; --ink:#0E1A3A; --muted:#55607D;
-  --line:#D6DCE8; --wave:#C3CBDD; --brass:#0F2E78; --brass-ink:#0F2E78; --brass-soft:#E3E9F6;
-  --on-brass:#FFFFFF; --loop:rgba(15,46,120,.12); --gold:#C99A2E; --red:#B3202A;
-  --band:#0F2E78; --band-ink:#FFFFFF; --band-muted:#C9D3EC;
-  --c-dobrados:#B3202A; --c-populares:#B8871F; --c-cancoes:#1F5FAE; --c-hinos:#5B6478; --c-toques:#8C6A12; --in-tune:#1E8E5A;
-  --shadow:0 1px 2px rgba(14,26,58,.06),0 6px 20px rgba(14,26,58,.07); --play-shadow:0 8px 22px rgba(15,46,120,.35);
-  --display:"Bricolage Grotesque",ui-rounded,system-ui,sans-serif;
-  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  color-scheme:dark;
-  --bg:#07122C; --surface:#0E1F47; --surface-2:#132857; --ink:#EEF2FB; --muted:#A3AFCF;
-  --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
-  --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
-  --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
-  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --c-toques:#F0C866; --in-tune:#4FD08A;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
-}}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#07122C; --surface:#0E1F47; --surface-2:#132857; --ink:#EEF2FB; --muted:#A3AFCF;
-  --line:#22386E; --wave:#2E4683; --brass:#E2B447; --brass-ink:#F0C866; --brass-soft:#1E2F5E;
-  --on-brass:#0A1633; --loop:rgba(226,180,71,.16); --gold:#E2B447; --red:#E0525A;
-  --band:#0A1A42; --band-ink:#FFFFFF; --band-muted:#AFBEE3;
-  --c-dobrados:#E0525A; --c-populares:#E2B447; --c-cancoes:#6FA3F0; --c-hinos:#B7C0D6; --c-toques:#F0C866; --in-tune:#4FD08A;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); --play-shadow:0 8px 22px rgba(226,180,71,.3);
+  --bg:#FFFFFF; --fill:#F4F5F8; --fill-2:#ECEEF3; --surface:#FFFFFF; --surface-2:#F4F5F8; --surface-3:#E9ECF2;
+  --ink:#0B1220; --ink-2:#3C4458; --muted:#6B7387; --sep:rgba(11,18,32,.10); --line:rgba(11,18,32,.08); --line-2:rgba(11,18,32,.14);
+  --brand:#0F2E78; --brand-2:#1C45A8; --brass:#0F2E78; --brass-ink:#0F2E78; --brass-soft:#E6ECF8; --on-brass:#FFFFFF;
+  --accent-grad:linear-gradient(135deg,#1C45A8,#0F2E78); --gold:#B98A1E; --red:#D7263D;
+  --wave:#CBD2E0; --loop:rgba(15,46,120,.10); --in-tune:#16A34A;
+  --c-dobrados:#D7263D; --c2-dobrados:#A3152A; --c-populares:#F29D12; --c2-populares:#C76B00;
+  --c-cancoes:#2F7CF6; --c2-cancoes:#1C4FC2; --c-hinos:#6A55D8; --c2-hinos:#4532A8; --c-toques:#C89418; --c2-toques:#8E6408;
+  --shadow:0 1px 2px rgba(11,18,32,.04),0 8px 24px -12px rgba(11,18,32,.16); --play-shadow:0 10px 24px -8px rgba(15,46,120,.5);
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --body:var(--font); --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{background:var(--bg);margin:0}
-html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-[hidden]{display:none!important}
-body{color:var(--ink);font:400 16px/1.45 var(--body);-webkit-tap-highlight-color:transparent}
-#app{max-width:600px;margin:0 auto;padding-inline:16px;padding-block:18px 40px}
-button{font:inherit;color:inherit;cursor:pointer}
-button:focus-visible,input:focus-visible,label:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+html{padding-bottom:0;background:var(--bg)}
+html,body{margin:0}
+body{min-height:100vh;color:var(--ink);background:var(--bg);font:400 16px/1.4 var(--font);letter-spacing:-.01em;-webkit-tap-highlight-color:transparent;
+  -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;-webkit-text-size-adjust:100%}
+#app{max-width:640px;margin:0 auto;padding-inline:16px;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-user-select:none;user-select:none;transition:background-color .15s,opacity .15s,transform .1s}
+button:active{opacity:.7}
+button:focus-visible,input:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+h1,h2,h3{margin:0;font-family:var(--display);text-wrap:balance}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.eyebrow{font:600 12px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-h1,h2{font-family:var(--display);text-wrap:balance;margin:0}
-.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.mono{font-variant-numeric:tabular-nums}
 
-/* Home */
-.masthead{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:16px;margin:-18px -16px 20px;padding:22px 16px 20px;
-  background:var(--band);color:var(--band-ink);border-bottom:4px solid var(--gold);border-radius:0 0 22px 22px}
-.masthead img{width:96px;height:96px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--gold),0 6px 18px rgba(0,0,0,.3)}
-.masthead .eyebrow{color:var(--gold)}
-.masthead h1{font-size:clamp(22px,6vw,30px);font-weight:800;line-height:1.05;letter-spacing:-.01em;margin-top:6px}
-.masthead p{margin:6px 0 0;color:var(--band-muted);font-size:14px;max-width:40ch}
-@media (max-width:360px){.masthead img{width:76px;height:76px}}
-.cats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.cat{position:relative;display:grid;align-content:space-between;gap:26px;min-height:150px;padding:16px;border:1px solid var(--line);
-  border-radius:18px;background:var(--surface);text-align:left;box-shadow:var(--shadow);overflow:hidden;transition:transform .15s}
-.cat:active{transform:scale(.98)}
-.cat:nth-child(odd):last-child{grid-column:1/-1;min-height:118px}
-.cat .staff{position:absolute;inset:auto 0 18px 0;height:34px;opacity:.5;
-  background:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px 8px)}
-.cat .name{position:relative;font:700 22px/1.05 var(--display);letter-spacing:-.01em}
-.cat .desc{position:relative;display:block;margin-top:4px;font-size:13px;color:var(--muted)}
-.cat .count{position:relative;display:flex;align-items:baseline;gap:6px}
-.cat .count b{font:800 34px/1 var(--display);color:var(--cc)}
-.cat .count span{font-size:13px;color:var(--muted)}
-.cat .clef{position:absolute;right:12px;top:10px;font:700 34px/1 var(--display);color:var(--cc);opacity:.9}
-.local{margin-top:18px;display:grid;gap:8px}
-.btn-line{display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 16px;border:1.5px dashed var(--line);
-  border-radius:14px;background:transparent;font-weight:600;color:var(--ink)}
-.hint{font-size:13px;color:var(--muted);text-align:center;margin:0}
+/* Ícones (Material Symbols Rounded, preenchidos) */
+.ms{font-family:"Material Symbols Rounded";font-weight:500;font-style:normal;font-size:24px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-grid;place-items:center;
+  width:1em;height:1em;overflow:hidden;white-space:nowrap;direction:ltr;font-feature-settings:"liga";-webkit-font-feature-settings:"liga";
+  font-variation-settings:"FILL" 1,"wght" 500,"GRAD" 0,"opsz" 24;-webkit-font-smoothing:antialiased;user-select:none;flex:none}
 
-/* Top bar */
-.bar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.back{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 12px 0 6px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-weight:600;font-size:15px}
-.back svg{width:20px;height:20px}
+/* Barra superior fixa (vidro) */
+.nav{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;min-height:52px;margin:0 -16px;
+  padding:env(safe-area-inset-top,0px) 12px 0;background:rgba(255,255,255,.86);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:.5px solid transparent;transition:border-color .2s}
+body.scrolled .nav{border-bottom-color:var(--sep)}
+.nav-title{font:600 17px/1.2 var(--font);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56vw}
+.nav-home{display:flex;gap:10px;padding-left:16px}
+.nav-home img{width:34px;height:34px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px var(--line-2)}
+.nav-home b{display:block;font:700 15px/1.15 var(--font)}
+.nav-home span{display:block;font-size:12px;color:var(--muted)}
+.back{justify-self:start;display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 6px 0 0;border:0;background:none;color:var(--brand);font:400 17px/1 var(--font)}
+.back .ms{font-size:22px;font-variation-settings:"FILL" 1,"wght" 600,"GRAD" 0,"opsz" 24}
 
-/* List */
-.list-head{display:grid;gap:4px;margin-bottom:14px}
-.list-head h2{font-size:34px;font-weight:800;letter-spacing:-.02em}
-.search{width:100%;min-height:46px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;margin-bottom:10px}
-.songs{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
-.songs li+li{border-top:1px solid var(--line)}
-.song{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:12px;width:100%;min-height:62px;padding:10px 14px;border:0;background:transparent;text-align:left}
-.song:active{background:var(--surface-2)}
-.song .n{font:700 13px/1 var(--mono);color:var(--muted)}
-.song .t{display:block;font-weight:600;overflow-wrap:anywhere}
-.song .a{display:block;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+/* Título grande */
+.large-title{padding:10px 0 18px}
+.large-title h1,.large-title h2{font:800 34px/1.08 var(--display);letter-spacing:-.025em}
+.large-title p{margin:6px 0 0;font-size:15px;color:var(--muted)}
+.eyebrow{font:600 12.5px/1 var(--font);letter-spacing:.02em;color:var(--muted);text-transform:none}
+.sec{margin:26px 4px 8px;font:600 13px/1 var(--font);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+
+/* Blocos de categoria */
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cat{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-height:112px;padding:14px;border:0;border-radius:18px;overflow:hidden;text-align:left;color:#fff;
+  background:linear-gradient(140deg,var(--cc),var(--cc2,var(--cc)));box-shadow:0 10px 22px -14px var(--cc)}
+.cat:nth-child(odd):last-child{grid-column:1/-1}
+.cat .ic{display:block;color:#fff}
+.cat .ic .ms{font-size:28px}
+.cat .ghost-ic{position:absolute;right:-10px;bottom:-14px;transform:rotate(-16deg);color:#fff;opacity:.2;pointer-events:none}
+.cat .ghost-ic .ms{font-size:92px;font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 48}
+.cat .name{position:relative;display:block;margin-top:18px;font:700 17px/1.15 var(--font);letter-spacing:-.01em}
+.cat .desc{display:none}
+.cat .count{position:relative;display:block;margin-top:2px;font:500 13px/1.2 var(--font);color:rgba(255,255,255,.85)}
+.cats-solo{grid-template-columns:1fr;margin-top:10px}
+.cats-solo:empty{display:none}
+
+/* Listas agrupadas e linhas */
+.group{margin-top:10px;border-radius:16px;background:var(--fill);overflow:hidden}
+.row{position:relative;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;width:100%;min-height:58px;padding:10px 14px;border:0;background:transparent;text-align:left}
+.row + .row::before,.group > * + *::before{content:"";position:absolute;left:62px;right:0;top:0;height:.5px;background:var(--sep)}
+.row-ic{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:var(--cc,var(--brand));color:#fff}
+.row-ic .ms{font-size:21px}
+.row-main{min-width:0}
+.row-t{display:block;font:500 16px/1.25 var(--font)}
+.row-s{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+.chev{font-size:22px;color:#B6BCC8}
+.tuner-btn{margin-top:10px;border-radius:16px;background:var(--fill)}
+/* Interruptor (estilo iOS) */
+.sw{position:relative;width:51px;height:31px;border-radius:999px;background:#D9DCE3;transition:background .2s}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:transform .2s}
+[aria-pressed="true"] > .sw{background:var(--in-tune)}
+[aria-pressed="true"] > .sw::after{transform:translateX(20px)}
+.row:disabled{opacity:.45}
+
+/* Barra de abas fixa */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:grid;grid-template-columns:1fr 1fr;padding:6px 12px calc(6px + env(safe-area-inset-bottom,0px));
+  background:rgba(255,255,255,.9);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--sep)}
+.tabbar button{display:grid;justify-items:center;gap:2px;min-height:50px;padding:4px 0 0;border:0;background:none;color:#8A91A3;font:600 11px/1.1 var(--font)}
+.tabbar button .ms{font-size:26px;font-variation-settings:"FILL" 0,"wght" 500,"GRAD" 0,"opsz" 24}
+.tabbar button[aria-current="page"]{color:var(--brand)}
+.tabbar button[aria-current="page"] .ms{font-variation-settings:"FILL" 1,"wght" 500,"GRAD" 0,"opsz" 24}
+
+/* Lista de músicas */
+.list-head{padding:10px 0 14px}
+.list-head h2{font:800 34px/1.08 var(--display);letter-spacing:-.025em}
+.list-head .eyebrow{display:block;margin-top:6px;font-size:15px;font-weight:400;color:var(--muted)}
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap .ms{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:20px;color:#8A91A3;pointer-events:none}
+.search{width:100%;min-height:40px;padding:0 12px 0 38px;border:0;border-radius:11px;background:var(--fill-2);color:var(--ink);font:400 16px/1 var(--font)}
+.search::placeholder{color:#8A91A3}
+.dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin-bottom:12px;padding:0 16px;border:0;border-radius:12px;
+  background:var(--brass-soft);color:var(--brand);font:600 15px/1.2 var(--font);text-align:center}
+.dl .ms{font-size:21px}
+.dl:disabled{background:var(--fill);color:var(--in-tune);cursor:default}
+.offline{margin:0 0 12px;padding:12px 14px;border-radius:12px;background:#FFF6E0;color:#6B4E00;font-size:14px}
+.songs{list-style:none;margin:0;padding:0;border-radius:16px;background:var(--fill);overflow:hidden}
+.songs li{position:relative}
+.songs li + li::before{content:"";position:absolute;left:58px;right:0;top:0;height:.5px;background:var(--sep)}
+.song{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:14px;width:100%;min-height:62px;padding:10px 14px;border:0;background:transparent;text-align:left}
+.song:active{background:var(--fill-2);opacity:1}
+.song .n{font:500 15px/1 var(--font);color:var(--muted);text-align:center}
+.song .t{display:block;font:500 16px/1.25 var(--font);overflow-wrap:anywhere}
+.song .a{display:block;margin-top:2px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
 .song .a:empty{display:none}
-.song .d{display:grid;justify-items:end;gap:4px;font:500 13px/1 var(--mono);color:var(--muted)}
-.song .ok{font:700 11px/1 var(--body);color:var(--c-cancoes);white-space:nowrap}
+.song .d{display:grid;justify-items:end;gap:4px;font:400 14px/1 var(--font);color:var(--muted)}
+.song .ok{display:inline-flex;align-items:center;gap:3px;font:600 11px/1 var(--font);color:var(--in-tune);white-space:nowrap}
+.song .ok .ms{font-size:14px}
 .song.off{opacity:.45}
-.dl{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-bottom:10px;padding:0 14px;border-radius:12px;border:1.5px solid var(--brass);background:transparent;color:var(--brass-ink);font-weight:700;text-align:center}
-.dl:disabled{border-color:var(--line);color:var(--muted);cursor:default}
-.dl svg{width:20px;height:20px;flex:none}
-.offline{margin:0 0 12px;padding:10px 12px;border-radius:12px;background:var(--brass-soft);color:var(--ink);font-size:14px}
-.empty{padding:22px 18px;border:1.5px dashed var(--line);border-radius:16px;color:var(--muted);font-size:15px}
-.empty code{font-family:var(--mono);font-size:13px;color:var(--ink);overflow-wrap:anywhere}
+.empty{padding:28px 18px;border-radius:16px;background:var(--fill);color:var(--muted);font-size:15px;text-align:center}
 
 /* Player */
-.p-title{display:grid;gap:4px;margin-bottom:16px}
-.p-title h2{font-size:clamp(24px,6.5vw,32px);font-weight:700;letter-spacing:-.015em;line-height:1.1;overflow-wrap:anywhere}
+.np{display:grid;justify-items:center;gap:16px;padding:8px 0 18px;text-align:center}
+.np .art{display:grid;place-items:center;width:min(58vw,210px);aspect-ratio:1;max-width:100%;border-radius:28px;color:#fff;
+  background:linear-gradient(140deg,var(--cc,var(--brand)),var(--cc2,var(--brand-2)));box-shadow:0 24px 44px -22px var(--cc,var(--brand))}
+.np .art .ms{font-size:84px}
+.p-title{display:grid;gap:4px;min-width:0;max-width:100%}
+.p-title .eyebrow{color:var(--muted)}
+.p-title h2{font:700 24px/1.15 var(--display);letter-spacing:-.02em;overflow-wrap:anywhere}
 .p-sub{margin:0;color:var(--muted);font-size:15px;overflow-wrap:anywhere}
-.stage{padding:14px 14px 10px;border-radius:18px;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
-.wave-wrap{position:relative;height:118px;touch-action:none;cursor:pointer}
+.stage{padding:14px 14px 10px;border-radius:18px;background:var(--fill)}
+.wave-wrap{position:relative;height:96px;touch-action:none;cursor:pointer}
 canvas{display:block;width:100%;height:100%}
-.loading{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:10px;color:var(--muted);font-size:14px;background:var(--surface)}
-.meter{width:60%;height:4px;border-radius:4px;background:var(--line);overflow:hidden}
-.meter i{display:block;height:100%;width:0;background:var(--brass);transition:width .2s}
-.times{display:flex;justify-content:space-between;margin-top:8px;font:500 13px/1 var(--mono);color:var(--muted)}
-.times b{font-size:22px;font-weight:700;color:var(--ink)}
-.transport{display:flex;align-items:center;justify-content:center;gap:22px;margin:18px 0 6px}
-.round{display:grid;place-items:center;width:58px;height:58px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font:700 12px/1 var(--mono)}
-.round svg{width:24px;height:24px}
-.play{width:78px;height:78px;border:0;background:var(--brass);color:var(--on-brass);box-shadow:var(--play-shadow)}
-.play svg{width:32px;height:32px}
-.round:disabled{opacity:.4}
-.tuner-btn{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:14px;width:100%;margin-top:12px;padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:var(--shadow);text-align:left}
-.tuner-btn:active{transform:scale(.99)}
-.cats-solo{grid-template-columns:1fr;margin-top:12px}
-.cats-solo:empty{display:none}
-.tuner-btn > svg{width:34px;height:34px;color:var(--gold)}
-.tuner-btn b{display:block;font:700 21px/1.1 var(--display)}
-.tuner-btn small{display:block;margin-top:3px;font-size:13px;color:var(--muted)}
-.tuner-btn .chev{width:20px;height:20px;color:var(--muted)}
-.tn-gauge svg{display:block;width:100%;max-width:420px;margin:0 auto}
+.loading{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:12px;color:var(--muted);font-size:14px;background:var(--fill)}
+.meter{width:60%;height:4px;border-radius:4px;background:var(--fill-2);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--brand);transition:width .2s}
+.times{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;font:500 13px/1 var(--font);color:var(--muted)}
+.times b{font:600 13px/1 var(--font);color:var(--ink-2)}
+.transport{display:flex;align-items:center;justify-content:center;gap:34px;margin:18px 0 4px}
+.round{display:grid;place-items:center;width:52px;height:52px;border-radius:50%;border:0;background:transparent;color:var(--ink)}
+.round .ms{font-size:34px}
+.play{width:76px;height:76px;background:var(--brand);color:#fff;box-shadow:var(--play-shadow)}
+.play .ms{font-size:44px}
+.round:disabled{opacity:.35}
+
+/* Grupos de ajustes */
+.panel{margin-top:22px}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 4px 8px}
+.panel-h h3{font:600 13px/1 var(--font);letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.panel-h h3 .ms{display:none}
+.panel-h .val{font:600 15px/1 var(--font);color:var(--brand)}
+.box{padding:14px;border-radius:16px;background:var(--fill)}
+.box + .box{margin-top:8px}
+.reset{min-height:28px;padding:0 4px;border:0;background:none;color:var(--brand);font:500 15px/1 var(--font)}
+.stepper{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px}
+.step{height:44px;border:0;border-radius:12px;background:var(--surface);box-shadow:0 1px 2px rgba(11,18,32,.06);font:500 26px/1 var(--font);color:var(--brand)}
+.readout{text-align:center}
+.readout b{display:block;font:700 28px/1 var(--display);letter-spacing:-.02em}
+.readout span{display:block;margin-top:4px;font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{min-height:32px;padding:0 12px;border-radius:999px;border:0;background:var(--surface);box-shadow:0 1px 2px rgba(11,18,32,.06);font:500 14px/1 var(--font);color:var(--ink-2)}
+.chip[aria-pressed="true"]{background:var(--brand);color:#fff;box-shadow:none}
+.m-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 10px;margin-top:12px;padding-top:12px;border-top:.5px solid var(--sep);font:400 15px/1.2 var(--font);color:var(--ink)}
+.m-row .chips{margin:0}
+.m-note{margin:8px 4px 0;font-size:13px;color:var(--muted)}
+.beat{width:12px;height:12px;border-radius:50%;background:#fff;opacity:.35;transition:opacity .05s}
+.beat.on{opacity:1}
+.sync{display:flex;align-items:center;gap:6px}
+.sync button{width:36px;height:32px;border:0;border-radius:10px;background:var(--surface);box-shadow:0 1px 2px rgba(11,18,32,.06);font:600 17px/1 var(--font);color:var(--brand)}
+.sync b{min-width:58px;text-align:center;font:600 14px/1 var(--font)}
+.loop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.loop-grid>*{min-width:0}
+.mark{display:grid;gap:8px;padding:10px;border-radius:12px;background:var(--surface)}
+.mark button.set{min-height:40px;border:0;border-radius:10px;background:var(--brass-soft);color:var(--brand);font:600 14px/1.1 var(--font)}
+.mark .row2{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.mark .row2 button{width:34px;height:30px;flex:none;border:0;border-radius:8px;background:var(--fill);font:600 16px/1 var(--font);color:var(--brand)}
+.mark .t{font:600 14px/1 var(--font)}
+.loop-actions{display:flex;justify-content:space-between;gap:10px;margin-top:10px}
+.ghost{min-height:40px;padding:0 14px;border:0;border-radius:10px;background:var(--surface);color:var(--brand);font:600 15px/1 var(--font);box-shadow:0 1px 2px rgba(11,18,32,.06)}
+.primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;margin-top:14px;border:0;border-radius:14px;background:var(--brand);color:#fff;font:600 17px/1 var(--font)}
+.primary[aria-pressed="true"]{background:var(--fill-2);color:var(--red)}
+.primary .ms{font-size:22px}
+.switch-row{border-radius:16px;background:var(--fill)}
+.switch-row .row-ic{background:var(--cc,var(--brand))}
+.err{margin-top:12px;padding:12px 14px;border-radius:12px;background:#FDECEE;color:#8A1424;font-size:14px}
+
+/* Afinador */
+.tn-stage{padding:18px 14px 16px;border-radius:20px;background:var(--fill)}
+.tn-gauge svg{display:block;width:100%;max-width:400px;margin:0 auto}
 .g-zone{fill:none;stroke:var(--in-tune);stroke-width:10;stroke-linecap:round;opacity:.3;transition:opacity .2s}
-.g-tick{stroke:var(--muted);stroke-width:1.5}
+.g-tick{stroke:#9AA1B2;stroke-width:1.5}
 .g-tick.big{stroke-width:2.5}
-.g-lab{fill:var(--muted);font:600 11px var(--mono);text-anchor:middle}
+.g-lab{fill:var(--muted);font:600 11px var(--font);text-anchor:middle}
 .g-needle{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
 .g-hub{fill:var(--ink)}
-.tn-note{margin-top:-6px;text-align:center;font:800 clamp(60px,20vw,92px)/1 var(--display);letter-spacing:-.02em}
-.tn-note small{font-size:.38em;font-weight:700;color:var(--muted);margin-left:4px}
-.tn-sub{margin-top:8px;text-align:center;font:500 13px/1.4 var(--mono);color:var(--muted)}
-.tn-state{margin-top:10px;text-align:center;font-weight:700;min-height:1.4em}
+.tn-note{margin-top:-6px;text-align:center;font:700 clamp(64px,21vw,92px)/1 var(--display);letter-spacing:-.03em}
+.tn-note small{font-size:.36em;font-weight:600;color:var(--muted);margin-left:4px}
+.tn-sub{margin-top:8px;text-align:center;font:500 13px/1.4 var(--font);color:var(--muted)}
+.tn-state{margin-top:10px;text-align:center;font-weight:600;min-height:1.4em}
 .tn-stage[data-state="in"] .g-needle{stroke:var(--in-tune)}
 .tn-stage[data-state="in"] .g-hub,.tn-stage[data-state="in"] .tn-note{fill:var(--in-tune);color:var(--in-tune)}
 .tn-stage[data-state="in"] .g-zone{opacity:.95}
 .tn-stage[data-state="in"] .tn-state{color:var(--in-tune)}
-.tn-stage[data-state="low"] .tn-state,.tn-stage[data-state="high"] .tn-state{color:var(--c-dobrados)}
+.tn-stage[data-state="low"] .tn-state,.tn-stage[data-state="high"] .tn-state{color:var(--red)}
+#list .nav-title,#tuner .nav-title,#metro .nav-title{opacity:0;transition:opacity .2s}
+body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #metro .nav-title{opacity:1}
+.tabbar{grid-template-columns:repeat(3,1fr)}
+.tools{margin-top:10px}
+.tools .row{background:transparent;border-radius:0;margin:0}
+/* Metrônomo */
+.mt-stage{padding:22px 16px 18px;border-radius:20px;background:var(--fill);text-align:center}
+.mt-dots{display:flex;justify-content:center;gap:12px;min-height:22px}
+.mt-dots i{width:18px;height:18px;border-radius:50%;background:var(--fill-2);box-shadow:inset 0 0 0 1.5px var(--line-2);transition:transform .08s,background-color .08s}
+.mt-dots i.acc{box-shadow:inset 0 0 0 2px var(--brand)}
+.mt-dots i.on{background:var(--brand);box-shadow:none;transform:scale(1.25)}
+.mt-dots i.acc.on{background:var(--red)}
+.mt-bpm{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:8px;margin-top:18px}
+.mt-bpm .step{height:64px;border-radius:18px;font-size:32px}
+.mt-bpm b{display:block;font:700 76px/1 var(--display);letter-spacing:-.04em}
+.mt-bpm span{display:block;margin-top:2px;font:600 13px/1 var(--font);letter-spacing:.08em;color:var(--muted)}
+.mt-name{margin-top:12px;font:500 15px/1.3 var(--font);color:var(--ink-2)}
+.wide{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin-top:10px}
+.wide .ms{font-size:22px}
+#mtPlay[aria-pressed="true"]{background:var(--red);color:#fff}
 
-.panel{margin-top:14px;padding:14px;border-radius:16px;background:var(--surface);border:1px solid var(--line)}
-.panel-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
-.panel-h h3{margin:0;font:700 17px/1 var(--display)}
-.panel-h .val{font:700 15px/1 var(--mono);color:var(--brass-ink)}
-.reset{border:0;background:none;padding:6px 2px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
-.stepper{display:grid;grid-template-columns:56px 1fr 56px;align-items:center;gap:10px}
-.step{height:52px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2);font:700 22px/1 var(--mono)}
-.step:active{background:var(--brass-soft)}
-.readout{text-align:center}
-.readout b{display:block;font:800 30px/1 var(--display)}
-.readout span{font-size:13px;color:var(--muted)}
-input[type=range]{width:100%;accent-color:var(--brass);height:32px}
-.ticks{display:flex;justify-content:space-between;font:500 11px/1 var(--mono);color:var(--muted);padding:0 2px}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.chip{min-height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);font:600 13px/1 var(--mono)}
-.chip[aria-pressed="true"]{background:var(--brass);border-color:var(--brass);color:var(--on-brass)}
-.m-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 10px;margin-top:12px;font-size:14px;font-weight:600;color:var(--muted)}
-.m-row .chips{margin:0}
-.m-note{margin:10px 0 0;font-size:13px;color:var(--muted)}
-.beat{width:12px;height:12px;border-radius:50%;background:currentColor;opacity:.25;transition:opacity .05s}
-.beat.on{opacity:1}
-.sync{display:flex;align-items:center;gap:8px}
-.sync button{width:40px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);font:700 15px/1 var(--mono)}
-.sync b{min-width:64px;text-align:center;font:700 14px/1 var(--mono);color:var(--ink)}
-
-.loop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.loop-grid>*{min-width:0}
-.mark .row button{width:36px;flex:none}
-.mark{display:grid;gap:6px;padding:10px;border-radius:14px;border:1px solid var(--line);background:var(--surface-2)}
-.mark button.set{min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:700}
-.mark .row{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.mark .row button{width:40px;height:34px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font:700 14px/1 var(--mono)}
-.mark .t{font:700 15px/1 var(--mono)}
-.loop-actions{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:10px}
-.toggle{min-height:48px;border-radius:12px;border:1.5px solid var(--brass);background:transparent;color:var(--brass-ink);font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
-.toggle[aria-pressed="true"]{background:var(--brass);color:var(--on-brass)}
-.toggle svg{width:20px;height:20px}
-.ghost{min-height:48px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:transparent;font-weight:600}
-.err{margin-top:12px;padding:12px 14px;border-radius:12px;background:var(--brass-soft);color:var(--ink);font-size:14px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -201,69 +251,103 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
 <div id="app">
   <!-- HOME -->
   <section id="home">
-    <header class="masthead">
-      <img src="brasao.png" alt="Brasão da Banda de Música Maestro ST Morais, Polícia Militar da Bahia" width="96" height="96">
-      <div>
-        <span class="eyebrow">Polícia Militar da Bahia</span>
-        <h1>Banda de Música Maestro ST Morais</h1>
-        <p>Repertório de estudo: escolha a categoria, ajuste o andamento e repita o trecho que quiser.</p>
-      </div>
+    <header class="nav nav-home">
+      <img src="brasao.png" alt="Brasão da Banda de Música Maestro ST Morais, Polícia Militar da Bahia" width="34" height="34">
+      <div><b>Banda de Música Maestro ST Morais</b><span>Polícia Militar da Bahia</span></div>
     </header>
+    <div class="large-title"><h1>Repertório</h1><p id="homeSub">Escolha uma categoria para estudar.</p></div>
     <div class="cats" id="cats"></div>
-    <button class="tuner-btn" id="openTuner">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2v8a3 3 0 0 0 6 0V2M12 13v9M9 22h6"/></svg>
-      <span><b>Afinador</b><small>Cromático · para Si♭, Mi♭, Fá e Dó</small></span>
-      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 5l7 7-7 7"/></svg>
-    </button>
+    <div class="group tools">
+      <button class="row" id="openTuner" style="--cc:var(--brand)">
+        <span class="row-ic"><span class="ms" aria-hidden="true">tune</span></span>
+        <span class="row-main"><span class="row-t">Afinador</span><span class="row-s">Cromático · para Si♭, Mi♭, Fá e Dó</span></span>
+        <span class="ms chev" aria-hidden="true">chevron_right</span>
+      </button>
+      <button class="row" id="openMetro" style="--cc:#C89418">
+        <span class="row-ic"><span class="ms" aria-hidden="true">timer</span></span>
+        <span class="row-main"><span class="row-t">Metrônomo</span><span class="row-s">BPM, compasso e toque no ritmo</span></span>
+        <span class="ms chev" aria-hidden="true">chevron_right</span>
+      </button>
+    </div>
     <div class="cats cats-solo" id="catsToques"></div>
   </section>
 
   <!-- AFINADOR -->
   <section id="tuner" hidden>
-    <div class="bar"><button class="back" id="backTuner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>Início</button></div>
-    <div class="p-title"><span class="eyebrow">Ferramenta</span><h2>Afinador</h2></div>
-    <div class="stage tn-stage" id="tnStage">
+    <nav class="nav"><button class="back" id="backTuner"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Início</button><span class="nav-title">Afinador</span><span></span></nav>
+    <div class="large-title"><h2>Afinador</h2><p>Toque uma nota longa perto do celular.</p></div>
+    <div class="tn-stage" id="tnStage">
       <div class="tn-gauge"><svg viewBox="0 0 300 165" id="gauge" aria-hidden="true"></svg></div>
       <div class="tn-note" id="tnNote" aria-live="polite">—</div>
       <div class="tn-sub" id="tnSub">Ligue o microfone e toque uma nota longa</div>
       <div class="tn-state" id="tnState"></div>
     </div>
-    <button class="toggle" id="micBtn" aria-pressed="false" style="width:100%;margin-top:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><span id="micLabel">Ligar microfone</span></button>
+    <button class="primary" id="micBtn" aria-pressed="false"><span class="ms" aria-hidden="true">mic</span><span id="micLabel">Ligar microfone</span></button>
     <div class="err" id="tnErr" hidden></div>
     <div class="panel">
       <div class="panel-h"><h3>Meu instrumento</h3></div>
-      <div class="chips" id="trChips" style="margin-top:0"></div>
+      <div class="box"><div class="chips" id="trChips" style="margin-top:0"></div></div>
       <p class="m-note" id="trNote"></p>
     </div>
     <div class="panel">
       <div class="panel-h"><h3>Referência do Lá</h3><button class="reset" id="a4Reset">440 Hz</button></div>
-      <div class="stepper">
+      <div class="box"><div class="stepper">
         <button class="step" id="a4Down" aria-label="Diminuir 1 Hz">−</button>
         <div class="readout"><b id="a4Val">440</b><span>Hz</span></div>
         <button class="step" id="a4Up" aria-label="Aumentar 1 Hz">+</button>
-      </div>
+      </div></div>
     </div>
     <div class="panel">
       <div class="panel-h"><h3>Nota de referência</h3></div>
-      <div class="chips" id="refChips" style="margin-top:0"></div>
+      <div class="box"><div class="chips" id="refChips" style="margin-top:0"></div></div>
       <p class="m-note">Toca a nota (som real, de concerto) para afinar de ouvido. Toque de novo para parar.</p>
+    </div>
+  </section>
+
+  <!-- METRÔNOMO -->
+  <section id="metro" hidden>
+    <nav class="nav"><button class="back" id="backMetro"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Início</button><span class="nav-title">Metrônomo</span><span></span></nav>
+    <div class="large-title"><h2>Metrônomo</h2><p>Escolha o andamento e o compasso.</p></div>
+    <div class="mt-stage">
+      <div class="mt-dots" id="mtDots" aria-hidden="true"></div>
+      <div class="mt-bpm">
+        <button class="step" id="mtDown" aria-label="Diminuir BPM">−</button>
+        <div><b id="mtBpm" aria-live="polite">100</b><span>BPM</span></div>
+        <button class="step" id="mtUp" aria-label="Aumentar BPM">+</button>
+      </div>
+      <div class="mt-name" id="mtName"></div>
+    </div>
+    <button class="primary" id="mtPlay" aria-pressed="false"><span class="ms" id="mtIc" aria-hidden="true">play_arrow</span><span id="mtLabel">Iniciar</span></button>
+    <button class="ghost wide" id="mtTap"><span class="ms" aria-hidden="true">touch_app</span><span id="mtTapLabel">Toque aqui no ritmo para medir o BPM</span></button>
+    <div class="panel">
+      <div class="panel-h"><h3>Andamentos</h3></div>
+      <div class="box"><div class="chips" id="mtPresets" style="margin-top:0"></div></div>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Compasso</h3></div>
+      <div class="box"><div class="chips" id="mtMeters" style="margin-top:0"></div></div>
+      <p class="m-note">O primeiro tempo de cada compasso soa mais forte.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-h"><h3>Volume</h3></div>
+      <div class="box"><div class="chips" id="mtVols" style="margin-top:0"></div></div>
     </div>
   </section>
 
   <!-- LIST -->
   <section id="list" hidden>
-    <div class="bar"><button class="back" id="backHome"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>Categorias</button></div>
-    <div class="list-head"><span class="eyebrow" id="listCount"></span><h2 id="listTitle"></h2></div>
-    <p class="offline" id="offMsg" hidden>Sem internet: só as músicas salvas no celular (✓) podem tocar.</p>
+    <nav class="nav"><button class="back" id="backHome"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Repertório</button><span class="nav-title" id="navListTitle"></span><span></span></nav>
+    <div class="list-head"><h2 id="listTitle"></h2><span class="eyebrow" id="listCount"></span></div>
+    <div class="search-wrap" id="searchWrap"><span class="ms" aria-hidden="true">search</span><input class="search" id="search" type="search" placeholder="Buscar música ou artista" autocomplete="off" aria-label="Buscar música ou artista"></div>
+    <p class="offline" id="offMsg" hidden>Sem internet: só as músicas salvas no celular podem tocar.</p>
     <button class="dl" id="dlAll" hidden></button>
-    <input class="search" id="search" type="search" placeholder="Buscar música ou artista…" autocomplete="off">
     <div id="songsBox"></div>
   </section>
 
   <!-- PLAYER -->
   <section id="player" hidden>
-    <div class="bar"><button class="back" id="backList"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg><span id="backLabel">Voltar</span></button></div>
-    <div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2><p class="p-sub" id="pSub" hidden></p></div>
+    <nav class="nav"><button class="back" id="backList"><span class="ms" aria-hidden="true">arrow_back_ios_new</span><span id="backLabel">Voltar</span></button><span class="nav-title">Tocando agora</span><span></span></nav>
+    <div class="np"><div class="art" id="pArt" aria-hidden="true"></div><div class="p-title"><span class="eyebrow" id="pCat"></span><h2 id="pTitle"></h2><p class="p-sub" id="pSub" hidden></p></div></div>
 
     <div class="stage">
       <div class="wave-wrap" id="waveWrap" aria-label="Posição na música: toque ou arraste para ir a qualquer ponto" role="slider" tabindex="0" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -274,62 +358,84 @@ input[type=range]{width:100%;accent-color:var(--brass);height:32px}
     </div>
 
     <div class="transport">
-      <button class="round" id="back5" aria-label="Voltar 5 segundos"><span>−5s</span></button>
-      <button class="round play" id="playBtn" aria-label="Tocar"><svg id="icPlay" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg><svg id="icPause" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z"/></svg></button>
-      <button class="round" id="fwd5" aria-label="Avançar 5 segundos"><span>+5s</span></button>
+      <button class="round" id="back5" aria-label="Voltar 5 segundos"><span class="ms" aria-hidden="true">replay_5</span></button>
+      <button class="round play" id="playBtn" aria-label="Tocar"><span class="ms" id="icPlay" aria-hidden="true">play_arrow</span><span class="ms" id="icPause" aria-hidden="true" hidden>pause</span></button>
+      <button class="round" id="fwd5" aria-label="Avançar 5 segundos"><span class="ms" aria-hidden="true">forward_5</span></button>
     </div>
     <div class="err" id="err" hidden></div>
 
     <div class="panel">
+      <div class="panel-h"><h3>Andamento</h3><button class="reset" id="tempoReset">Original</button></div>
+      <div class="box">
+        <div class="stepper">
+          <button class="step" id="tempoDown" aria-label="Mais lento 5%">−</button>
+          <div class="readout"><b id="tempoVal">100%</b><span id="tempoTxt">velocidade original</span></div>
+          <button class="step" id="tempoUp" aria-label="Mais rápido 5%">+</button>
+        </div>
+        <div class="chips" id="tempoChips"></div>
+      </div>
+    </div>
+
+    <div class="panel">
       <div class="panel-h"><h3>Trecho em loop</h3><button class="reset" id="loopClear">Limpar</button></div>
-      <div class="loop-grid">
-        <div class="mark">
-          <button class="set" id="setA">Marcar início (A)</button>
-          <div class="row"><button id="aMinus" aria-label="Início meio segundo antes">‹</button><span class="t" id="tA">—</span><button id="aPlus" aria-label="Início meio segundo depois">›</button></div>
-        </div>
-        <div class="mark">
-          <button class="set" id="setB">Marcar fim (B)</button>
-          <div class="row"><button id="bMinus" aria-label="Fim meio segundo antes">‹</button><span class="t" id="tB">—</span><button id="bPlus" aria-label="Fim meio segundo depois">›</button></div>
-        </div>
+      <div class="box" style="padding:0">
+        <button class="row" id="loopBtn" aria-pressed="false" style="--cc:#16A34A">
+          <span class="row-ic"><span class="ms" aria-hidden="true">repeat</span></span>
+          <span class="row-main"><span class="row-t" id="loopLabel">Repetir trecho</span><span class="row-s">Marque o início (A) e o fim (B)</span></span>
+          <span class="sw" aria-hidden="true"></span>
+        </button>
       </div>
-      <div class="loop-actions">
-        <button class="toggle" id="loopBtn" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg><span id="loopLabel">Repetir trecho</span></button>
-        <button class="ghost" id="toA">Ir ao A</button>
+      <div class="box">
+        <div class="loop-grid" style="margin-top:0">
+          <div class="mark">
+            <button class="set" id="setA">Marcar início (A)</button>
+            <div class="row2"><button id="aMinus" aria-label="Início meio segundo antes">‹</button><span class="t" id="tA">—</span><button id="aPlus" aria-label="Início meio segundo depois">›</button></div>
+          </div>
+          <div class="mark">
+            <button class="set" id="setB">Marcar fim (B)</button>
+            <div class="row2"><button id="bMinus" aria-label="Fim meio segundo antes">‹</button><span class="t" id="tB">—</span><button id="bPlus" aria-label="Fim meio segundo depois">›</button></div>
+          </div>
+        </div>
+        <div class="loop-actions"><button class="ghost" id="toA">Ir ao início do trecho</button></div>
       </div>
     </div>
 
-    <div class="panel">
-      <div class="panel-h"><h3>Andamento</h3><button class="reset" id="tempoReset">100%</button></div>
-      <div class="stepper">
-        <button class="step" id="tempoDown" aria-label="Mais lento 5%">−</button>
-        <div class="readout"><b id="tempoVal">100%</b><span id="tempoTxt">velocidade original</span></div>
-        <button class="step" id="tempoUp" aria-label="Mais rápido 5%">+</button>
-      </div>
-      <div class="chips" id="tempoChips"></div>
-    </div>
-
-    <div class="panel">
+    <div class="panel" hidden>
       <div class="panel-h"><h3>Metrônomo</h3><span class="val" id="bpmVal">— BPM</span></div>
-      <button class="toggle" id="metroBtn" aria-pressed="false" style="width:100%"><span class="beat" id="beatDot"></span><span id="metroLabel">Ligar metrônomo</span></button>
-      <p class="m-note" id="metroStatus">Detectando o andamento…</p>
-      <div class="m-row"><span>Volume do clique</span><div class="chips" id="volChips"></div></div>
-      <div class="m-row"><span>Pulsação</span><div class="chips" id="multChips"></div></div>
-      <div class="m-row"><span>Sincronia</span><div class="sync"><button id="offMinus" aria-label="Clique mais cedo">‹</button><b id="offVal">0 ms</b><button id="offPlus" aria-label="Clique mais tarde">›</button></div></div>
+      <div class="box" style="padding:0">
+        <button class="row" id="metroBtn" aria-pressed="false" style="--cc:#C89418">
+          <span class="row-ic"><span class="beat" id="beatDot"></span></span>
+          <span class="row-main"><span class="row-t" id="metroLabel">Ligar metrônomo</span><span class="row-s" id="metroStatus">Detectando o andamento…</span></span>
+          <span class="sw" aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="box">
+        <div class="m-row" style="margin-top:0;padding-top:0;border-top:0"><span>Volume do clique</span><div class="chips" id="volChips"></div></div>
+        <div class="m-row"><span>Pulsação</span><div class="chips" id="multChips"></div></div>
+        <div class="m-row"><span>Sincronia</span><div class="sync"><button id="offMinus" aria-label="Clique mais cedo">‹</button><b id="offVal">0 ms</b><button id="offPlus" aria-label="Clique mais tarde">›</button></div></div>
+      </div>
     </div>
   </section>
 </div>
+
+<nav class="tabbar" id="tabbar" aria-label="Navegação">
+  <button id="tabRep" aria-current="page"><span class="ms" aria-hidden="true">library_music</span>Repertório</button>
+  <button id="tabTun"><span class="ms" aria-hidden="true">tune</span>Afinador</button>
+  <button id="tabMet"><span class="ms" aria-hidden="true">timer</span>Metrônomo</button>
+</nav>
 
 <script type="module">
 let ST = null;
 try { ST = await import("https://cdn.jsdelivr.net/npm/soundtouchjs@0.3.0/dist/soundtouch.js"); } catch (e) { console.error(e); }
 
 const $ = id => document.getElementById(id);
+const ICON = n => `<span class="ms" aria-hidden="true">${n}</span>`;
 const CAT_INFO = {
-  dobrados:  { name: "Dobrados",  folder: "Dobrados", desc: "Marchas de banda", clef: "𝄞" },
-  populares: { name: "Populares", folder: "Populares", desc: "MPB e música popular", clef: "♫︎" },
-  cancoes:   { name: "Canções",   folder: "Cancoes", desc: "Canções e melodias", clef: "♪︎" },
-  hinos:     { name: "Hinos",     folder: "Hinos", desc: "Hinos e louvores", clef: "𝄐" },
-  toques:    { name: "Toques de Corneta", folder: "Toques", desc: "Toques regulamentares de clarim e corneta", clef: "𝄆" },
+  dobrados:  { name: "Dobrados",  folder: "Dobrados", desc: "Marchas de banda", icon: ICON("military_tech") },
+  populares: { name: "Populares", folder: "Populares", desc: "MPB e música popular", icon: ICON("music_note") },
+  cancoes:   { name: "Canções",   folder: "Cancoes", desc: "Canções e melodias", icon: ICON("mic") },
+  hinos:     { name: "Hinos",     folder: "Hinos", desc: "Hinos e louvores", icon: ICON("auto_stories") },
+  toques:    { name: "Toques de Corneta", folder: "Toques", desc: "Toques regulamentares de clarim e corneta", icon: ICON("campaign") },
 };
 const ORDER = ["dobrados", "populares", "cancoes", "hinos", "toques"];
 // As músicas vêm de biblioteca.json, mantida pelo painel (admin.html).
@@ -424,18 +530,29 @@ const fmt = (s, dec) => {
   const m = Math.floor(s / 60), r = s - m * 60;
   return dec ? `${m}:${r.toFixed(1).padStart(4, "0")}` : `${m}:${String(Math.floor(r)).padStart(2, "0")}`;
 };
-function show(id) { for (const s of ["home", "list", "player", "tuner"]) $(s).hidden = s !== id; window.scrollTo(0, 0); }
+addEventListener("scroll", () => document.body.classList.toggle("scrolled", scrollY > 24), { passive: true });
+function show(id) {
+  for (const s of ["home", "list", "player", "tuner", "metro"]) $(s).hidden = s !== id;
+  $("tabbar").hidden = !(id === "home" || id === "tuner" || id === "metro");
+  for (const [tab, view] of [["tabRep", "home"], ["tabTun", "tuner"], ["tabMet", "metro"]]) {
+    if (id === view) $(tab).setAttribute("aria-current", "page"); else $(tab).removeAttribute("aria-current");
+  }
+  if (id !== "metro" && typeof mtStop === "function" && mtOn) mtStop();
+  window.scrollTo(0, 0);
+}
 
 /* ---------- Home ---------- */
 function renderHome() {
   $("cats").innerHTML = ""; $("catsToques").innerHTML = "";
+  const total = new Set(LIB.songs.map(s => s.id)).size;
+  if (total) $("homeSub").textContent = `${total} ${total === 1 ? "música" : "músicas"} para estudar`;
   for (const id of ORDER) {
     const info = CAT_INFO[id], n = LIB.songs.filter(s => s.cat === id).length;
     const b = document.createElement("button");
-    b.className = "cat"; b.style.setProperty("--cc", `var(--c-${id})`);
-    b.innerHTML = `<span class="staff"></span><span class="clef" aria-hidden="true">${info.clef}</span>
+    b.className = "cat"; b.style.setProperty("--cc", `var(--c-${id})`); b.style.setProperty("--cc2", `var(--c2-${id})`);
+    b.innerHTML = `<span class="ghost-ic" aria-hidden="true">${info.icon}</span><span class="ic" aria-hidden="true">${info.icon}</span>
       <span><span class="name">${info.name}</span><span class="desc">${info.desc}</span></span>
-      <span class="count"><b>${n}</b><span>${n === 1 ? "música" : "músicas"}</span></span>`;
+      <span class="count">${n} ${n === 1 ? "música" : "músicas"}</span>`;
     b.onclick = () => openList(id);
     $(id === "toques" ? "catsToques" : "cats").append(b); // toques ficam abaixo do afinador
   }
@@ -445,7 +562,8 @@ function renderHome() {
 let curCat = null;
 function openList(id) {
   curCat = id; $("search").value = "";
-  $("listTitle").textContent = CAT_INFO[id].name;
+  $("listTitle").textContent = CAT_INFO[id].name; $("navListTitle").textContent = CAT_INFO[id].name;
+  $("list").style.setProperty("--cc", `var(--c-${id})`);
   renderList(); show("list");
 }
 function renderList() {
@@ -453,7 +571,7 @@ function renderList() {
   const all = LIB.songs.filter(s => s.cat === curCat);
   const songs = all.filter(s => !q || [s.title, s.artist, s.album].join(" ").toLowerCase().includes(q));
   $("listCount").textContent = `${all.length} ${all.length === 1 ? "música" : "músicas"}`;
-  $("search").hidden = all.length < 7;
+  $("searchWrap").hidden = all.length < 7;
   const online = navigator.onLine !== false;
   $("offMsg").hidden = online;
   const missing = [...new Map(all.filter(s => !saved.has(absUrl(s))).map(s => [s.file, s])).values()];
@@ -462,8 +580,8 @@ function renderList() {
   if (!downloading) {
     $("dlAll").disabled = !missing.length;
     $("dlAll").innerHTML = missing.length
-      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Baixar ${missing.length === all.length ? "todas" : "as " + missing.length + " que faltam"} para ouvir sem internet${mbTotal ? ` (${mbTotal} MB)` : ""}`
-      : "✓ Todas salvas no celular";
+      ? `<span class="ms" aria-hidden="true">download</span>Baixar ${missing.length === all.length ? "todas" : "as " + missing.length + " que faltam"} para ouvir sem internet${mbTotal ? ` (${mbTotal} MB)` : ""}`
+      : `<span class="ms" aria-hidden="true">check_circle</span>Todas salvas no celular`;
   }
   const box = $("songsBox"); box.innerHTML = "";
   if (!all.length) {
@@ -476,7 +594,7 @@ function renderList() {
     const li = document.createElement("li");
     const b = document.createElement("button"); const has = saved.has(absUrl(s));
     b.className = "song" + (!has && navigator.onLine === false ? " off" : "");
-    b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span><span class="t"></span><span class="a"></span></span><span class="d">${s.dur ? fmt(s.dur) : ""}${has ? '<span class="ok">✓ no celular</span>' : ""}</span>`;
+    b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span><span><span class="t"></span><span class="a"></span></span><span class="d">${s.dur ? fmt(s.dur) : ""}${has ? '<span class="ok"><span class="ms" aria-hidden="true">check_circle</span>no celular</span>' : ""}</span>`;
     b.querySelector(".t").textContent = s.title;
     b.querySelector(".a").textContent = [s.artist, s.album].filter(Boolean).join(" · ");
     b.onclick = () => openSong(s);
@@ -577,7 +695,7 @@ async function detectBeats(channels, rate, yieldFn = () => Promise.resolve()) {
 }
 
 let BEAT = { base: null, bpm: 0 }, beatsCur = [], clicks = [];
-const M = Object.assign({ on: false, vol: 0.5 }, store.get("metro") || {});
+const M = Object.assign({ vol: 0.5 }, store.get("metro") || {}, { on: false }); // metrônomo das músicas desativado (agora há uma tela própria)
 function buildBeats() {
   const b = BEAT.base || [];
   if (S.mult === 2) { beatsCur = []; for (let i = 0; i < b.length; i++) { beatsCur.push(b[i]); if (i + 1 < b.length) beatsCur.push((b[i] + b[i + 1]) / 2); } }
@@ -589,6 +707,9 @@ let CLICK = null;
 // Som de cowbell (estilo Roland 808): duas ondas quadradas de 540 e 800 Hz, filtro passa-faixa e decaimento curto.
 function clickSound() {
   if (CLICK && CLICK.sr === sr) return CLICK.data;
+  CLICK = { sr, data: cowbell(sr) }; return CLICK.data;
+}
+function cowbell(sr) {
   const n = Math.round(sr * 0.22), d = new Float32Array(n);
   const w0 = 2 * Math.PI * 2640 / sr, q = 1.2, al = Math.sin(w0) / (2 * q), a0 = 1 + al;
   const b0 = al / a0, b2 = -al / a0, a1 = -2 * Math.cos(w0) / a0, a2 = (1 - al) / a0;
@@ -602,7 +723,7 @@ function clickSound() {
     d[i] = y * env; peak = Math.max(peak, Math.abs(d[i]));
   }
   for (let i = 0; i < n; i++) d[i] *= 0.95 / (peak || 1);
-  CLICK = { sr, data: d }; return d;
+  return d;
 }
 // Relógio da saída: qual ponto da gravação cada amostra produzida representa (medido com o SoundTouch).
 // Cada salto do loop abre um novo trecho linear; um reposicionamento recomeça a lista.
@@ -797,13 +918,14 @@ function computePeaks(buf) {
   if (max > 0) for (let i = 0; i < N; i++) p[i] /= max;
   return p;
 }
-async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) {
+async function loadSong({ key, title, sub = "", cat = "", catLabel, backLabel, getData }) {
   const token = ++loadToken;
   playing = false; syncPlayBtn(); filter = null; st = null; buffer = null; peaks = null; // libera a memória da música anterior
   if (player) { player.send({ t: "p", v: false }); player.send({ t: "f" }); }
   BEAT = { base: null, bpm: 0 }; beatsCur = []; clicks = [];
   songKey = key;
   Object.assign(S, { tempo: 100, A: null, B: null, loop: false, mult: 1, metroOff: 0 }, store.get(key) || {}, { semi: 0 });
+  $("pArt").innerHTML = CAT_INFO[cat]?.icon || ""; $("player").style.setProperty("--cc", cat ? `var(--c-${cat})` : "var(--brand)"); $("player").style.setProperty("--cc2", cat ? `var(--c2-${cat})` : "var(--brand-2)");
   $("pTitle").textContent = title; $("pSub").textContent = sub; $("pSub").hidden = !sub; $("pCat").textContent = catLabel; $("backLabel").textContent = backLabel;
   $("err").hidden = true; $("loading").hidden = false; $("loadMsg").textContent = "Carregando música…"; $("loadBar").style.width = "0";
   $("tNow").textContent = "0:00"; $("tDur").textContent = "0:00";
@@ -828,8 +950,9 @@ async function loadSong({ key, title, sub = "", catLabel, backLabel, getData }) 
     };
     anchor(0); applyFx(); floorIdx = playedIdx = outCount; producedEnd = false;
     peaks = computePeaks(buf);
-    const cachedBeats = store.get("beats:" + key);
-    if (cachedBeats && cachedBeats.v === 1) { BEAT = { base: cachedBeats.b.map(x => x / 1000), bpm: cachedBeats.bpm }; buildBeats(); }
+    const cachedBeats = store.get("beats:" + key), SONG_METRO = false; // análise de BPM desligada junto com o metrônomo das músicas
+    if (!SONG_METRO) { BEAT = { base: [], bpm: 0 }; }
+    else if (cachedBeats && cachedBeats.v === 1) { BEAT = { base: cachedBeats.b.map(x => x / 1000), bpm: cachedBeats.bpm }; buildBeats(); }
     else setTimeout(async () => {
       try {
         const chans = []; for (let c = 0; c < buf.numberOfChannels; c++) chans.push(buf.getChannelData(c));
@@ -855,7 +978,7 @@ function fail(msg) { $("loading").hidden = true; $("err").textContent = msg; $("
 
 function openSong(s) {
   loadSong({
-    key: "song:" + s.id, title: s.title, sub: [s.artist, s.album].filter(Boolean).join(" · "), catLabel: CAT_INFO[s.cat]?.name || "", backLabel: CAT_INFO[s.cat]?.name || "Voltar",
+    key: "song:" + s.id, cat: s.cat, title: s.title, sub: [s.artist, s.album].filter(Boolean).join(" · "), catLabel: CAT_INFO[s.cat]?.name || "", backLabel: CAT_INFO[s.cat]?.name || "Voltar",
     getData: async token => {
       const local = await savedBytes(s); // já está no celular: toca sem internet
       if (local) { $("loadBar").style.width = "100%"; return local; }
@@ -1157,6 +1280,102 @@ $("a4Reset").onclick = () => setA4(440);
 $("micBtn").onclick = () => mic ? stopMic() : startMic();
 $("openTuner").onclick = () => { setPlaying(false); show("tuner"); renderTuner(); if (!mic) startMic(); };
 $("backTuner").onclick = () => { stopMic(); stopRef(); renderTuner(); renderHome(); show("home"); };
+$("tabTun").onclick = () => { if ($("tuner").hidden) $("openTuner").click(); };
+$("tabRep").onclick = () => { if ($("home").hidden) $("backTuner").click(); };
+
+/* ---------- Metrônomo (tela própria) ----------
+   Agenda cada batida com antecedência no relógio do áudio (precisão de amostra, não depende da tela). */
+const MT = Object.assign({ bpm: 100, beats: 2, vol: 0.7 }, store.get("metronomo") || {});
+let mtOn = false, mtNext = 0, mtBeat = 0, mtTimer = null, mtQueue = [], mtBufs = null, mtLock = null, taps = [];
+const mtSave = () => store.set("metronomo", MT);
+const mtClamp = v => Math.max(30, Math.min(250, Math.round(v)));
+function mtTempoName(b) {
+  const n = b < 60 ? "Largo" : b < 66 ? "Larghetto" : b < 76 ? "Adagio" : b < 108 ? "Andante" : b < 120 ? "Moderato" : b < 168 ? "Allegro" : b < 200 ? "Presto" : "Prestíssimo";
+  return n + (b >= 108 && b <= 124 ? " · andamento de dobrado" : "");
+}
+function mtSounds() {
+  if (mtBufs && mtBufs.rate === ctx.sampleRate) return mtBufs;
+  const d = cowbell(ctx.sampleRate), b = ctx.createBuffer(1, d.length, ctx.sampleRate); b.copyToChannel(d, 0);
+  return (mtBufs = { rate: ctx.sampleRate, buf: b });
+}
+function mtSchedule() {
+  const snd = mtSounds();
+  while (mtNext < ctx.currentTime + 0.15) {
+    const pos = mtBeat % MT.beats, accent = pos === 0, mid = MT.beats === 6 && pos === 3;
+    const src = ctx.createBufferSource(), g = ctx.createGain();
+    src.buffer = snd.buf; src.playbackRate.value = accent ? 1.26 : mid ? 1.12 : 1;
+    g.gain.value = MT.vol * (accent ? 1 : mid ? 0.85 : 0.62);
+    src.connect(g).connect(ctx.destination); src.start(mtNext);
+    mtQueue.push({ t: mtNext, pos });
+    mtNext += 60 / MT.bpm; mtBeat++;
+  }
+}
+async function mtStart() {
+  await ensureCtx(); setPlaying(false); stopMic(); stopRef();
+  mtOn = true; mtBeat = 0; mtQueue = []; mtNext = ctx.currentTime + 0.08;
+  mtSchedule(); clearInterval(mtTimer); mtTimer = setInterval(mtSchedule, 25);
+  try { mtLock = await navigator.wakeLock?.request("screen"); } catch {}
+  renderMetroTool();
+}
+function mtStop() {
+  mtOn = false; clearInterval(mtTimer); mtTimer = null; mtQueue = [];
+  try { mtLock?.release(); } catch {} mtLock = null;
+  renderMetroTool();
+}
+function mtSetBpm(v) { MT.bpm = mtClamp(v); mtSave(); renderMetroTool(); }
+function renderMetroTool() {
+  $("mtBpm").textContent = MT.bpm; $("mtName").textContent = mtTempoName(MT.bpm);
+  $("mtPlay").setAttribute("aria-pressed", mtOn); $("mtIc").textContent = mtOn ? "stop" : "play_arrow"; $("mtLabel").textContent = mtOn ? "Parar" : "Iniciar";
+  if ($("mtDots").children.length !== MT.beats) $("mtDots").innerHTML = Array.from({ length: MT.beats }, (_, i) => `<i class="${i === 0 ? "acc" : ""}"></i>`).join("");
+  if (!mtOn) for (const d of $("mtDots").children) d.classList.remove("on");
+  for (const c of $("mtPresets").children) c.setAttribute("aria-pressed", +c.dataset.v === MT.bpm);
+  for (const c of $("mtMeters").children) c.setAttribute("aria-pressed", +c.dataset.v === MT.beats);
+  for (const c of $("mtVols").children) c.setAttribute("aria-pressed", +c.dataset.v === MT.vol);
+}
+// Bolinhas acendem no tempo certo (relógio do áudio, descontando a latência da saída).
+(function mtFrame() {
+  if (mtOn && !$("metro").hidden) {
+    const now = ctx.currentTime - (ctx.outputLatency || ctx.baseLatency || 0);
+    let cur = null; while (mtQueue.length && mtQueue[0].t <= now) cur = mtQueue.shift();
+    if (cur) [...$("mtDots").children].forEach((d, i) => d.classList.toggle("on", i === cur.pos));
+  }
+  requestAnimationFrame(mtFrame);
+})();
+for (const v of [60, 72, 80, 92, 100, 112, 120, 132, 144]) {
+  const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = v;
+  c.onclick = () => mtSetBpm(v); $("mtPresets").append(c);
+}
+for (const [v, label] of [[2, "2/4"], [3, "3/4"], [4, "4/4"], [6, "6/8"]]) {
+  const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = label;
+  c.onclick = () => { MT.beats = v; mtBeat = 0; mtSave(); renderMetroTool(); }; $("mtMeters").append(c);
+}
+for (const [v, label] of [[0.35, "Baixo"], [0.7, "Médio"], [1, "Alto"]]) {
+  const c = document.createElement("button"); c.className = "chip"; c.dataset.v = v; c.textContent = label;
+  c.onclick = () => { MT.vol = v; mtSave(); renderMetroTool(); }; $("mtVols").append(c);
+}
+// Segurar − ou + muda o BPM continuamente.
+for (const [id, d] of [["mtDown", -1], ["mtUp", 1]]) {
+  let t1 = null, t2 = null;
+  const stop = () => { clearTimeout(t1); clearInterval(t2); };
+  $(id).addEventListener("pointerdown", e => { e.preventDefault(); mtSetBpm(MT.bpm + d); t1 = setTimeout(() => { t2 = setInterval(() => mtSetBpm(MT.bpm + d), 70); }, 420); });
+  for (const ev of ["pointerup", "pointerleave", "pointercancel"]) $(id).addEventListener(ev, stop);
+  $(id).addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); mtSetBpm(MT.bpm + d); } });
+}
+$("mtTap").onclick = () => {
+  const t = performance.now();
+  if (taps.length && t - taps[taps.length - 1] > 2000) taps = [];
+  taps.push(t); if (taps.length > 6) taps.shift();
+  if (taps.length >= 2) {
+    const iv = (taps[taps.length - 1] - taps[0]) / (taps.length - 1);
+    mtSetBpm(60000 / iv); $("mtTapLabel").textContent = `Medido: ${MT.bpm} BPM · continue tocando para ajustar`;
+  } else $("mtTapLabel").textContent = "Continue tocando no ritmo…";
+};
+$("mtPlay").onclick = () => mtOn ? mtStop() : mtStart();
+function openMetroTool() { stopMic(); stopRef(); setPlaying(false); show("metro"); taps = []; $("mtTapLabel").textContent = "Toque aqui no ritmo para medir o BPM"; renderMetroTool(); }
+$("openMetro").onclick = openMetroTool;
+$("tabMet").onclick = () => { if ($("metro").hidden) openMetroTool(); };
+$("backMetro").onclick = () => { renderHome(); show("home"); };
+renderMetroTool();
 gaugeBuild(); tnSetNeedle(0);
 
 renderHome();
