@@ -59,6 +59,13 @@ code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:
 .tabs button[aria-selected="true"]{background:var(--brass);color:var(--on-brass)}
 
 .drop{display:grid;place-items:center;gap:4px;min-height:100px;padding:16px;border:1.5px dashed var(--line);border-radius:14px;text-align:center;cursor:pointer;font-weight:600}
+.drop.small{min-height:64px;padding:10px}
+.parts-ed{display:grid;gap:8px;padding:10px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
+.prow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center}
+.prow input{min-height:40px}
+.prow small{font:500 12px/1 var(--mono);color:var(--muted);white-space:nowrap}
+.prow .x{width:36px;height:36px}
+.prow.new input{border-color:var(--brass)}
 .drop.over{border-color:var(--brass);background:var(--brass-soft)}
 .drop small{font-weight:400;color:var(--muted)}
 .new{display:grid;gap:10px;padding:12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
@@ -173,7 +180,7 @@ const CATS = [["dobrados", "Dobrados"], ["populares", "Populares"], ["cancoes", 
 const CAT_NAME = Object.fromEntries(CATS);
 const MAX = 50 * 1048576;
 
-let token = "", lib = { songs: [] }, pending = [], editing = null, confirmDel = null, curCat = "dobrados", catDraft = null;
+let token = "", lib = { songs: [] }, pending = [], editing = null, confirmDel = null, curCat = "dobrados", catDraft = null, pdraft = null;
 
 const store = {
   get() { try { return localStorage.getItem("estante-token") || ""; } catch { return ""; } },
@@ -184,6 +191,17 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "
 const fmt = s => { if (!s) return ""; const m = Math.floor(s / 60); return m + ":" + String(Math.floor(s % 60)).padStart(2, "0"); };
 const mb = b => (b / 1048576).toFixed(1).replace(".", ",") + " MB";
 const slug = s => (s || "musica").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "musica";
+// "220 - Trombone 1.pdf" (música "220") → "Trombone 1"
+function guessPart(fname, title) {
+  let n = fname.replace(/\.[^.]+$/, "").replace(/_+/g, " ");
+  const N = x => x.normalize("NFC").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+  n = n.normalize("NFC");
+  const t = N(title || "").trim();
+  if (t) { const i = N(n).indexOf(t); if (i >= 0) n = n.slice(0, i) + n.slice(i + t.length); }
+  n = n.replace(/^\s*\d{1,2}\s*[-.)]\s+/, "").replace(/^[\s\-–—.,:]+|[\s\-–—.,:]+$/g, "").replace(/\s+/g, " ").trim();
+  if (!n) n = fname.replace(/\.[^.]+$/, "");
+  return n.split(" ").map((w, i) => /^(i{1,3}|iv|v)$/i.test(w) ? w.toUpperCase() : (i && /^(em|de|do|da|in)$/i.test(w)) ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+}
 function showMsg(el, text, bad) { el.textContent = text; el.className = "msg" + (bad ? " bad" : ""); el.hidden = !text; }
 
 /* ---------- GitHub ---------- */
@@ -391,10 +409,10 @@ function renderLib() {
   if (!songs.length) { box.innerHTML = `<div class="empty">${lib.songs.length ? "Nada encontrado." : "Nenhuma música ainda. Envie a primeira acima."}</div>`; return; }
   for (const s of songs) {
     const row = document.createElement("div"); row.className = "row";
-    row.innerHTML = `<div><div class="t">${esc(s.title)}</div><div class="s">${esc(sub(s) || "Sem artista")}${s.dur ? " · " + fmt(s.dur) : ""}</div>
+    row.innerHTML = `<div><div class="t">${esc(s.title)}</div><div class="s">${esc(sub(s) || "Sem artista")}${s.dur ? " · " + fmt(s.dur) : ""}${(s.parts || []).length ? " · " + s.parts.length + " partitura" + (s.parts.length > 1 ? "s" : "") : ""}</div>
       <div class="chips">${(s.cats || []).map(c => `<span class="chip" style="--cc:var(--c-${c})">${CAT_NAME[c] || c}</span>`).join("")}</div></div>
       <button class="btn-2" data-a="edit">${editing === s.id ? "Fechar" : "Editar"}</button>`;
-    row.querySelector('[data-a="edit"]').onclick = () => { editing = editing === s.id ? null : s.id; confirmDel = null; renderLib(); };
+    row.querySelector('[data-a="edit"]').onclick = () => { editing = editing === s.id ? null : s.id; confirmDel = null; pdraft = null; renderLib(); };
     if (editing === s.id) {
       const ed = document.createElement("div"); ed.className = "edit";
       ed.innerHTML = `<div class="grid3">
@@ -402,25 +420,71 @@ function renderLib() {
           <label class="f">Artista / compositor<input type="text" data-k="artist" value="${esc(s.artist)}"></label>
           <label class="f">Álbum<input type="text" data-k="album" value="${esc(s.album)}"></label></div>
         <div>${catPicker(s.cats || [], "ec")}</div>
+        <div class="parts-ed">
+          <p class="muted" style="margin:0">Partituras · 1 arquivo por instrumento (PDF ou foto)</p>
+          <div class="plist" style="display:grid;gap:6px"></div>
+          <label class="drop small" for="pf-${s.id}"><span>Adicionar partituras</span><small>O instrumento é lido do nome do arquivo · confira antes de salvar</small></label>
+          <input type="file" id="pf-${s.id}" accept=".pdf,image/*" multiple style="position:absolute;width:1px;height:1px;opacity:0">
+        </div>
         <div class="acts"><button class="btn" data-a="save">Salvar alterações</button>
           <button class="btn-2 danger" data-a="del">${confirmDel === s.id ? "Toque de novo para apagar de vez" : "Apagar música"}</button></div>
         <div class="msg bad" hidden></div>`;
       const err = ed.querySelector(".msg");
+      if (!pdraft || pdraft.id !== s.id) pdraft = { id: s.id, keep: (s.parts || []).map(p => ({ ...p })), add: [] };
+      const plist = ed.querySelector(".plist");
+      const drawParts = () => {
+        plist.innerHTML = "";
+        if (!pdraft.keep.length && !pdraft.add.length) plist.innerHTML = '<p class="muted" style="margin:0">Nenhuma partitura ainda.</p>';
+        const row = (item, isNew, i) => {
+          const r = document.createElement("div"); r.className = "prow" + (isNew ? " new" : "");
+          r.innerHTML = `<input type="text" aria-label="Instrumento" value="${esc(item.name)}"><small>${isNew ? "nova · " + mb(item.file.size) : (item.size ? mb(item.size) : "")}</small><button class="x" aria-label="Tirar">×</button>`;
+          r.querySelector("input").oninput = ev => { item.name = ev.target.value; };
+          r.querySelector(".x").onclick = () => { (isNew ? pdraft.add : pdraft.keep).splice(i, 1); drawParts(); };
+          plist.append(r);
+        };
+        pdraft.keep.forEach((p, i) => row(p, false, i));
+        pdraft.add.forEach((p, i) => row(p, true, i));
+      };
+      drawParts();
+      const pin = ed.querySelector(`#pf-${CSS.escape(s.id)}`);
+      pin.onchange = ev => {
+        for (const f of ev.target.files) {
+          if (!/\.(pdf|png|jpe?g|webp)$/i.test(f.name) || !f.size) continue;
+          pdraft.add.push({ file: f, name: guessPart(f.name, s.title) });
+        }
+        ev.target.value = ""; drawParts();
+      };
       ed.querySelector('[data-a="save"]').onclick = async e => {
         const next = { ...s };
         ed.querySelectorAll("input[data-k]").forEach(i => next[i.dataset.k] = i.value.trim());
         if (!next.title) next.title = s.title;
         next.cats = [...ed.querySelectorAll('input[name="ec"]:checked')].map(c => c.value);
         const idx = lib.songs.findIndex(x => x.id === s.id), prev = lib.songs[idx];
-        lib.songs[idx] = next; e.target.disabled = true; e.target.textContent = "Salvando…";
-        try { await commit({ message: `Edita "${next.title}"` }); editing = null; renderLib(); }
+        e.target.disabled = true; e.target.textContent = "Salvando…";
+        try {
+          const blobs = [], added = [];
+          for (let i = 0; i < pdraft.add.length; i++) {
+            const it = pdraft.add[i], ext = (it.file.name.match(/\.([^.]+)$/) || [, "pdf"])[1].toLowerCase();
+            e.target.textContent = `Enviando partitura ${i + 1} de ${pdraft.add.length}…`;
+            const sha = await blobUpload(await toBase64(it.file), () => {});
+            const path = `musicas/partituras/${s.id}/${slug(it.name)}-${Math.random().toString(36).slice(2, 6)}.${ext}`;
+            blobs.push({ path, sha }); added.push({ name: (it.name || "").trim() || "Parte", file: path, size: it.file.size });
+          }
+          const keep = pdraft.keep.map(p => ({ ...p, name: (p.name || "").trim() || "Parte" }));
+          const removed = (s.parts || []).filter(p => !keep.some(k => k.file === p.file)).map(p => p.file);
+          next.parts = [...keep, ...added];
+          lib.songs[idx] = next;
+          e.target.textContent = "Salvando…";
+          await commit({ blobs, deletes: removed, message: `Edita "${next.title}"` + (added.length ? ` (+${added.length} partitura${added.length > 1 ? "s" : ""})` : "") });
+          editing = null; pdraft = null; renderLib();
+        }
         catch (x) { lib.songs[idx] = prev; showMsg(err, x.message, true); e.target.disabled = false; e.target.textContent = "Salvar alterações"; }
       };
       ed.querySelector('[data-a="del"]').onclick = async e => {
         if (confirmDel !== s.id) { confirmDel = s.id; renderLib(); return; }
         const before = lib.songs.slice();
         lib.songs = lib.songs.filter(x => x.id !== s.id); e.target.disabled = true; e.target.textContent = "Apagando…";
-        try { await commit({ deletes: [s.file], message: `Remove "${s.title}"` }); editing = confirmDel = null; renderLib(); }
+        try { await commit({ deletes: [s.file, ...(s.parts || []).map(p => p.file)], message: `Remove "${s.title}"` }); editing = confirmDel = null; renderLib(); }
         catch (x) { lib.songs = before; showMsg(err, x.message, true); e.target.disabled = false; }
       };
       row.append(ed);
