@@ -61,7 +61,19 @@ code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:
 .drop{display:grid;place-items:center;gap:4px;min-height:100px;padding:16px;border:1.5px dashed var(--line);border-radius:14px;text-align:center;cursor:pointer;font-weight:600}
 .drop.small{min-height:64px;padding:10px}
 .parts-ed{display:grid;gap:8px;padding:10px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}
-.prow{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center}
+.prow{display:grid;grid-template-columns:1fr auto auto auto;gap:6px;align-items:center}
+.prow .sp{min-height:36px;padding:0 10px;border-radius:9px;border:1px solid var(--brass);background:var(--brass-soft);color:var(--brass);font-weight:700;font-size:13px}
+.split{display:grid;gap:10px;padding:10px;border-radius:12px;background:var(--surface);border:1.5px solid var(--brass)}
+.split h4{margin:0;font-size:15px}
+.sgrp{display:grid;gap:6px;padding:8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2)}
+.sgrp .th{height:96px;overflow:hidden;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:zoom-in}
+.sgrp .th.open{height:auto;cursor:zoom-out}
+.sgrp .th canvas{display:block;width:100%;height:auto}
+.sgrp .ctl{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.sgrp .ctl input[type=text]{grid-column:1/-1;min-height:42px}
+.sgrp .pg{display:flex;align-items:center;gap:4px;font:500 12px/1 var(--mono);color:var(--muted)}
+.sgrp .pg input{width:64px;min-height:40px;padding:0 6px;text-align:center}
+.sgrp.grade{border-color:var(--gold)}
 .prow input{min-height:40px}
 .prow small{font:500 12px/1 var(--mono);color:var(--muted);white-space:nowrap}
 .prow .x{width:36px;height:36px}
@@ -201,6 +213,94 @@ function guessPart(fname, title) {
   n = n.replace(/^\s*\d{1,2}\s*[-.)]\s+/, "").replace(/^[\s\-–—.,:]+|[\s\-–—.,:]+$/g, "").replace(/\s+/g, " ").trim();
   if (!n) n = fname.replace(/\.[^.]+$/, "");
   return n.split(" ").map((w, i) => /^(i{1,3}|iv|v)$/i.test(w) ? w.toUpperCase() : (i && /^(em|de|do|da|in)$/i.test(w)) ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+}
+// Vários arquivos "Smoking Snakes Trombone 1.pdf", "Smoking Snakes Tuba.pdf"… → tira o começo comum; o que sobra vazio é a grade
+function stripCommon(names) {
+  if (names.length < 2) return names;
+  const w = names.map(n => n.split(" "));
+  let k = 0;
+  while (w.every(x => x.length > k && x[k].toLowerCase() === w[0][k].toLowerCase())) k++;
+  if (!k || w.filter(x => x.length > k).length < 2) return names;
+  return w.map(x => x.slice(k).join(" ") || "Grade");
+}
+
+/* ---------- Separar PDF com todas as partes ---------- */
+const libP = {};
+const loadScript = (key, src, get) => libP[key] ||= new Promise((res, rej) => {
+  const sc = document.createElement("script"); sc.src = src;
+  sc.onload = () => res(get()); sc.onerror = () => { delete libP[key]; rej(new Error("Sem internet para abrir o PDF.")); };
+  document.head.append(sc);
+});
+const PDFJS = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/";
+const loadPdfjs = () => loadScript("pdfjs", PDFJS + "pdf.min.js", () => { pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS + "pdf.worker.min.js"; return pdfjsLib; });
+const loadPdfLib = () => loadScript("pdflib", "https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js", () => PDFLib);
+// Como o instrumento aparece escrito na parte (português ou inglês) → nome usado no app
+const INSTR = [
+  ["flautim|pic+ol+o", "Flautim"], ["flauta|flute", "Flauta"], ["obo[eé]", "Oboé"], ["fagote|bassoon", "Fagote"], ["requinta", "Requinta"],
+  ["clarone|bass clarinet", "Clarone"], ["clarinete|clarinet", "Clarinete"],
+  ["sax(?:ofone)?\\s*-?\\s*soprano|soprano sax", "Sax Soprano"], ["sax(?:ofone)?\\s*-?\\s*alto|alto sax", "Sax Alto"],
+  ["sax(?:ofone)?\\s*-?\\s*tenor|tenor sax", "Sax Tenor"], ["sax(?:ofone)?\\s*-?\\s*bar[ií]tono|baritone sax", "Sax Barítono"],
+  ["flugelhorn", "Flugelhorn"], ["trompete|trumpete?|piston|cornet", "Trompete"], ["trompa|horn", "Trompa"], ["trombone", "Trombone"],
+  ["bombardino|euf[oô]nio|euphonium|bar[ií]tono", "Bombardino"], ["tuba|sousafone|sousaphone", "Tuba"], ["contrabaixo|baixo", "Baixo"],
+  ["caixa|snare", "Caixa"], ["bumbo|bombo|bass drum", "Bumbo"], ["pratos?|cymbals?", "Pratos"], ["t[ií]mpanos?|timpani", "Tímpano"],
+  ["glockenspiel|lira", "Lira"], ["xilofone|xylophone", "Xilofone"], ["percuss[aã]o|percussion", "Percussão"], ["bateria|drum set", "Bateria"],
+];
+const TOM = { c: "Dó", do: "Dó", "dó": "Dó", bb: "Si♭", "b♭": "Si♭", sib: "Si♭", eb: "Mi♭", "e♭": "Mi♭", mib: "Mi♭", f: "Fá", fa: "Fá", "fá": "Fá", ab: "Lá♭", lab: "Lá♭", g: "Sol", sol: "Sol", d: "Ré", re: "Ré", "ré": "Ré", a: "Lá", la: "Lá", "lá": "Lá" };
+const INSTR_RE = INSTR.map(([k, name]) => [new RegExp(`(?:(\\d)\\s*[ºª°]?\\s*)?(?<![a-zà-ú])(?:${k})(?![a-zà-ú])(?:\\s*(\\d)(?!\\d))?(?:\\s*\\(?\\s*(?:in|em)?\\s*(c|bb|b♭|sib|si\\s?b|eb|e♭|mib|mi\\s?b|f|fa|fá|do|dó|ab|lab|g|sol)\\s*\\)?(?![a-zà-ú]))?(?:\\s*(\\d)(?!\\d))?`, "gi"), name]);
+function findInstr(text) {
+  const t = text.replace(/([a-zà-ú])([A-ZÀ-Ú])/g, "$1 $2").replace(/\b([A-Z]) (?=[a-z]{3})/g, "$1"); // "SantoFlauta" → "Santo Flauta"; "T rompa" → "Trompa"
+  const hits = [];
+  for (const [re, name] of INSTR_RE) {
+    re.lastIndex = 0; let m;
+    while ((m = re.exec(t))) {
+      if (hits.some(h => m.index < h.end && m.index + m[0].length > h.at)) continue;
+      const num = m[1] || m[2] || m[4] || "", tom = m[3] ? TOM[m[3].toLowerCase().replace(/\s/g, "")] || "" : "";
+      hits.push({ at: m.index, end: m.index + m[0].length, base: name, name: name + (num ? " " + num : "") + (tom ? ` (${tom})` : "") });
+    }
+  }
+  return hits.sort((a, b) => a.at - b.at);
+}
+/** Lê o texto de cada página e agrupa páginas seguidas do mesmo instrumento. Página com muitos instrumentos = grade. */
+async function splitAnalyze(bytes, onPage) {
+  const pdfjs = await loadPdfjs();
+  const doc = await pdfjs.getDocument({ data: new Uint8Array(bytes.slice(0)) }).promise;
+  const n = doc.numPages, groups = [];
+  const thumbAt = async i => {
+    const page = await doc.getPage(i), v0 = page.getViewport({ scale: 1 }), v = page.getViewport({ scale: 480 / v0.width });
+    const c = document.createElement("canvas"); c.width = v.width; c.height = v.height;
+    await page.render({ canvasContext: c.getContext("2d"), viewport: v }).promise;
+    return c;
+  };
+  for (let i = 1; i <= n; i++) {
+    onPage(i, n);
+    const page = await doc.getPage(i), tc = await page.getTextContent();
+    const text = tc.items.map(it => it.str).join(" ");
+    const hits = findInstr(text), kinds = new Set(hits.map(h => h.base));
+    const name = kinds.size >= 4 ? "Grade" : hits.length ? hits[0].name : !text.trim() ? "" : null;
+    const last = groups[groups.length - 1];
+    if (last && (name === null || (name && name === last.name))) { last.to = i; continue; }
+    groups.push({ name: name || "", from: i, to: i });
+  }
+  // nomes repetidos (ex.: duas "Tuba" sem tom escrito) ganham número
+  const seen = {};
+  groups.forEach(g => { if (!g.name) return; const k = g.name; seen[k] = (seen[k] || 0) + 1; if (seen[k] > 1) g.name = `${k} (${seen[k]})`; });
+  for (const g of groups) g.thumb = await thumbAt(g.from);
+  groups.pages = n; groups.thumbAt = thumbAt;
+  return groups;
+}
+/** Gera um PDF para cada grupo de páginas. */
+async function splitBuild(bytes, groups) {
+  const { PDFDocument } = await loadPdfLib();
+  const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
+  const out = [];
+  for (const g of groups) {
+    const doc = await PDFDocument.create();
+    const pages = await doc.copyPages(src, Array.from({ length: g.to - g.from + 1 }, (_, k) => g.from - 1 + k));
+    pages.forEach(p => doc.addPage(p));
+    const name = g.name.trim();
+    out.push({ name, file: new File([await doc.save()], slug(name) + ".pdf", { type: "application/pdf" }) });
+  }
+  return out;
 }
 function showMsg(el, text, bad) { el.textContent = text; el.className = "msg" + (bad ? " bad" : ""); el.hidden = !text; }
 
@@ -421,9 +521,10 @@ function renderLib() {
           <label class="f">Álbum<input type="text" data-k="album" value="${esc(s.album)}"></label></div>
         <div>${catPicker(s.cats || [], "ec")}</div>
         <div class="parts-ed">
-          <p class="muted" style="margin:0">Partituras · 1 arquivo por instrumento (PDF ou foto)</p>
+          <p class="muted" style="margin:0">Partituras · 1 arquivo por instrumento, ou o PDF completo com todas as partes (o painel separa)</p>
+          <div class="splitbox"></div>
           <div class="plist" style="display:grid;gap:6px"></div>
-          <label class="drop small" for="pf-${s.id}"><span>Adicionar partituras</span><small>O instrumento é lido do nome do arquivo · confira antes de salvar</small></label>
+          <label class="drop small" for="pf-${s.id}"><span>Adicionar partituras</span><small>O instrumento é lido do nome do arquivo ou de dentro do PDF · confira antes de salvar</small></label>
           <input type="file" id="pf-${s.id}" accept=".pdf,image/*" multiple style="position:absolute;width:1px;height:1px;opacity:0">
         </div>
         <div class="acts"><button class="btn" data-a="save">Salvar alterações</button>
@@ -437,22 +538,81 @@ function renderLib() {
         if (!pdraft.keep.length && !pdraft.add.length) plist.innerHTML = '<p class="muted" style="margin:0">Nenhuma partitura ainda.</p>';
         const row = (item, isNew, i) => {
           const r = document.createElement("div"); r.className = "prow" + (isNew ? " new" : "");
-          r.innerHTML = `<input type="text" aria-label="Instrumento" value="${esc(item.name)}"><small>${isNew ? "nova · " + mb(item.file.size) : (item.size ? mb(item.size) : "")}</small><button class="x" aria-label="Tirar">×</button>`;
+          const isPdf = /\.pdf$/i.test(isNew ? item.file.name : item.file);
+          r.innerHTML = `<input type="text" aria-label="Instrumento" value="${esc(item.name)}"><small>${isNew ? "nova · " + mb(item.file.size) : (item.size ? mb(item.size) : "")}</small>${isPdf ? '<button class="sp" title="Separar por instrumento">Separar</button>' : "<span></span>"}<button class="x" aria-label="Tirar">×</button>`;
           r.querySelector("input").oninput = ev => { item.name = ev.target.value; };
+          if (isPdf) r.querySelector(".sp").onclick = () => openSplit(item, isNew, false);
           r.querySelector(".x").onclick = () => { (isNew ? pdraft.add : pdraft.keep).splice(i, 1); drawParts(); };
           plist.append(r);
         };
         pdraft.keep.forEach((p, i) => row(p, false, i));
         pdraft.add.forEach((p, i) => row(p, true, i));
       };
+      const splitbox = ed.querySelector(".splitbox");
+      // PDF com todas as partes juntas → um PDF por instrumento (entra como partituras novas)
+      const openSplit = async (item, isNew, auto) => {
+        const box = document.createElement("div"); box.className = "split";
+        box.innerHTML = `<h4>Separando “${esc(item.name)}”</h4><p class="muted st" style="margin:0">Abrindo o PDF…</p>`;
+        splitbox.replaceChildren(box);
+        const st = box.querySelector(".st");
+        try {
+          const bytes = isNew ? await item.file.arrayBuffer() : await (async () => {
+            const r = await fetch(`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/${item.file.split("/").map(encodeURIComponent).join("/")}`, { cache: "no-store" });
+            if (!r.ok) throw new Error("Não foi possível baixar o PDF (" + r.status + ")");
+            return r.arrayBuffer();
+          })();
+          const groups = await splitAnalyze(bytes, (i, n) => st.textContent = `Lendo página ${i} de ${n}…`);
+          if (groups.length < 2) {
+            if (auto) { splitbox.replaceChildren(); return; }
+            st.textContent = "Não achei mais de um instrumento neste PDF. Se ele for escaneado, separe ajustando as páginas abaixo."; 
+          } else st.textContent = `Achei ${groups.length} partes. Confira o nome e as páginas de cada uma (toque na imagem para ver a página inteira).`;
+          const list = document.createElement("div"); list.style.cssText = "display:grid;gap:8px";
+          const n = groups.pages;
+          const draw = () => {
+            list.replaceChildren();
+            groups.forEach((g, gi) => {
+              const d = document.createElement("div"); d.className = "sgrp" + (g.name === "Grade" ? " grade" : "");
+              d.innerHTML = `<div class="th"></div><div class="ctl"><input type="text" aria-label="Instrumento" value="${esc(g.name)}" placeholder="Instrumento">
+                <span class="pg">pág.<input type="number" min="1" max="${n}" value="${g.from}" aria-label="Da página">–<input type="number" min="1" max="${n}" value="${g.to}" aria-label="Até a página"></span><button class="x" aria-label="Tirar">×</button></div>`;
+              d.querySelector(".th").append(g.thumb); d.querySelector(".th").onclick = e => e.currentTarget.classList.toggle("open");
+              const [nm, a, b] = d.querySelectorAll("input");
+              nm.oninput = () => g.name = nm.value; a.oninput = () => g.from = +a.value; b.oninput = () => g.to = +b.value;
+              a.onchange = () => groups.thumbAt(g.from).then(c => { g.thumb = c; draw(); });
+              d.querySelector(".x").onclick = () => { groups.splice(gi, 1); draw(); };
+              list.append(d);
+            });
+          };
+          draw();
+          const acts = document.createElement("div"); acts.className = "acts";
+          acts.innerHTML = `<button class="btn">Usar estas partes</button><button class="btn-2">Cancelar</button>`;
+          const msg = document.createElement("div"); msg.className = "msg bad"; msg.hidden = true;
+          box.append(list, acts, msg);
+          acts.lastChild.onclick = () => splitbox.replaceChildren();
+          acts.firstChild.onclick = async ev => {
+            const bad = groups.find(g => !g.name.trim() || !(g.from >= 1 && g.to <= n && g.from <= g.to));
+            if (bad) return showMsg(msg, bad.name.trim() ? `Páginas inválidas em “${bad.name}” (o PDF tem ${n}).` : "Falta o nome de uma das partes.", true);
+            if (!groups.length) return showMsg(msg, "Nenhuma parte para salvar.", true);
+            ev.target.disabled = true; ev.target.textContent = "Separando…";
+            try {
+              const files = await splitBuild(bytes, groups);
+              const from = isNew ? pdraft.add : pdraft.keep, k = from.indexOf(item);
+              if (k >= 0) from.splice(k, 1);
+              files.forEach(f => pdraft.add.push(f));
+              splitbox.replaceChildren(); drawParts();
+              showMsg(err, `${files.length} partes prontas. Toque em “Salvar alterações” para enviar.`, false);
+            } catch (x) { showMsg(msg, x.message || "Não foi possível separar o PDF.", true); ev.target.disabled = false; ev.target.textContent = "Usar estas partes"; }
+          };
+        } catch (x) { st.textContent = x.message || "Não foi possível ler o PDF."; st.style.color = "var(--bad)"; }
+      };
       drawParts();
       const pin = ed.querySelector(`#pf-${CSS.escape(s.id)}`);
       pin.onchange = ev => {
-        for (const f of ev.target.files) {
-          if (!/\.(pdf|png|jpe?g|webp)$/i.test(f.name) || !f.size) continue;
-          pdraft.add.push({ file: f, name: guessPart(f.name, s.title) });
-        }
+        const got = [...ev.target.files].filter(f => /\.(pdf|png|jpe?g|webp)$/i.test(f.name) && f.size);
+        const names = stripCommon(got.map(f => guessPart(f.name, s.title)));
+        got.forEach((f, i) => pdraft.add.push({ file: f, name: names[i] }));
         ev.target.value = ""; drawParts();
+        // Um PDF só: pode ser o arquivo com todas as partes
+        if (got.length === 1 && /\.pdf$/i.test(got[0].name)) openSplit(pdraft.add[pdraft.add.length - 1], true, true);
       };
       ed.querySelector('[data-a="save"]').onclick = async e => {
         const next = { ...s };
