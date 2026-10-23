@@ -64,7 +64,134 @@
    ],
    "dur": 240.4,
    "size": 9616195,
-   "added": "2026-09-23"
+   "added": "2026-09-23",
+   "parts": [
+    {
+     "name": "Smoking Snakes Bass Drum",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-bass-drum-tvji.pdf",
+     "size": 12031
+    },
+    {
+     "name": "Smoking Snakes Clarinete 1",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-clarinete-1-jqpn.pdf",
+     "size": 23845
+    },
+    {
+     "name": "Smoking Snakes Clarinete 2",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-clarinete-2-gi6n.pdf",
+     "size": 23490
+    },
+    {
+     "name": "Smoking Snakes Clarinete 3",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-clarinete-3-cxxg.pdf",
+     "size": 21322
+    },
+    {
+     "name": "Smoking Snakes Cymbals",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-cymbals-p3x5.pdf",
+     "size": 12441
+    },
+    {
+     "name": "Smoking Snakes Fagote",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-fagote-tli1.pdf",
+     "size": 16634
+    },
+    {
+     "name": "Smoking Snakes Flauta Picollo",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-flauta-picollo-26qx.pdf",
+     "size": 24451
+    },
+    {
+     "name": "Smoking Snakes Horn in F 1",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-horn-in-f-1-ptwd.pdf",
+     "size": 17441
+    },
+    {
+     "name": "Smoking Snakes Horn in F 2",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-horn-in-f-2-omi9.pdf",
+     "size": 17593
+    },
+    {
+     "name": "Smoking Snakes Oboe",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-oboe-3c5x.pdf",
+     "size": 21168
+    },
+    {
+     "name": "Smoking Snakes Requinta Eb",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-requinta-eb-5sxq.pdf",
+     "size": 23874
+    },
+    {
+     "name": "Smoking Snakes Sax Alto",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-sax-alto-vg4x.pdf",
+     "size": 20094
+    },
+    {
+     "name": "Smoking Snakes Sax Baritono",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-sax-baritono-wfcv.pdf",
+     "size": 17022
+    },
+    {
+     "name": "Smoking Snakes Sax Tenor",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-sax-tenor-my45.pdf",
+     "size": 18682
+    },
+    {
+     "name": "Smoking Snakes Snare Drum",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-snare-drum-ijjl.pdf",
+     "size": 12358
+    },
+    {
+     "name": "Smoking Snakes Trombone 3",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-trombone-3-9da5.pdf",
+     "size": 17507
+    },
+    {
+     "name": "Smoking Snakes Trombone 1",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-trombone-1-ns8w.pdf",
+     "size": 19532
+    },
+    {
+     "name": "Smoking Snakes Trombone 2",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-trombone-2-mg47.pdf",
+     "size": 18108
+    },
+    {
+     "name": "Smoking Snakes Trumpete 1",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-trumpete-1-hnpd.pdf",
+     "size": 17720
+    },
+    {
+     "name": "Smoking Snakes Trumpete 2",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-trumpete-2-lcvf.pdf",
+     "size": 17794
+    },
+    {
+     "name": "Smoking Snakes Trumpete 3",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-trumpete-3-mafr.pdf",
+     "size": 17858
+    },
+    {
+     "name": "Smoking Snakes Tuba Bb",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-tuba-bb-mrhv.pdf",
+     "size": 18665
+    },
+    {
+     "name": "Smoking Snakes Tuba C",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-tuba-c-hmze.pdf",
+     "size": 18303
+    },
+    {
+     "name": "Smoking Snakes Tuba Eb",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-tuba-eb-mipt.pdf",
+     "size": 18362
+    },
+    {
+     "name": "Smoking Snakes",
+     "file": "musicas/partituras/215-aien4/smoking-snakes-7dcm.pdf",
+     "size": 179728
+    }
+   ]
   },
   {
    "id": "220-m14wu",
