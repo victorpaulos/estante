@@ -271,6 +271,15 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .ev .chev{color:#B4BAC8}
 .badge{display:inline-block;margin-left:6px;padding:3px 7px;border-radius:6px;background:#FDE7EA;color:var(--red);font:700 11px/1 var(--font);vertical-align:2px;text-decoration:none}
 .badge.soon{background:var(--brass-soft);color:var(--brand)}
+.my-inst{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:-6px 0 12px;min-height:36px;padding:0 14px 0 10px;border:0;border-radius:999px;background:var(--fill);color:var(--ink-2);font:500 14px/1.2 var(--font);text-align:left}
+.my-inst .ms{font-size:20px;color:var(--brand)}
+.my-inst b{color:var(--ink);font-weight:700}
+.my-inst.none{background:var(--brand);color:#fff}
+.my-inst.none .ms{color:#fff}
+.inst-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;overflow-y:auto;padding:2px}
+.inst-grid button{min-height:48px;padding:6px 10px;border:0;border-radius:12px;background:var(--fill);font:600 15px/1.2 var(--font);color:var(--ink)}
+.inst-grid button.on{background:var(--brand);color:#fff}
+.inst-grid.voices{grid-template-columns:repeat(3,1fr)}
 .next-ev{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;margin-top:10px;padding:12px 14px;border:0;border-radius:16px;background:var(--brass-soft);color:var(--brand);text-align:left}
 .next-ev .t{display:block;font:700 15px/1.2 var(--font)}
 .next-ev .s{display:block;margin-top:2px;font-size:13px;color:var(--ink-2)}
@@ -462,6 +471,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
     </header>
     <div class="content">
       <div class="large-title"><h1>Repertório</h1><p id="homeSub">Escolha uma categoria para estudar.</p></div>
+      <button class="my-inst" id="myInst"></button>
       <button class="next-ev" id="nextEv" hidden></button>
       <div class="cats" id="cats"></div>
       <div class="group tools" hidden><!-- Afinador e Metrônomo ficam nas abas de baixo -->
@@ -2070,9 +2080,55 @@ const sortParts = parts => parts.slice().sort((a, b) => partRank(a.name) - partR
 let myPart = (() => { try { return localStorage.getItem("estante:meuInstrumento") || ""; } catch { return ""; } })();
 const saveMyPart = n => { myPart = n; try { localStorage.setItem("estante:meuInstrumento", n); } catch {} };
 let curPart = null, scoreDoc = null, scoreZoom = 1, scoreToken = 0, pdfjsP = null;
+// voz da parte: "Trombone 2 (Dó)", "2º Trombone", "Trombone II" → 2 (0 = sem número)
+const partVoice = t => {
+  const n = partNorm(t).replace(/\(.*?\)/g, " ");
+  const m = n.match(/(?:^|\s)(\d)\s*[ºª°]?(?=\s|$)/) || n.match(/(?:^|\s)(iv|i{1,3})(?=\s|$)/);
+  return !m ? 0 : /\d/.test(m[1]) ? +m[1] : { i: 1, ii: 2, iii: 3, iv: 4 }[m[1]];
+};
 function findMyPart(parts) {
   if (!myPart) return null;
-  return parts.find(p => partNorm(p.name) === partNorm(myPart)) || parts.find(p => partFamily(p.name) && partFamily(p.name) === partFamily(myPart)) || null;
+  const fam = partFamily(myPart), v = partVoice(myPart);
+  if (fam === "regente") return parts.find(p => partRank(p.name) <= 1) || null; // regente abre a grade
+  const exact = parts.find(p => partNorm(p.name) === partNorm(myPart));
+  if (exact) return exact;
+  let same = parts.filter(p => partFamily(p.name) === fam);
+  if (!same.length) same = parts.filter(p => (" " + partFamily(p.name) + " ").includes(" " + fam + " ")); // "Smoking Snakes Trombone 3", "Flauta Picollo"
+  if (!same.length) return null;
+  // mesma voz; senão a parte sem número; senão a voz mais próxima
+  return same.find(p => partVoice(p.name) === v) || same.find(p => !partVoice(p.name)) || same.slice().sort((a, b) => Math.abs(partVoice(a.name) - v) - Math.abs(partVoice(b.name) - v))[0];
+}
+// Escolha do instrumento (tela inicial e partitura)
+const INSTRUMENTOS = [["Regente (grade)", 0], ["Flautim", 0], ["Flauta", 2], ["Oboé", 0], ["Fagote", 0], ["Requinta", 0], ["Clarinete", 3], ["Clarone", 0], ["Sax Soprano", 0], ["Sax Alto", 2], ["Sax Tenor", 2], ["Sax Barítono", 0],
+  ["Trompete", 3], ["Trompa", 4], ["Trombone", 3], ["Bombardino", 2], ["Tuba", 0], ["Caixa", 0], ["Bumbo", 0], ["Pratos", 0], ["Percussão", 0]];
+const myPartLabel = () => myPart.replace(/^Regente.*/, "Regente").replace(/ (\d)$/, " $1º");
+function renderMyInst() {
+  const b = $("myInst");
+  b.classList.toggle("none", !myPart);
+  b.innerHTML = myPart ? `<span class="ms" aria-hidden="true">music_note</span>Meu instrumento: <b>${myPartLabel()}</b>` : `<span class="ms" aria-hidden="true">music_note</span>Escolher meu instrumento`;
+}
+function instSheet(done) {
+  const bg = document.createElement("div"); bg.className = "sheet-bg";
+  const cur = INSTRUMENTOS.find(([n]) => partFamily(myPart) === partFamily(n));
+  const step1 = () => {
+    bg.innerHTML = `<div class="sheet" role="dialog" aria-label="Meu instrumento"><div class="grab"></div><h3>Qual é o seu instrumento?</h3><p>Ao abrir uma partitura, o app mostra direto a sua parte. Dá para trocar quando quiser.</p>
+      <div class="inst-grid">${INSTRUMENTOS.map(([n], i) => `<button data-i="${i}" class="${cur && cur[0] === n ? "on" : ""}">${n}</button>`).join("")}</div>
+      <div class="foot"><span></span><button data-a="close">${myPart ? "Fechar" : "Agora não"}</button></div></div>`;
+    bg.querySelectorAll("[data-i]").forEach(b => b.onclick = () => { const [n, voices] = INSTRUMENTOS[+b.dataset.i]; voices ? step2(n, voices) : pick(n.replace(/ \(.*$/, "")); });
+    bg.querySelector('[data-a="close"]').onclick = () => bg.remove();
+  };
+  const step2 = (n, voices) => {
+    const v = partFamily(myPart) === partFamily(n) ? partVoice(myPart) : -1;
+    bg.innerHTML = `<div class="sheet" role="dialog" aria-label="Qual voz"><div class="grab"></div><h3>${n}: qual voz?</h3><p>Se a música não tiver a sua voz, o app abre a mais próxima.</p>
+      <div class="inst-grid voices">${Array.from({ length: voices }, (_, i) => `<button data-v="${i + 1}" class="${v === i + 1 ? "on" : ""}">${i + 1}º ${n}</button>`).join("")}</div>
+      <div class="foot"><button data-a="back">Voltar</button><button data-a="any">Não sei / tanto faz</button></div></div>`;
+    bg.querySelectorAll("[data-v]").forEach(b => b.onclick = () => pick(`${n} ${b.dataset.v}`));
+    bg.querySelector('[data-a="back"]').onclick = step1;
+    bg.querySelector('[data-a="any"]').onclick = () => pick(n);
+  };
+  const pick = n => { saveMyPart(n); renderMyInst(); if (curSong) scoreSetup(curSong); bg.remove(); done?.(); };
+  bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  step1(); document.body.append(bg);
 }
 function scoreSetup(s) {
   const parts = s.parts || [];
@@ -2212,22 +2268,26 @@ function partSheet(mode) {
     const b = document.createElement("button"); b.className = "opt";
     const isMine = mine && p.file === mine.file, isCur = curPart && p.file === curPart.file;
     b.innerHTML = `<span>${p.name.replace(/</g, "&lt;")}</span><span>${isMine ? '<span class="tag">MINHA PARTE</span> ' : ""}${isCur ? '<span class="ms" aria-hidden="true">check</span>' : ""}</span>`;
-    b.onclick = () => { bg.remove(); if (mode === "mine") { saveMyPart(p.name); scoreSetup(curSong); } if (!$("score").hidden || mode === "mine") { show("score"); openPart(p); } };
+    b.onclick = () => { bg.remove(); show("score"); openPart(p); };
     list.append(b);
   }
   bg.onclick = e => { if (e.target === bg) bg.remove(); };
   bg.querySelector('[data-a="close"]').onclick = () => bg.remove();
-  bg.querySelector('[data-a="mine"]')?.addEventListener("click", () => { bg.remove(); partSheet("mine"); });
+  bg.querySelector('[data-a="mine"]')?.addEventListener("click", () => { bg.remove(); instSheet(() => { const m = findMyPart(sortParts(curSong?.parts || [])); if (m) { show("score"); openPart(m); } else partSheet("view"); }); });
   document.body.append(bg);
 }
 $("openScore").onclick = () => {
   const parts = sortParts(curSong?.parts || []);
   if (!parts.length) return;
+  if (!myPart) { instSheet(() => myPart && $("openScore").click()); return; }
   const mine = findMyPart(parts);
-  if (!myPart) { partSheet("mine"); return; }
-  show("score"); openPart(mine || parts[0]);
-  if (!mine) partSheet("view");
+  if (mine) { show("score"); openPart(mine); return; }
+  partSheet("view"); // a música não tem a parte dele: mostra as que existem
 };
+$("myInst").onclick = () => instSheet();
+renderMyInst();
+// primeira vez no app: pergunta o instrumento (uma vez só)
+try { if (!myPart && !localStorage.getItem("estante:instPerguntado")) { localStorage.setItem("estante:instPerguntado", "1"); setTimeout(() => $("home").hidden || instSheet(), 800); } } catch {}
 $("partPick").onclick = () => partSheet("view");
 $("backScore").onclick = () => show("player");
 $("zoomIn").onclick = () => zoomTo(scoreZoom * 1.25);
