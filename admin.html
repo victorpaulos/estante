@@ -44,6 +44,7 @@ h2{font-size:20px;font-weight:700}
 .card{padding:16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);margin-bottom:14px;display:grid;gap:12px}
 label.f{display:grid;gap:5px;font-size:13px;font-weight:600;color:var(--muted)}
 input[type=text],input[type=password],input[type=search]{width:100%;min-height:44px;padding:0 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);color:var(--ink);font-size:16px}
+textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--surface-2);color:var(--ink);font:inherit;font-size:16px;resize:vertical}
 .btn{min-height:48px;padding:0 18px;border-radius:12px;border:0;background:var(--brass);color:var(--on-brass);font-weight:700}
 .btn:disabled{opacity:.45;cursor:default}
 .btn-2{min-height:42px;padding:0 14px;border-radius:11px;border:1px solid var(--line);background:transparent;font-weight:600;font-size:14px}
@@ -54,7 +55,7 @@ ol.steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
 ol.steps b{font-weight:700}
 code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:1px 5px;border-radius:5px}
 
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:14px}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:14px}
 .tabs button{min-height:44px;border:0;border-radius:10px;background:transparent;font-weight:700}
 .tabs button[aria-selected="true"]{background:var(--brass);color:var(--on-brass)}
 
@@ -143,6 +144,7 @@ code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:
     <div class="tabs" role="tablist">
       <button role="tab" id="tabSongs" aria-selected="true">Músicas</button>
       <button role="tab" id="tabCats" aria-selected="false">Categorias</button>
+      <button role="tab" id="tabPush" aria-selected="false">Avisos</button>
     </div>
 
     <!-- MÚSICAS -->
@@ -177,6 +179,30 @@ code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:
       </section>
       <div class="sticky"><button class="btn" id="saveCat" disabled>Nada para salvar</button></div>
       <div class="msg" id="catMsg" hidden style="margin-top:10px"></div>
+    </div>
+
+    <!-- AVISOS -->
+    <div id="viewPush" hidden>
+      <section class="card" id="pushSetup">
+        <h2>Ligar os avisos</h2>
+        <p class="muted">Para o painel mandar notificações, cole aqui a chave do OneSignal (fica guardada só neste aparelho).</p>
+        <ol class="steps">
+          <li>Abra <a href="https://dashboard.onesignal.com/apps/1e262598-08be-4cac-918b-944ee8d049ac/settings/keys_and_ids" target="_blank" rel="noopener">OneSignal → Settings → Keys &amp; IDs</a></li>
+          <li>Em <b>API Keys</b>, clique em <b>Add Key</b>, dê o nome <code>painel</code> e confirme</li>
+          <li>Copie a chave que aparece (ela só é mostrada uma vez) e cole abaixo</li>
+        </ol>
+        <label class="f" for="pushKey">Chave do OneSignal<input type="password" id="pushKey" autocomplete="off" placeholder="os_v2_app_…"></label>
+        <button class="btn" id="pushKeySave">Salvar chave</button>
+      </section>
+      <section class="card" id="pushForm" hidden>
+        <h2>Enviar aviso para a banda</h2>
+        <p class="muted">Chega como notificação no celular de quem tocou no sino do app.</p>
+        <label class="f" for="pushTitle">Título<input type="text" id="pushTitle" value="Banda PMBA" maxlength="60"></label>
+        <label class="f" for="pushText">Mensagem<textarea id="pushText" rows="4" maxlength="400" placeholder="Ex.: Ensaio amanhã às 8h. Estudar a 220 – Avante Camaradas."></textarea></label>
+        <button class="btn" id="pushSend">Enviar aviso</button>
+        <div class="msg" id="pushMsg" hidden></div>
+        <p style="margin:6px 0 0"><button class="btn-2" id="pushKeyClear">Trocar a chave do OneSignal</button></p>
+      </section>
     </div>
 
     <p style="margin-top:22px"><button class="btn-2" id="disconnect">Desconectar este aparelho</button></p>
@@ -371,12 +397,14 @@ $("disconnect").onclick = () => { store.clear(); token = ""; $("panel").hidden =
 
 /* ---------- Abas ---------- */
 function tab(which) {
-  $("tabSongs").setAttribute("aria-selected", which === "songs"); $("tabCats").setAttribute("aria-selected", which === "cats");
-  $("viewSongs").hidden = which !== "songs"; $("viewCats").hidden = which !== "cats";
+  $("tabSongs").setAttribute("aria-selected", which === "songs"); $("tabCats").setAttribute("aria-selected", which === "cats"); $("tabPush").setAttribute("aria-selected", which === "push");
+  $("viewSongs").hidden = which !== "songs"; $("viewCats").hidden = which !== "cats"; $("viewPush").hidden = which !== "push";
+  if (which === "push") pushView();
   if (which === "cats") renderCats();
 }
 $("tabSongs").onclick = () => tab("songs");
 $("tabCats").onclick = () => tab("cats");
+$("tabPush").onclick = () => tab("push");
 
 /* ---------- Leitura das etiquetas do MP3 (ID3) ---------- */
 async function readTags(file) {
@@ -482,6 +510,7 @@ $("saveNew").onclick = async () => {
       await commit({ blobs, message: added.length === 1 ? `Adiciona "${added[0].song.title}"` : `Adiciona ${added.length} músicas` });
       added.forEach(a => { a.it.state = "done"; a.it.pct = 1; });
       showMsg($("newMsg"), `${added.length === 1 ? "Música salva" : added.length + " músicas salvas"}. Em cerca de 1 minuto já aparecem para os músicos.`);
+      offerPush($("newMsg"), added.length === 1 ? `Nova música no repertório: ${added[0].song.title}` : `${added.length} músicas novas no repertório: ${added.map(a => a.song.title).join(", ")}`);
     } catch (e) {
       lib.songs = before;
       added.forEach(a => { a.it.state = "fail"; a.it.err = e.message; });
@@ -497,6 +526,51 @@ drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add(
 drop.addEventListener("dragleave", () => drop.classList.remove("over"));
 drop.addEventListener("drop", e => { e.preventDefault(); drop.classList.remove("over"); addFiles(e.dataTransfer.files); });
 drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("files").click(); } });
+
+/* ---------- Avisos (notificações pelo OneSignal) ---------- */
+const PUSH_APP = "1e262598-08be-4cac-918b-944ee8d049ac";
+const pushStore = {
+  get() { try { return localStorage.getItem("estante-onesignal") || ""; } catch { return ""; } },
+  set(v) { try { localStorage.setItem("estante-onesignal", v); } catch {} },
+  clear() { try { localStorage.removeItem("estante-onesignal"); } catch {} },
+};
+function pushView() { const has = !!pushStore.get(); $("pushSetup").hidden = has; $("pushForm").hidden = !has; }
+async function sendPush(title, text) {
+  const key = pushStore.get();
+  if (!key) throw new Error("Falta a chave do OneSignal (aba Avisos).");
+  const send = seg => fetch("https://api.onesignal.com/notifications?c=push", {
+    method: "POST", headers: { Authorization: "Key " + key, "Content-Type": "application/json" },
+    body: JSON.stringify({ app_id: PUSH_APP, target_channel: "push", included_segments: [seg], headings: { en: title, pt: title }, contents: { en: text, pt: text }, url: `https://${OWNER}.github.io/${REPO}/` }),
+  }).then(async r => ({ ok: r.ok, status: r.status, d: await r.json().catch(() => ({})) }),
+    () => { throw new Error("Não foi possível enviar. Confira a internet e a chave do OneSignal (toque em “Trocar a chave”)."); }); // chave errada também cai aqui (o OneSignal não libera a resposta)
+  let r = await send("Total Subscriptions");
+  if (r.ok && !r.d.id && JSON.stringify(r.d.errors || "").includes("segment")) r = await send("Subscribed Users");
+  if (r.status === 401 || r.status === 403) throw new Error("Chave do OneSignal inválida. Troque a chave na aba Avisos.");
+  if (!r.ok) throw new Error((r.d.errors && [].concat(r.d.errors).join(" ")) || "Erro " + r.status);
+  if (!r.d.id) return "Ninguém ativou os avisos ainda. Peça aos músicos para tocar no sino do app.";
+  return "Aviso enviado para a banda.";
+}
+// depois de salvar músicas/partituras: botão "Avisar a banda" com o texto pronto
+function offerPush(el, text) {
+  const b = document.createElement("button"); b.className = "btn-2"; b.style.cssText = "display:block;margin-top:8px";
+  b.textContent = "Avisar a banda";
+  b.onclick = async () => {
+    if (!pushStore.get()) { tab("push"); $("pushText").value = text; return; }
+    b.disabled = true; b.textContent = "Enviando…";
+    try { b.textContent = await sendPush("Banda PMBA", text); } catch (e) { b.textContent = e.message; b.disabled = false; }
+  };
+  el.append(b);
+}
+$("pushKeySave").onclick = () => { const v = $("pushKey").value.trim(); if (!v) return; pushStore.set(v); $("pushKey").value = ""; pushView(); };
+$("pushKeyClear").onclick = () => { pushStore.clear(); pushView(); };
+$("pushSend").onclick = async e => {
+  const title = $("pushTitle").value.trim() || "Banda PMBA", text = $("pushText").value.trim();
+  if (!text) return showMsg($("pushMsg"), "Escreva a mensagem.", true);
+  e.target.disabled = true; e.target.textContent = "Enviando…";
+  try { showMsg($("pushMsg"), await sendPush(title, text)); $("pushText").value = ""; }
+  catch (x) { showMsg($("pushMsg"), x.message, true); }
+  e.target.disabled = false; e.target.textContent = "Enviar aviso";
+};
 
 /* ---------- Biblioteca ---------- */
 const sub = s => [s.artist, s.album].filter(Boolean).join(" · ");
@@ -637,6 +711,7 @@ function renderLib() {
           e.target.textContent = "Salvando…";
           await commit({ blobs, deletes: removed, message: `Edita "${next.title}"` + (added.length ? ` (+${added.length} partitura${added.length > 1 ? "s" : ""})` : "") });
           editing = null; pdraft = null; renderLib();
+          if (added.length) { const m = $("newMsg"); showMsg(m, `Partituras de “${next.title}” salvas.`); offerPush(m, `Partituras novas: ${next.title} (${added.length === 1 ? added[0].name : added.length + " instrumentos"})`); m.scrollIntoView({ block: "center", behavior: "smooth" }); }
         }
         catch (x) { lib.songs[idx] = prev; showMsg(err, x.message, true); e.target.disabled = false; e.target.textContent = "Salvar alterações"; }
       };
