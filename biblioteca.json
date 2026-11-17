@@ -710,6 +710,19 @@
    "dur": 401.5,
    "size": 16059036,
    "added": "2026-09-25"
+  },
+  {
+   "id": "evidencias-nruin",
+   "file": "musicas/arquivos/evidencias-nruin.aac",
+   "title": "Evidências",
+   "artist": "",
+   "album": "",
+   "cats": [
+    "populares"
+   ],
+   "dur": 252,
+   "size": 482836,
+   "added": "2026-11-17"
   }
  ]
 }
