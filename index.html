@@ -7,6 +7,7 @@
 <meta name="color-scheme" content="light">
 <link rel="icon" href="icone.png">
 <link rel="apple-touch-icon" href="icone.png">
+<link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Banda PMBA">
@@ -14,7 +15,7 @@
 <title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=arrow_back_ios_new,auto_stories,campaign,check,check_circle,chevron_right,description,download,expand_more,forward_5,graphic_eq,library_music,mic,military_tech,music_note,notifications,notifications_active,pause,piano,play_arrow,repeat,replay_5,search,speed,star,stop,timer,touch_app,tune,zoom_in,zoom_out&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=add,arrow_back_ios_new,arrow_downward,arrow_upward,auto_stories,campaign,check,check_circle,checkroom,chevron_right,close,description,download,event,expand_more,forward_5,graphic_eq,library_music,map,mic,military_tech,music_note,navigation,notifications,notifications_active,pause,piano,place,play_arrow,queue_music,repeat,replay_5,search,share,speed,star,stop,timer,touch_app,tune,zoom_in,zoom_out&display=block">
 <style>
 /* Banda PMBA — visual de app profissional (padrão iOS/Android): fonte do sistema, barras fixas com vidro,
    blocos de cor por categoria, listas agrupadas e interruptores. Sempre claro. */
@@ -228,7 +229,7 @@ canvas{display:block;width:100%;height:100%}
 .tn-stage[data-state="low"] .tn-state,.tn-stage[data-state="high"] .tn-state{color:var(--red)}
 #list .nav-title,#tuner .nav-title,#metro .nav-title{opacity:0;transition:opacity .2s}
 body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #metro .nav-title{opacity:1}
-.tabbar{grid-template-columns:repeat(3,1fr)}
+.tabbar{grid-template-columns:repeat(4,1fr)}
 .tools{margin-top:10px}
 .tools .row{background:transparent;border-radius:0;margin:0}
 /* Metrônomo */
@@ -247,6 +248,82 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .wide .ms{font-size:22px}
 #mtPlay[aria-pressed="true"]{background:var(--red);color:#fff}
 
+/* Agenda */
+.ag-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ag-acts{display:flex;gap:8px;padding-top:14px}
+.ic-btn{display:grid;place-items:center;width:42px;height:42px;border:0;border-radius:50%;background:var(--fill);color:var(--brand)}
+.ic-btn.fill{background:var(--brand);color:#fff}
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px;border-radius:12px;background:var(--fill-2);margin-bottom:12px}
+.seg2 button{min-height:36px;border:0;border-radius:9px;background:transparent;font:600 14px/1 var(--font);color:var(--ink-2)}
+.seg2 button[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(11,18,32,.12)}
+.ag-sec{margin:16px 4px 6px;font:600 13px/1 var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.evs{border-radius:16px;background:var(--fill);overflow:hidden}
+.ev{position:relative;display:grid;grid-template-columns:50px 1fr auto;gap:12px;align-items:center;width:100%;min-height:72px;padding:10px 14px;border:0;background:transparent;text-align:left}
+.ev + .ev::before{content:"";position:absolute;left:76px;right:0;top:0;height:.5px;background:var(--sep)}
+.ev .dt{display:grid;place-items:center;align-content:center;gap:3px;width:50px;height:54px;border-radius:12px;background:var(--brand);color:#fff}
+.ev .dt b{font:800 21px/1 var(--font)}
+.ev .dt span{font:700 10.5px/1 var(--font);text-transform:uppercase;letter-spacing:.04em;opacity:.85}
+.ev.today .dt{background:var(--red)}
+.ev.past .dt{background:#9AA1B2}
+.ev .t{display:block;font:600 16px/1.25 var(--font);overflow-wrap:anywhere}
+.ev .s{display:block;margin-top:3px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.ev.cancel .t{text-decoration:line-through;color:var(--muted)}
+.ev .chev{color:#B4BAC8}
+.badge{display:inline-block;margin-left:6px;padding:3px 7px;border-radius:6px;background:#FDE7EA;color:var(--red);font:700 11px/1 var(--font);vertical-align:2px;text-decoration:none}
+.badge.soon{background:var(--brass-soft);color:var(--brand)}
+.next-ev{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;margin-top:10px;padding:12px 14px;border:0;border-radius:16px;background:var(--brass-soft);color:var(--brand);text-align:left}
+.next-ev .t{display:block;font:700 15px/1.2 var(--font)}
+.next-ev .s{display:block;margin-top:2px;font-size:13px;color:var(--ink-2)}
+/* detalhe */
+.nav-act{justify-self:end;min-height:40px;padding:0 6px;border:0;background:none;color:var(--brand);font:500 17px/1 var(--font)}
+.nav-act.strong{font-weight:700}
+.ev-hero{padding:8px 0 14px}
+.ev-hero h2{font:800 28px/1.12 var(--display);letter-spacing:-.02em;overflow-wrap:anywhere}
+.ev-hero p{margin:6px 0 0;font-size:16px;color:var(--ink-2)}
+.ev-hero .badge{margin:8px 0 0}
+.times{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.times div{padding:10px 8px;border-radius:14px;background:var(--fill);text-align:center}
+.times b{display:block;font:700 20px/1 var(--font)}
+.times span{display:block;margin-top:5px;font-size:12px;color:var(--muted)}
+.info{margin-top:10px;border-radius:16px;background:var(--fill);overflow:hidden}
+.info > div{position:relative;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;padding:12px 14px}
+.info > div + div::before{content:"";position:absolute;left:60px;right:0;top:0;height:.5px;background:var(--sep)}
+.info .ms{color:var(--brand)}
+.info .k{display:block;font-size:12px;color:var(--muted)}
+.info .v{display:block;margin-top:2px;font-size:16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.maps{display:flex;gap:8px;margin-top:8px}
+.maps a{display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 12px;border-radius:999px;background:#fff;color:var(--brand);font:600 14px/1 var(--font);text-decoration:none}
+.btns{display:grid;gap:8px;margin:14px 0 4px}
+.big-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border:0;border-radius:14px;background:var(--brand);color:#fff;font:600 16px/1 var(--font)}
+.big-btn.wa{background:#1FA855}
+.big-btn.soft{background:var(--fill);color:var(--brand)}
+.big-btn.danger{background:#FDE7EA;color:var(--red)}
+.song .na{font-size:12px;color:var(--muted)}
+.foot-note{margin:10px 4px 0;font-size:13px;color:var(--muted)}
+/* formulário */
+.fm{display:grid;gap:12px;padding:6px 0 24px}
+.fm label{display:grid;gap:6px;font:600 13px/1.2 var(--font);color:var(--ink-2)}
+.fm input,.fm textarea,.fm select{width:100%;min-height:46px;padding:0 12px;border:1px solid var(--line-2);border-radius:12px;background:#fff;color:var(--ink);font:400 16px/1.3 var(--font)}
+.fm textarea{min-height:90px;padding:10px 12px;resize:vertical}
+.fm .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fm .hint{font-weight:400;color:var(--muted)}
+.sl{border-radius:14px;background:var(--fill);overflow:hidden}
+.sl-row{position:relative;display:grid;grid-template-columns:26px 1fr auto auto auto;gap:4px;align-items:center;min-height:50px;padding:4px 6px 4px 12px}
+.sl-row + .sl-row::before{content:"";position:absolute;left:12px;right:0;top:0;height:.5px;background:var(--sep)}
+.sl-row .n{font:500 14px/1 var(--font);color:var(--muted)}
+.sl-row .t{font:500 15px/1.25 var(--font);overflow-wrap:anywhere}
+.sl-row button{width:38px;height:38px;border:0;border-radius:10px;background:transparent;color:var(--ink-2)}
+.sl-row button:disabled{opacity:.25}
+.sl-empty{padding:16px;color:var(--muted);font-size:14px;text-align:center}
+.add-songs{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:46px;margin-top:8px;border:1.5px dashed var(--line-2);border-radius:12px;background:transparent;color:var(--brand);font:600 15px/1 var(--font)}
+.pick{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;width:100%;min-height:50px;padding:6px 14px;border:0;background:none;text-align:left;font:500 15px/1.25 var(--font)}
+.pick .ms{color:#C3C8D4}
+.pick[aria-pressed="true"] .ms{color:var(--brand)}
+.sheet input,.sheet textarea{width:100%;min-height:46px;margin-bottom:10px;padding:0 12px;border:1px solid var(--line-2);border-radius:12px;font:400 16px/1.3 var(--font)}
+.sheet textarea{min-height:110px;padding:10px 12px}
+.sheet .err{margin:0 4px 10px;color:var(--red);font-size:14px}
+.sheet .foot .primary{background:var(--brand);color:#fff}
+
 /* ---------- Telas fixas: cada tela cabe na altura do celular; só o conteúdo que não cabe rola ---------- */
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 *{touch-action:manipulation}
@@ -257,6 +334,8 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 .content{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0 -16px;padding:0 16px}
 #home .content,#tuner .content,#metro .content{padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
 #list .content,#player .content{padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+#agenda .content{padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(74px + env(safe-area-inset-bottom,0px))}
+#evView .content,#evForm .content{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 .large-title{padding:6px 0 14px}
 .large-title h1{font-size:32px}
 /* Player compacto */
@@ -377,6 +456,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
     </header>
     <div class="content">
       <div class="large-title"><h1>Repertório</h1><p id="homeSub">Escolha uma categoria para estudar.</p></div>
+      <button class="next-ev" id="nextEv" hidden></button>
       <div class="cats" id="cats"></div>
       <div class="group tools" hidden><!-- Afinador e Metrônomo ficam nas abas de baixo -->
         <button class="row" id="openTuner" style="--cc:var(--brand)">
@@ -392,6 +472,30 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
       </div>
       <div class="cats cats-solo" id="catsToques"></div>
     </div>
+  </section>
+
+  <!-- AGENDA (apresentações e repertórios fixos) -->
+  <section id="agenda" hidden>
+    <div class="content">
+      <div class="ag-head"><div class="large-title"><h1>Agenda</h1><p id="agSub">Apresentações da banda</p></div>
+        <div class="ag-acts"><button class="ic-btn" id="agAviso" aria-label="Mandar aviso para a banda"><span class="ms" aria-hidden="true">campaign</span></button>
+        <button class="ic-btn fill" id="agNew" aria-label="Novo"><span class="ms" aria-hidden="true">add</span></button></div></div>
+      <div class="seg2" role="tablist"><button role="tab" id="agTabEv" aria-selected="true">Apresentações</button><button role="tab" id="agTabSet" aria-selected="false">Repertórios</button></div>
+      <p class="offline" id="agOff" hidden>Sem internet: mostrando a última agenda salva no celular.</p>
+      <div id="agBox"></div>
+    </div>
+  </section>
+
+  <!-- DETALHE DO EVENTO / REPERTÓRIO -->
+  <section id="evView" hidden>
+    <nav class="nav"><button class="back" id="backEv"><span class="ms" aria-hidden="true">arrow_back_ios_new</span>Agenda</button><span class="nav-title" id="evNavTitle"></span><button class="nav-act" id="evEdit">Editar</button></nav>
+    <div class="content" id="evBox"></div>
+  </section>
+
+  <!-- EDITOR -->
+  <section id="evForm" hidden>
+    <nav class="nav"><button class="back" id="formCancel">Cancelar</button><span class="nav-title" id="formTitle" style="opacity:1"></span><button class="nav-act strong" id="formSave">Salvar</button></nav>
+    <div class="content" id="formBox"></div>
   </section>
 
   <!-- AFINADOR -->
@@ -557,6 +661,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 
 <nav class="tabbar" id="tabbar" aria-label="Navegação">
   <button id="tabRep" aria-current="page"><span class="ms" aria-hidden="true">library_music</span>Repertório</button>
+  <button id="tabAg"><span class="ms" aria-hidden="true">event</span>Agenda</button>
   <button id="tabTun"><span class="ms" aria-hidden="true">tune</span>Afinador</button>
   <button id="tabMet"><span class="ms" aria-hidden="true">timer</span>Metrônomo</button>
 </nav>
@@ -670,9 +775,9 @@ const fmt = (s, dec) => {
 };
 document.addEventListener("scroll", e => { if (e.target.classList && e.target.classList.contains("content")) document.body.classList.toggle("scrolled", e.target.scrollTop > 24); }, { passive: true, capture: true });
 function show(id) {
-  for (const s of ["home", "list", "player", "tuner", "metro", "score"]) $(s).hidden = s !== id;
-  $("tabbar").hidden = !(id === "home" || id === "tuner" || id === "metro");
-  for (const [tab, view] of [["tabRep", "home"], ["tabTun", "tuner"], ["tabMet", "metro"]]) {
+  for (const s of ["home", "list", "player", "tuner", "metro", "score", "agenda", "evView", "evForm"]) $(s).hidden = s !== id;
+  $("tabbar").hidden = !(id === "home" || id === "tuner" || id === "metro" || id === "agenda");
+  for (const [tab, view] of [["tabRep", "home"], ["tabAg", "agenda"], ["tabTun", "tuner"], ["tabMet", "metro"]]) {
     if (id === view) $(tab).setAttribute("aria-current", "page"); else $(tab).removeAttribute("aria-current");
   }
   if (id !== "metro" && typeof mtStop === "function" && mtOn) mtStop();
@@ -1132,6 +1237,7 @@ function openSong(s) {
 }
 $("backList").onclick = () => {
   loadToken++; setPlaying(false);
+  if (backTo) { const f = backTo; backTo = null; f(); return; } // veio da agenda
   if (curCat) { renderList(); show("list"); } else { renderHome(); show("home"); }
 };
 
@@ -1267,6 +1373,359 @@ document.addEventListener("keydown", e => {
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible" && playing) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });
+/* ---------- Agenda: apresentações e repertórios fixos (servidor no Cloudflare) ---------- */
+const API = "https://estante-api.estante-api.workers.dev";
+const E = n => String.fromCodePoint(n); // emojis sem escrever o caractere no código
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+let AG = (() => { try { return JSON.parse(localStorage.getItem("estante:agenda")) || { events: [], sets: [] }; } catch { return { events: [], sets: [] }; } })();
+let agTab = "ev", curEv = null, curSet = null, agOffline = false, backTo = null;
+const band = {
+  get() { try { return JSON.parse(localStorage.getItem("estante:banda")) || {}; } catch { return {}; } },
+  set(v) { try { localStorage.setItem("estante:banda", JSON.stringify(v)); } catch {} },
+};
+async function agLoad() {
+  try {
+    const r = await fetch(API + "/dados", { cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    AG = await r.json(); agOffline = false;
+    try { localStorage.setItem("estante:agenda", JSON.stringify(AG)); } catch {}
+  } catch { agOffline = true; }
+  renderNextEv();
+  if (!$("agenda").hidden) renderAgenda();
+}
+async function api(method, path, body) {
+  const b = band.get();
+  const r = await fetch(API + path, { method, headers: { "Content-Type": "application/json", "X-Banda": b.pass || "" }, body: body ? JSON.stringify({ ...body, by: b.name || "" }) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401) { band.set({ ...b, pass: "" }); throw new Error("A senha da banda mudou ou está errada. Tente de novo."); }
+  if (!r.ok) throw new Error(d.error || "Erro " + r.status);
+  return d;
+}
+
+// datas e horas
+const MES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const DIA = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+const dObj = ev => new Date(ev.date + "T12:00:00");
+const hhmm = t => t ? t.replace(":", "h").replace(/h00$/, "h") : "";
+const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
+const dateLong = ev => { const d = dObj(ev); return `${DIA[d.getDay()]}, ${d.getDate()} de ${["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"][d.getMonth()]}`; };
+const dateShort = ev => { const d = dObj(ev); return `${DIA[d.getDay()].slice(0, 3)}, ${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}`; };
+const daysTo = ev => Math.round((dObj(ev) - new Date(todayStr() + "T12:00:00")) / 864e5);
+const whenTxt = ev => { const n = daysTo(ev); return n === 0 ? "Hoje" : n === 1 ? "Amanhã" : n > 1 && n < 7 ? `Em ${n} dias` : ""; };
+
+// músicas de um evento/repertório: id da biblioteca ou "txt:Nome" (música que ainda não está no app)
+const songById = id => LIB.songs.find(s => s.id === id);
+const songName = id => id.startsWith("txt:") ? id.slice(4) : (songById(id)?.title || "(música removida)");
+const libUnique = () => [...new Map(LIB.songs.map(s => [s.id, s])).values()].sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
+
+/* ---- Início: próxima apresentação ---- */
+function renderNextEv() {
+  const box = $("nextEv"); if (!box) return;
+  const t = todayStr(), ev = AG.events.filter(e => !e.cancelled && e.date >= t).sort((a, b) => (a.date + a.arrive).localeCompare(b.date + b.arrive))[0];
+  box.hidden = !ev || daysTo(ev) > 21;
+  if (!ev || box.hidden) return;
+  box.innerHTML = `<span class="ms" aria-hidden="true">event</span><span><span class="t">${esc(ev.title)}</span><span class="s">${whenTxt(ev) || dateShort(ev)}${ev.arrive ? " · chegada " + hhmm(ev.arrive) : ""}${ev.place ? " · " + esc(ev.place) : ""}</span></span><span class="ms" aria-hidden="true">chevron_right</span>`;
+  box.onclick = () => openEvent(ev.id);
+}
+
+/* ---- Lista ---- */
+function openAgenda() { renderAgenda(); show("agenda"); agLoad(); }
+function renderAgenda() {
+  $("agTabEv").setAttribute("aria-selected", agTab === "ev"); $("agTabSet").setAttribute("aria-selected", agTab === "set");
+  $("agOff").hidden = !agOffline;
+  const box = $("agBox"); box.innerHTML = "";
+  if (agTab === "set") {
+    $("agSub").textContent = "Repertórios fixos da banda";
+    const sets = AG.sets.slice().sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+    if (!sets.length) { box.innerHTML = `<div class="empty">Nenhum repertório ainda. Toque em <b>+</b> para criar (ex.: Natal, Dia das Mães, Dia das Crianças).</div>`; return; }
+    const g = document.createElement("div"); g.className = "evs";
+    for (const s of sets) {
+      const b = document.createElement("button"); b.className = "ev";
+      b.innerHTML = `<span class="dt" style="background:var(--gold)"><span class="ms" aria-hidden="true">queue_music</span></span><span><span class="t">${esc(s.name)}</span><span class="s">${s.songs.length} ${s.songs.length === 1 ? "música" : "músicas"}${s.songs.length ? " · " + esc(s.songs.slice(0, 3).map(songName).join(", ")) + (s.songs.length > 3 ? "…" : "") : ""}</span></span><span class="ms chev" aria-hidden="true">chevron_right</span>`;
+      b.onclick = () => openSet(s.id);
+      g.append(b);
+    }
+    box.append(g); return;
+  }
+  $("agSub").textContent = "Apresentações da banda";
+  const t = todayStr(), sorted = AG.events.slice().sort((a, b) => (a.date + a.arrive).localeCompare(b.date + b.arrive));
+  const next = sorted.filter(e => e.date >= t), past = sorted.filter(e => e.date < t).reverse().slice(0, 8);
+  if (!next.length && !past.length) { box.innerHTML = `<div class="empty">Nenhuma apresentação marcada. Toque em <b>+</b> para criar.</div>`; return; }
+  const list = (title, evs, isPast) => {
+    if (!evs.length) return;
+    const h = document.createElement("div"); h.className = "ag-sec"; h.textContent = title; box.append(h);
+    const g = document.createElement("div"); g.className = "evs";
+    for (const ev of evs) {
+      const d = dObj(ev), b = document.createElement("button");
+      b.className = "ev" + (ev.cancelled ? " cancel" : "") + (isPast ? " past" : daysTo(ev) === 0 ? " today" : "");
+      const w = !isPast && !ev.cancelled && whenTxt(ev);
+      b.innerHTML = `<span class="dt"><b>${d.getDate()}</b><span>${MES[d.getMonth()]}</span></span>
+        <span><span class="t">${esc(ev.title)}</span>${ev.cancelled ? '<span class="badge">CANCELADO</span>' : w ? `<span class="badge soon">${w}</span>` : ""}
+        <span class="s">${dateShort(ev)}${ev.arrive ? " · chegada " + hhmm(ev.arrive) : ""}${ev.place ? " · " + esc(ev.place) : ""}</span></span><span class="ms chev" aria-hidden="true">chevron_right</span>`;
+      b.onclick = () => openEvent(ev.id);
+      g.append(b);
+    }
+    box.append(g);
+  };
+  list("Próximas", next, false);
+  list("Anteriores", past, true);
+}
+$("agTabEv").onclick = () => { agTab = "ev"; renderAgenda(); };
+$("agTabSet").onclick = () => { agTab = "set"; renderAgenda(); };
+
+/* ---- Detalhe ---- */
+function songListHtml(ids) {
+  if (!ids.length) return `<div class="empty">Nenhuma música escolhida ainda.</div>`;
+  return `<ul class="songs">${ids.map((id, i) => {
+    const s = !id.startsWith("txt:") && songById(id);
+    return `<li><button class="song" data-i="${i}" ${s ? "" : "disabled"}><span class="n">${i + 1}</span><span><span class="t">${esc(songName(id))}</span>${s ? "" : '<span class="a">ainda não está no app</span>'}</span><span class="d">${s && s.dur ? fmt(s.dur) : ""}</span></button></li>`;
+  }).join("")}</ul>`;
+}
+function bindSongList(root, ids, label) {
+  root.querySelectorAll(".song[data-i]").forEach(b => b.onclick = () => {
+    const s = songById(ids[+b.dataset.i]); if (!s) return;
+    backTo = () => show(label); openSong(s); $("backLabel").textContent = "Voltar";
+  });
+}
+function openEvent(id) {
+  const ev = AG.events.find(e => e.id === id);
+  if (!ev) { openAgenda(); return; }
+  curEv = ev; curSet = null;
+  $("evNavTitle").textContent = ev.title; $("evEdit").hidden = ev.cancelled;
+  const mapsQ = encodeURIComponent(ev.address || ev.place);
+  const w = !ev.cancelled && whenTxt(ev);
+  $("evBox").innerHTML = `<div class="ev-hero"><h2>${esc(ev.title)}</h2><p>${dateLong(ev)}${w ? " · " + w : ""}</p>${ev.cancelled ? '<span class="badge">APRESENTAÇÃO CANCELADA</span>' : ""}</div>
+    ${ev.arrive || ev.start || ev.leave ? `<div class="times"><div><b>${hhmm(ev.arrive) || "—"}</b><span>Chegada</span></div><div><b>${hhmm(ev.start) || "—"}</b><span>Início</span></div><div><b>${hhmm(ev.leave) || "—"}</b><span>Saída</span></div></div>` : ""}
+    <div class="info">
+      ${ev.place || ev.address ? `<div><span class="ms" aria-hidden="true">place</span><span><span class="k">Local</span><span class="v">${esc(ev.place)}${ev.place && ev.address ? "\n" : ""}${esc(ev.address)}</span>
+        <span class="maps"><a href="https://www.google.com/maps/search/?api=1&query=${mapsQ}" target="_blank" rel="noopener"><span class="ms" aria-hidden="true">map</span>Google Maps</a><a href="https://waze.com/ul?q=${mapsQ}&navigate=yes" target="_blank" rel="noopener"><span class="ms" aria-hidden="true">navigation</span>Waze</a></span></span></div>` : ""}
+      ${ev.uniform ? `<div><span class="ms" aria-hidden="true">checkroom</span><span><span class="k">Uniforme</span><span class="v">${esc(ev.uniform)}</span></span></div>` : ""}
+      ${ev.notes ? `<div><span class="ms" aria-hidden="true">description</span><span><span class="k">Observação</span><span class="v">${esc(ev.notes)}</span></span></div>` : ""}
+    </div>
+    <div class="ag-sec">Repertório · ${ev.songs.length} ${ev.songs.length === 1 ? "música" : "músicas"}</div>
+    ${songListHtml(ev.songs)}
+    <div class="btns"><button class="big-btn wa" id="evWa"><span class="ms" aria-hidden="true">share</span>Enviar no grupo do WhatsApp</button>
+      ${ev.cancelled ? "" : `<button class="big-btn danger" id="evCancel">Cancelar apresentação</button>`}</div>
+    ${ev.by ? `<p class="foot-note">Última alteração por ${esc(ev.by)}.</p>` : ""}`;
+  bindSongList($("evBox"), ev.songs, "evView");
+  $("evWa").onclick = () => shareWa(waEvent(ev));
+  $("evCancel")?.addEventListener("click", () => withPass(() => confirmSheet("Cancelar apresentação?", `“${esc(ev.title)}” fica riscada na agenda e toda a banda recebe o aviso de cancelamento.`, "Cancelar apresentação", async () => {
+    const d = await api("DELETE", "/eventos/" + ev.id); upsert("events", d.event); openEvent(ev.id); afterSave(d.event, true);
+  })));
+  show("evView"); location.hash = "evento=" + ev.id;
+}
+function openSet(id) {
+  const s = AG.sets.find(x => x.id === id); if (!s) return;
+  curSet = s; curEv = null;
+  $("evNavTitle").textContent = s.name; $("evEdit").hidden = false;
+  $("evBox").innerHTML = `<div class="ev-hero"><h2>${esc(s.name)}</h2><p>Repertório fixo · ${s.songs.length} ${s.songs.length === 1 ? "música" : "músicas"}</p></div>
+    ${songListHtml(s.songs)}
+    <div class="btns"><button class="big-btn wa" id="evWa"><span class="ms" aria-hidden="true">share</span>Enviar no grupo do WhatsApp</button></div>
+    ${s.by ? `<p class="foot-note">Última alteração por ${esc(s.by)}.</p>` : ""}`;
+  bindSongList($("evBox"), s.songs, "evView");
+  $("evWa").onclick = () => shareWa(`${E(0x1F3BC)} *Repertório: ${s.name}*\n` + s.songs.map((id, i) => `${i + 1}. ${songName(id)}`).join("\n") + `\n\n${E(0x1F4F2)} No app: ${APP_URL}`);
+  show("evView");
+}
+$("backEv").onclick = () => { history.replaceState(null, "", location.pathname + location.search); openAgenda(); };
+$("evEdit").onclick = () => withPass(() => curEv ? editEvent(curEv) : editSet(curSet));
+
+/* ---- WhatsApp ---- */
+const APP_URL = location.origin + location.pathname;
+function waEvent(ev) {
+  const L = [];
+  L.push(ev.cancelled ? `${E(0x274C)} *CANCELADO: ${ev.title}*` : `${E(0x1F3BA)} *${ev.title}*`);
+  L.push(`${E(0x1F4C5)} ${dateLong(ev).replace(/^./, c => c.toUpperCase())}`);
+  const h = [ev.arrive && "Chegada " + hhmm(ev.arrive), ev.start && "Início " + hhmm(ev.start), ev.leave && "Saída " + hhmm(ev.leave)].filter(Boolean);
+  if (h.length) L.push(`${E(0x23F0)} ${h.join(" · ")}`);
+  if (ev.place || ev.address) L.push(`${E(0x1F4CD)} ${[ev.place, ev.address].filter(Boolean).join(" – ")}\n${E(0x1F5FA)} https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.address || ev.place)}`);
+  if (ev.uniform) L.push(`${E(0x1F454)} Uniforme: ${ev.uniform}`);
+  if (ev.songs.length) L.push(`${E(0x1F3BC)} *Repertório:*\n` + ev.songs.map((id, i) => `${i + 1}. ${songName(id)}`).join("\n"));
+  if (ev.notes) L.push(`${E(0x1F4DD)} ${ev.notes}`);
+  L.push(`${E(0x1F4F2)} Detalhes no app: ${APP_URL}#evento=${ev.id}`);
+  return L.join("\n");
+}
+const shareWa = text => { location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text); }; // o wa.me estraga os emojis
+
+/* ---- Folhas (senha, confirmação, aviso) ---- */
+function sheet(html, onReady) {
+  const bg = document.createElement("div"); bg.className = "sheet-bg";
+  bg.innerHTML = `<div class="sheet" role="dialog"><div class="grab"></div>${html}</div>`;
+  bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  document.body.append(bg); onReady?.(bg, () => bg.remove());
+  return bg;
+}
+function confirmSheet(title, text, okLabel, fn) {
+  sheet(`<h3>${title}</h3><p>${text}</p><p class="err" hidden></p><div class="foot"><button data-a="no">Voltar</button><button data-a="ok" class="primary">${okLabel}</button></div>`, (bg, close) => {
+    bg.querySelector('[data-a="no"]').onclick = close;
+    bg.querySelector('[data-a="ok"]').onclick = async e => {
+      e.target.disabled = true;
+      try { await fn(); close(); } catch (x) { const er = bg.querySelector(".err"); er.textContent = x.message; er.hidden = false; e.target.disabled = false; }
+    };
+  });
+}
+// pede a senha da banda (uma vez por celular) antes de qualquer alteração
+function withPass(fn) {
+  const b = band.get();
+  if (b.pass) return Promise.resolve().then(fn).catch(x => { if (!band.get().pass) withPass(fn); else alertSheet(x.message); });
+  sheet(`<h3>Senha da banda</h3><p>Para criar ou alterar a agenda e os repertórios. Peça a senha ao maestro. Fica guardada só neste celular.</p>
+    <input type="password" id="bpPass" placeholder="Senha da banda" autocomplete="off">
+    <input type="text" id="bpName" placeholder="Seu nome (aparece nos avisos)" value="${esc(b.name || "")}" maxlength="40">
+    <p class="err" hidden></p><div class="foot"><button data-a="no">Cancelar</button><button data-a="ok" class="primary">Entrar</button></div>`, (bg, close) => {
+    bg.querySelector('[data-a="no"]').onclick = close;
+    bg.querySelector('[data-a="ok"]').onclick = async e => {
+      const pass = bg.querySelector("#bpPass").value.trim(), name = bg.querySelector("#bpName").value.trim(), er = bg.querySelector(".err");
+      if (!pass || !name) { er.textContent = "Preencha a senha e o seu nome."; er.hidden = false; return; }
+      e.target.disabled = true;
+      const r = await fetch(API + "/senha", { method: "POST", headers: { "X-Banda": pass } }).catch(() => null);
+      if (!r) { er.textContent = "Sem internet. Tente de novo."; er.hidden = false; e.target.disabled = false; return; }
+      if (!r.ok) { er.textContent = "Senha incorreta."; er.hidden = false; e.target.disabled = false; return; }
+      band.set({ pass, name }); close(); fn();
+    };
+    setTimeout(() => bg.querySelector("#bpPass").focus(), 50);
+  });
+}
+const alertSheet = msg => sheet(`<h3>Não deu certo</h3><p>${esc(msg)}</p><div class="foot"><span></span><button data-a="ok">OK</button></div>`, (bg, close) => bg.querySelector('[data-a="ok"]').onclick = close);
+function avisoSheet(text = "") {
+  withPass(() => sheet(`<h3>Aviso para a banda</h3><p>Chega como notificação no celular de todos. Use só para o que for importante.</p>
+    <input type="text" id="avTitle" value="Banda PMBA" maxlength="60" aria-label="Título">
+    <textarea id="avText" maxlength="400" placeholder="Ex.: Ensaio amanhã às 8h no quartel." aria-label="Mensagem">${esc(text)}</textarea>
+    <p class="err" hidden></p><div class="foot"><button data-a="no">Cancelar</button><button data-a="ok" class="primary">Enviar aviso</button></div>`, (bg, close) => {
+    bg.querySelector('[data-a="no"]').onclick = close;
+    bg.querySelector('[data-a="ok"]').onclick = async e => {
+      const er = bg.querySelector(".err"), txt = bg.querySelector("#avText").value.trim();
+      if (!txt) { er.textContent = "Escreva a mensagem."; er.hidden = false; return; }
+      e.target.disabled = true; e.target.textContent = "Enviando…";
+      try { await api("POST", "/aviso", { title: bg.querySelector("#avTitle").value, text: txt }); close(); alertSheet2("Aviso enviado", "Toda a banda recebe a notificação em alguns segundos."); }
+      catch (x) { er.textContent = x.message; er.hidden = false; e.target.disabled = false; e.target.textContent = "Enviar aviso"; }
+    };
+  }));
+}
+const alertSheet2 = (t, msg, extra) => sheet(`<h3>${t}</h3><p>${msg}</p><div class="foot">${extra ? `<button data-a="x" class="primary">${extra[0]}</button>` : "<span></span>"}<button data-a="ok">OK</button></div>`, (bg, close) => {
+  bg.querySelector('[data-a="ok"]').onclick = close;
+  if (extra) bg.querySelector('[data-a="x"]').onclick = () => { close(); extra[1](); };
+});
+$("agAviso").onclick = () => avisoSheet();
+function afterSave(ev, cancelled) {
+  alertSheet2(cancelled ? "Apresentação cancelada" : "Salvo!", "A banda já recebeu a notificação no app. Quer mandar também no grupo do WhatsApp?", ["Enviar no WhatsApp", () => shareWa(waEvent(ev))]);
+}
+const upsert = (key, item) => { const a = AG[key], i = a.findIndex(x => x.id === item.id); if (i < 0) a.push(item); else a[i] = item; try { localStorage.setItem("estante:agenda", JSON.stringify(AG)); } catch {} };
+
+/* ---- Editor ---- */
+$("agNew").onclick = () => withPass(() => agTab === "set" ? editSet(null) : editEvent(null));
+let formSave = null, formBack = null;
+$("formCancel").onclick = () => formBack?.();
+$("formSave").onclick = async e => {
+  if (!formSave) return;
+  e.target.disabled = true;
+  try { await formSave(); } catch (x) { alertSheet(x.message); }
+  e.target.disabled = false;
+};
+function songsEditor(box, list) {
+  const draw = () => {
+    box.innerHTML = `<div class="sl">${list.length ? list.map((id, i) => `<div class="sl-row"><span class="n">${i + 1}</span><span class="t">${esc(songName(id))}</span>
+      <button data-up="${i}" ${i ? "" : "disabled"} aria-label="Subir"><span class="ms" aria-hidden="true">arrow_upward</span></button>
+      <button data-down="${i}" ${i < list.length - 1 ? "" : "disabled"} aria-label="Descer"><span class="ms" aria-hidden="true">arrow_downward</span></button>
+      <button data-del="${i}" aria-label="Tirar"><span class="ms" aria-hidden="true">close</span></button></div>`).join("") : '<div class="sl-empty">Nenhuma música ainda.</div>'}</div>
+      <button class="add-songs"><span class="ms" aria-hidden="true">add</span>Adicionar músicas</button>`;
+    box.querySelectorAll("[data-up]").forEach(b => b.onclick = () => { const i = +b.dataset.up; [list[i - 1], list[i]] = [list[i], list[i - 1]]; draw(); });
+    box.querySelectorAll("[data-down]").forEach(b => b.onclick = () => { const i = +b.dataset.down; [list[i + 1], list[i]] = [list[i], list[i + 1]]; draw(); });
+    box.querySelectorAll("[data-del]").forEach(b => b.onclick = () => { list.splice(+b.dataset.del, 1); draw(); });
+    box.querySelector(".add-songs").onclick = () => pickSongs(list, draw);
+  };
+  draw();
+  return { set(v) { list.splice(0, list.length, ...v); draw(); } };
+}
+function pickSongs(list, done) {
+  const all = libUnique();
+  sheet(`<h3>Adicionar músicas</h3><input type="search" id="pkQ" placeholder="Buscar música" autocomplete="off">
+    <div class="list" id="pkList"></div>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px"><input type="text" id="pkTxt" placeholder="Música que ainda não está no app" style="margin:0"><button class="ic-btn fill" id="pkAdd" aria-label="Adicionar"><span class="ms" aria-hidden="true">add</span></button></div>
+    <div class="foot"><span></span><button data-a="ok" class="primary">Pronto</button></div>`, (bg, close) => {
+    const draw = () => {
+      const q = bg.querySelector("#pkQ").value.trim().toLowerCase();
+      const box = bg.querySelector("#pkList"); box.innerHTML = "";
+      for (const s of all.filter(s => !q || (s.title + " " + s.artist).toLowerCase().includes(q))) {
+        const b = document.createElement("button"); b.className = "pick"; const on = list.includes(s.id);
+        b.setAttribute("aria-pressed", on);
+        b.innerHTML = `<span>${esc(s.title)}${s.artist ? `<span class="row-s">${esc(s.artist)}</span>` : ""}</span><span class="ms" aria-hidden="true">${on ? "check_circle" : "add"}</span>`;
+        b.onclick = () => { const i = list.indexOf(s.id); if (i < 0) list.push(s.id); else list.splice(i, 1); draw(); };
+        box.append(b);
+      }
+    };
+    bg.querySelector("#pkQ").oninput = draw;
+    bg.querySelector("#pkAdd").onclick = () => { const v = bg.querySelector("#pkTxt").value.trim(); if (v) { list.push("txt:" + v); bg.querySelector("#pkTxt").value = ""; draw(); } };
+    bg.querySelector('[data-a="ok"]').onclick = () => { close(); done(); };
+    draw();
+  });
+}
+const TITULOS = ["Tocata de Natal", "Dia das Mães", "Dia dos Pais", "Dia das Crianças", "Desfile de 2 de Julho", "Desfile de 7 de Setembro", "Formatura", "Solenidade", "Missa", "Ensaio"];
+function editEvent(ev) {
+  const isNew = !ev;
+  const d = ev ? { ...ev, songs: ev.songs.slice() } : { title: "", date: "", arrive: "", start: "", leave: "", place: "", address: "", uniform: "", notes: "", songs: [], setId: "" };
+  const uniforms = [...new Set(AG.events.map(e => e.uniform).filter(Boolean))];
+  $("formTitle").textContent = isNew ? "Nova apresentação" : "Editar";
+  $("formBox").innerHTML = `<div class="fm">
+    <label>Nome da apresentação<input id="fTitle" list="dlTitles" value="${esc(d.title)}" maxlength="80" placeholder="Ex.: Tocata de Natal – Shopping"></label>
+    <datalist id="dlTitles">${TITULOS.map(t => `<option value="${t}">`).join("")}</datalist>
+    <label>Data<input id="fDate" type="date" value="${d.date}"></label>
+    <div class="row3"><label>Chegada<input id="fArrive" type="time" value="${d.arrive}"></label><label>Início<input id="fStart" type="time" value="${d.start}"></label><label>Saída<input id="fLeave" type="time" value="${d.leave}"></label></div>
+    <label>Local<input id="fPlace" value="${esc(d.place)}" maxlength="120" placeholder="Ex.: Praça da Piedade"></label>
+    <label>Endereço <span class="hint">(para o mapa)</span><input id="fAddr" value="${esc(d.address)}" maxlength="200" placeholder="Rua, número, bairro, cidade"></label>
+    <label>Uniforme<input id="fUni" list="dlUni" value="${esc(d.uniform)}" maxlength="60"></label>
+    <datalist id="dlUni">${uniforms.map(u => `<option value="${esc(u)}">`).join("")}</datalist>
+    <label>Observação<textarea id="fNotes" maxlength="1000" placeholder="Ex.: levar estante; concentração no portão 2">${esc(d.notes)}</textarea></label>
+    ${AG.sets.length ? `<label>Usar um repertório fixo<select id="fSet"><option value="">— escolher —</option>${AG.sets.map(s => `<option value="${s.id}" ${s.id === d.setId ? "selected" : ""}>${esc(s.name)} (${s.songs.length})</option>`).join("")}</select></label>` : ""}
+    <div><div class="ag-sec" style="margin-top:4px">Músicas, na ordem</div><div id="fSongs"></div></div>
+    ${isNew ? "" : `<button class="big-btn danger" id="fDel">Apagar (criado por engano)</button>`}
+  </div>`;
+  const se = songsEditor($("fSongs"), d.songs);
+  $("fSet")?.addEventListener("change", e => { const s = AG.sets.find(x => x.id === e.target.value); if (s) { d.setId = s.id; se.set(s.songs.slice()); } });
+  $("fDel")?.addEventListener("click", () => confirmSheet("Apagar de vez?", "Use só se foi criado por engano: some da agenda e ninguém recebe aviso. Para avisar a banda, use “Cancelar apresentação”.", "Apagar", async () => {
+    await api("DELETE", "/eventos/" + ev.id + "?apagar=1"); AG.events = AG.events.filter(x => x.id !== ev.id); openAgenda();
+  }));
+  formBack = () => isNew ? show("agenda") : openEvent(ev.id);
+  formSave = async () => {
+    const v = { title: $("fTitle").value, date: $("fDate").value, arrive: $("fArrive").value, start: $("fStart").value, leave: $("fLeave").value, place: $("fPlace").value, address: $("fAddr").value, uniform: $("fUni").value, notes: $("fNotes").value, songs: d.songs, setId: d.setId || "" };
+    if (!v.title.trim()) throw new Error("Escreva o nome da apresentação.");
+    if (!v.date) throw new Error("Escolha a data.");
+    const r = isNew ? await api("POST", "/eventos", v) : await api("PUT", "/eventos/" + ev.id, v);
+    upsert("events", r.event); openEvent(r.event.id); afterSave(r.event);
+  };
+  show("evForm");
+}
+function editSet(s) {
+  const isNew = !s, d = s ? { name: s.name, songs: s.songs.slice() } : { name: "", songs: [] };
+  $("formTitle").textContent = isNew ? "Novo repertório" : "Editar repertório";
+  $("formBox").innerHTML = `<div class="fm">
+    <label>Nome do repertório<input id="fName" value="${esc(d.name)}" maxlength="60" placeholder="Ex.: Natal"></label>
+    <div><div class="ag-sec" style="margin-top:4px">Músicas, na ordem</div><div id="fSongs"></div></div>
+    ${isNew ? "" : `<button class="big-btn danger" id="fDel">Apagar repertório</button>`}
+  </div>`;
+  songsEditor($("fSongs"), d.songs);
+  $("fDel")?.addEventListener("click", () => confirmSheet("Apagar repertório?", `“${esc(s.name)}” some da lista. As apresentações que já usaram ele continuam com as músicas.`, "Apagar", async () => {
+    await api("DELETE", "/repertorios/" + s.id); AG.sets = AG.sets.filter(x => x.id !== s.id); agTab = "set"; openAgenda();
+  }));
+  formBack = () => isNew ? show("agenda") : openSet(s.id);
+  formSave = async () => {
+    if (!$("fName").value.trim()) throw new Error("Escreva o nome do repertório.");
+    const v = { name: $("fName").value, songs: d.songs };
+    const r = isNew ? await api("POST", "/repertorios", v) : await api("PUT", "/repertorios/" + s.id, v);
+    upsert("sets", r.set); openSet(r.set.id);
+  };
+  show("evForm");
+}
+
+/* ---- Abrir pelo link (#evento=…) ou pelo "Compartilhar" do WhatsApp no Android ---- */
+{
+  const m = location.hash.match(/evento=([\w-]+)/);
+  const qs = new URLSearchParams(location.search), shared = [qs.get("title"), qs.get("text"), qs.get("url")].filter(Boolean).join("\n").trim();
+  agLoad().then(() => { if (m) openEvent(m[1]); });
+  if (m && AG.events.some(e => e.id === m[1])) openEvent(m[1]);
+  if (shared) { history.replaceState(null, "", location.pathname); avisoSheet(shared.slice(0, 400)); }
+}
+addEventListener("hashchange", () => { const m = location.hash.match(/evento=([\w-]+)/); if (m && curEv?.id !== m[1]) agLoad().then(() => openEvent(m[1])); });
+$("tabAg").onclick = () => { if ($("agenda").hidden) openAgenda(); };
+
 /* ---------- Avisos da banda (notificações pelo OneSignal) ---------- */
 const PUSH_APP = "1e262598-08be-4cac-918b-944ee8d049ac";
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -1330,7 +1789,7 @@ let libAt = Date.now();
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState !== "visible" || Date.now() - libAt < 30000) return;
   libAt = Date.now();
-  await loadLibrary(); await refreshSaved();
+  await loadLibrary(); await refreshSaved(); agLoad();
   if (curSong) { const n = LIB.songs.find(x => x.id === curSong.id); if (n) { curSong.parts = n.parts; scoreSetup(curSong); } }
   if (!$("list").hidden) renderList(); else if (!$("home").hidden) renderHome();
 });
