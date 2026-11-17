@@ -14,7 +14,7 @@
 <title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=arrow_back_ios_new,auto_stories,campaign,check,check_circle,chevron_right,description,download,expand_more,forward_5,graphic_eq,library_music,mic,military_tech,music_note,pause,piano,play_arrow,repeat,replay_5,search,speed,star,stop,timer,touch_app,tune,zoom_in,zoom_out&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=arrow_back_ios_new,auto_stories,campaign,check,check_circle,chevron_right,description,download,expand_more,forward_5,graphic_eq,library_music,mic,military_tech,music_note,notifications,notifications_active,pause,piano,play_arrow,repeat,replay_5,search,speed,star,stop,timer,touch_app,tune,zoom_in,zoom_out&display=block">
 <style>
 /* Banda PMBA — visual de app profissional (padrão iOS/Android): fonte do sistema, barras fixas com vidro,
    blocos de cor por categoria, listas agrupadas e interruptores. Sempre claro. */
@@ -58,6 +58,10 @@ body.scrolled .nav{border-bottom-color:var(--sep)}
 .nav-title{font:600 17px/1.2 var(--font);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:56vw}
 .nav-home{display:flex;gap:10px;padding-left:16px}
 .nav-home img{width:34px;height:34px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px var(--line-2)}
+.nav-home .bell{position:relative;margin-left:auto;width:40px;height:40px;flex:none;display:grid;place-items:center;border:0;border-radius:50%;background:var(--fill);color:var(--brand)}
+.nav-home .bell .ms{font-size:22px}
+.nav-home .bell:not(.on)::after{content:"";position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#D93A3A;box-shadow:0 0 0 2px #fff}
+.nav-home .bell.on{background:var(--brand);color:#fff}
 .nav-home b{display:block;font:700 15px/1.15 var(--font)}
 .nav-home span{display:block;font-size:12px;color:var(--muted)}
 .back{justify-self:start;display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0 6px 0 0;border:0;background:none;color:var(--brand);font:400 17px/1 var(--font)}
@@ -369,6 +373,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
     <header class="nav nav-home">
       <img src="brasao.png" alt="Brasão da Banda de Música Maestro ST Morais, Polícia Militar da Bahia" width="34" height="34">
       <div><b>Banda de Música Maestro ST Morais</b><span>Polícia Militar da Bahia</span></div>
+      <button class="bell" id="bellBtn" aria-label="Avisos da banda"><span class="ms" aria-hidden="true">notifications</span></button>
     </header>
     <div class="content">
       <div class="large-title"><h1>Repertório</h1><p id="homeSub">Escolha uma categoria para estudar.</p></div>
@@ -1261,6 +1266,64 @@ document.addEventListener("keydown", e => {
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible" && playing) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });
+/* ---------- Avisos da banda (notificações pelo OneSignal) ---------- */
+const PUSH_APP = "1e262598-08be-4cac-918b-944ee8d049ac";
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const isInstalled = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+const pushOk = "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+const osReady = new Promise(res => {
+  if (!pushOk || !location.hostname.endsWith(".github.io")) return res(null);
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async OneSignal => {
+    try {
+      const base = new URL(".", location.href).pathname; // "/estante/"
+      await OneSignal.init({
+        appId: PUSH_APP, safari_web_id: "web.onesignal.auto.47c70ae7-2660-4f5d-88d3-857f7dfd7254",
+        serviceWorkerPath: base + "sw.js", serviceWorkerUpdaterPath: base + "sw.js", serviceWorkerParam: { scope: base },
+        notifyButton: { enable: false },
+      });
+      OneSignal.User.PushSubscription.addEventListener("change", bellState);
+      res(OneSignal);
+    } catch (e) { console.error(e); res(null); }
+  });
+  const sc = document.createElement("script");
+  sc.src = "https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"; sc.defer = true; sc.onerror = () => res(null);
+  document.head.append(sc);
+});
+const pushOn = async () => { const OS = await osReady; return !!(OS && Notification.permission === "granted" && OS.User.PushSubscription.optedIn); };
+async function bellState() {
+  const on = await pushOn();
+  $("bellBtn").classList.toggle("on", on);
+  $("bellBtn").querySelector(".ms").textContent = on ? "notifications_active" : "notifications";
+}
+function infoSheet(title, text, actions = []) {
+  const bg = document.createElement("div"); bg.className = "sheet-bg";
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-label="${title}"><div class="grab"></div><h3>${title}</h3><p>${text}</p><div class="foot"></div></div>`;
+  const foot = bg.querySelector(".foot");
+  for (const [label, fn] of [...actions, ["Fechar", null]]) {
+    const b = document.createElement("button"); b.textContent = label;
+    b.onclick = () => { bg.remove(); fn?.(); };
+    foot.append(b);
+  }
+  bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  document.body.append(bg);
+}
+$("bellBtn").onclick = async () => {
+  if (isIOS && !isInstalled) return infoSheet("Avisos no iPhone", "Para receber os avisos da banda, instale o app: no Safari toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>. Abra a Estante pelo ícone novo e toque neste sino de novo.");
+  if (!pushOk) return infoSheet("Avisos", "Este navegador não recebe avisos. No Android use o Chrome; no iPhone, instale o app na Tela de Início.");
+  if (Notification.permission === "denied") return infoSheet("Avisos bloqueados", "Os avisos estão bloqueados neste aparelho. Libere as notificações deste site nos ajustes do navegador (ou do app) e toque no sino de novo.");
+  const OS = await osReady;
+  if (!OS) return infoSheet("Avisos", "Não foi possível ligar os avisos agora. Confira a internet e tente de novo.");
+  if (await pushOn()) return infoSheet("Avisos ligados", "Você recebe os avisos da banda: músicas e partituras novas e os recados do maestro.", [["Desligar avisos", async () => { await OS.User.PushSubscription.optOut(); bellState(); }]]);
+  try {
+    if (Notification.permission !== "granted") await OS.Notifications.requestPermission();
+    if (Notification.permission === "granted" && !OS.User.PushSubscription.optedIn) await OS.User.PushSubscription.optIn();
+  } catch (e) { console.error(e); }
+  await bellState();
+  if (await pushOn()) infoSheet("Pronto!", "Avisos ligados. Quando chegar música, partitura nova ou recado da banda, aparece uma notificação no seu celular.");
+};
+bellState();
+
 // No iPhone o app fica aberto em segundo plano: ao voltar, busca a lista de novo (partituras e músicas novas)
 let libAt = Date.now();
 document.addEventListener("visibilitychange", async () => {
