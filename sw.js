@@ -1,4 +1,6 @@
 // Estante da Banda — funciona sem internet.
+// Avisos da banda (notificações) via OneSignal
+try { importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js"); } catch (e) {}
 // O app fica guardado em SHELL; as músicas baixadas ficam em AUDIO (gravadas pela própria página).
 const SHELL = "estante-shell-v1";
 const AUDIO = "estante-audio-v1";
