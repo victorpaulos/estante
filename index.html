@@ -305,7 +305,13 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .fm label{display:grid;gap:6px;font:600 13px/1.2 var(--font);color:var(--ink-2)}
 .fm input,.fm textarea,.fm select{width:100%;min-height:46px;padding:0 12px;border:1px solid var(--line-2);border-radius:12px;background:#fff;color:var(--ink);font:400 16px/1.3 var(--font)}
 .fm textarea{min-height:90px;padding:10px 12px;resize:vertical}
-.fm .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fm .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+/* iPhone: campos de data/hora têm largura própria e empurravam a tela (o botão Salvar sumia) */
+.fm label,.fm input,.fm select,.fm textarea{min-width:0;max-width:100%}
+.fm input[type=date],.fm input[type=time]{-webkit-appearance:none;appearance:none;display:block;line-height:44px;text-align:left}
+.fm input::-webkit-date-and-time-value{text-align:left}
+#evForm,#evForm .content{overflow-x:hidden}
+#evForm .nav{grid-template-columns:auto minmax(0,1fr) auto}
 .fm .hint{font-weight:400;color:var(--muted)}
 .sl{border-radius:14px;background:var(--fill);overflow:hidden}
 .sl-row{position:relative;display:grid;grid-template-columns:26px 1fr auto auto auto;gap:4px;align-items:center;min-height:50px;padding:4px 6px 4px 12px}
@@ -1620,6 +1626,7 @@ $("formSave").onclick = async e => {
   try { await formSave(); } catch (x) { alertSheet(x.message); }
   e.target.disabled = false;
 };
+$("formBox").addEventListener("click", e => { if (e.target.closest("[data-save]")) $("formSave").click(); });
 function songsEditor(box, list) {
   const draw = () => {
     box.innerHTML = `<div class="sl">${list.length ? list.map((id, i) => `<div class="sl-row"><span class="n">${i + 1}</span><span class="t">${esc(songName(id))}</span>
@@ -1676,6 +1683,7 @@ function editEvent(ev) {
     <label>Observação<textarea id="fNotes" maxlength="1000" placeholder="Ex.: levar estante; concentração no portão 2">${esc(d.notes)}</textarea></label>
     ${AG.sets.length ? `<label>Usar um repertório fixo<select id="fSet"><option value="">— escolher —</option>${AG.sets.map(s => `<option value="${s.id}" ${s.id === d.setId ? "selected" : ""}>${esc(s.name)} (${s.songs.length})</option>`).join("")}</select></label>` : ""}
     <div><div class="ag-sec" style="margin-top:4px">Músicas, na ordem</div><div id="fSongs"></div></div>
+    <button class="big-btn" data-save>Salvar apresentação</button>
     ${isNew ? "" : `<button class="big-btn danger" id="fDel">Apagar (criado por engano)</button>`}
   </div>`;
   const se = songsEditor($("fSongs"), d.songs);
@@ -1699,6 +1707,7 @@ function editSet(s) {
   $("formBox").innerHTML = `<div class="fm">
     <label>Nome do repertório<input id="fName" value="${esc(d.name)}" maxlength="60" placeholder="Ex.: Natal"></label>
     <div><div class="ag-sec" style="margin-top:4px">Músicas, na ordem</div><div id="fSongs"></div></div>
+    <button class="big-btn" data-save>Salvar repertório</button>
     ${isNew ? "" : `<button class="big-btn danger" id="fDel">Apagar repertório</button>`}
   </div>`;
   songsEditor($("fSongs"), d.songs);
