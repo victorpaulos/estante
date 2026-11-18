@@ -1741,7 +1741,7 @@ function editEvent(ev) {
     <datalist id="dlTitles">${TITULOS.map(t => `<option value="${t}">`).join("")}</datalist>
     <label>Data<input id="fDate" type="date" value="${d.date}"></label>
     <div class="row3"><label>Chegada<input id="fArrive" type="time" value="${d.arrive}"></label><label>Início<input id="fStart" type="time" value="${d.start}"></label><label>Saída<input id="fLeave" type="time" value="${d.leave}"></label></div>
-    <label>Local<input id="fPlace" value="${esc(d.place)}" maxlength="120" placeholder="Ex.: Praça da Piedade"></label>
+    <label>Local<input id="fPlace" value="${esc(d.place)}" maxlength="120" placeholder="Ex.: Praça Dom Eduardo (Catedral)"></label>
     <label>Endereço <span class="hint">(para o mapa)</span><input id="fAddr" value="${esc(d.address)}" maxlength="200" placeholder="Rua, número, bairro, cidade"></label>
     <label>Uniforme<input id="fUni" list="dlUni" value="${esc(d.uniform)}" maxlength="60"></label>
     <datalist id="dlUni">${uniforms.map(u => `<option value="${esc(u)}">`).join("")}</datalist>
@@ -1979,7 +1979,7 @@ async function printReport(ev, rep) {
     ${rep.ocorrencias ? `<h2>Ocorrências / observações</h2><p>${esc(rep.ocorrencias).replace(/\n/g, "<br>")}</p>` : ""}
     ${fotos.filter(Boolean).length ? `<h2>Registro fotográfico</h2><div class="pfotos">${fotos.filter(Boolean).map(u => `<img src="${u}" alt="">`).join("")}</div>` : ""}
     <div class="sign"><span></span>${esc(rep.by || "")}<small>Relator</small></div>
-    <p class="pfoot">Salvador, ${new Date(rep.updated).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}.</p>`;
+    <p class="pfoot">Ilhéus-BA, ${new Date(rep.updated).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}.</p>`;
   const imgs = [...area.querySelectorAll("img")];
   await Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })));
   const t = document.title; document.title = `Relatório – ${ev.title} – ${ev.date}`;
