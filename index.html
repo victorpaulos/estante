@@ -15,7 +15,7 @@
 <title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=add,arrow_back_ios_new,arrow_downward,arrow_upward,auto_stories,campaign,check,check_circle,checkroom,chevron_right,close,description,download,event,expand_more,forward_5,graphic_eq,library_music,map,mic,military_tech,music_note,navigation,notifications,notifications_active,pause,piano,place,play_arrow,queue_music,repeat,replay_5,search,share,speed,star,stop,timer,touch_app,tune,zoom_in,zoom_out&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=add,arrow_back_ios_new,arrow_downward,arrow_upward,assignment,attach_file,auto_stories,badge,campaign,check,check_circle,checkroom,chevron_right,close,description,download,event,expand_more,forward_5,graphic_eq,groups,image,library_music,map,mic,military_tech,music_note,navigation,notes,notifications,notifications_active,pause,person,piano,picture_as_pdf,place,play_arrow,queue_music,repeat,replay_5,search,share,shield_person,speed,star,stop,timer,touch_app,tune,visibility,zoom_in,zoom_out&display=block">
 <style>
 /* Banda PMBA — visual de app profissional (padrão iOS/Android): fonte do sistema, barras fixas com vidro,
    blocos de cor por categoria, listas agrupadas e interruptores. Sempre claro. */
@@ -339,6 +339,54 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .sheet .err{margin:0 4px 10px;color:var(--red);font-size:14px}
 .sheet .foot .primary{background:var(--brand);color:#fff}
 
+/* Ofício, relatório e impressão */
+.fls{display:grid;gap:6px;margin-bottom:8px}
+.fl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--fill)}
+.fl > .ms{color:var(--brand)}
+.fl-open{display:grid;gap:2px;min-width:0;border:0;background:none;padding:4px 0;text-align:left}
+.fl-n{font:600 15px/1.2 var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fl-s{font-size:12px;color:var(--muted)}
+.fl-x{width:36px;height:36px;border:0;border-radius:10px;background:transparent;color:var(--ink-2)}
+.fl-msg{margin:6px 2px 0;font-size:14px;color:var(--muted)}
+.info .fls{margin:8px 0 0}
+.info .fl{background:#fff}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fm-intro{margin:0;padding:12px 14px;border-radius:14px;background:var(--brass-soft);color:var(--brand);font-size:15px}
+.rep-songs{margin:0;padding:10px 14px 10px 36px;border-radius:16px;background:var(--fill);font-size:16px;line-height:1.7}
+.fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fotos button{aspect-ratio:1;border:0;border-radius:10px;background:var(--fill) center/cover no-repeat}
+.badge.ok{background:#E3F5EA;color:var(--in-tune)}
+.badge.todo{background:#FFF1D6;color:#8A5A00}
+.doc-ov{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:#E9ECF2}
+.doc-bar{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px;background:#fff;border-bottom:.5px solid var(--sep)}
+.doc-bar button,.doc-bar a{min-height:40px;padding:0 6px;border:0;background:none;color:var(--brand);font:600 16px/40px var(--font);text-decoration:none}
+.doc-t{font:600 15px/1.2 var(--font);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-body{flex:1;overflow:auto;padding:8px;display:grid;gap:8px;justify-items:center;align-content:start;touch-action:pan-x pan-y pinch-zoom}
+.doc-body canvas,.doc-body img{max-width:100%;background:#fff;border-radius:4px;box-shadow:0 2px 10px rgba(11,18,32,.15)}
+.doc-msg{margin:40px 16px;color:var(--muted);text-align:center}
+#printArea{display:none}
+@media print{
+  html,body{height:auto!important;overflow:visible!important;background:#fff}
+  body > *:not(#printArea){display:none!important}
+  #printArea{display:block;color:#000;font:12pt/1.45 Georgia,"Times New Roman",serif;padding:0 4mm}
+  #printArea header{display:flex;align-items:center;gap:12px;padding-bottom:8px;border-bottom:2px solid #000}
+  #printArea header img{width:56px;height:56px}
+  #printArea header b{display:block;font:700 13pt/1.2 Arial,sans-serif}
+  #printArea header span{display:block;font:11pt/1.3 Arial,sans-serif}
+  #printArea h1{margin:14px 0 10px;font:700 15pt/1.2 Arial,sans-serif;text-align:center;text-transform:uppercase;letter-spacing:.04em}
+  #printArea h2{margin:14px 0 6px;font:700 12pt/1.2 Arial,sans-serif;text-transform:uppercase}
+  #printArea table{width:100%;border-collapse:collapse}
+  #printArea th,#printArea td{padding:5px 8px;border:1px solid #444;text-align:left;vertical-align:top}
+  #printArea th{width:32%;background:#eee;font:700 10.5pt/1.3 Arial,sans-serif}
+  #printArea ol{margin:0;padding-left:22px}
+  #printArea .cols{columns:2}
+  #printArea .pfotos{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  #printArea .pfotos img{width:100%;height:60mm;object-fit:cover;break-inside:avoid}
+  #printArea .sign{display:grid;justify-items:center;margin:28mm auto 4mm;width:70%;text-align:center}
+  #printArea .sign span{display:block;width:100%;border-top:1px solid #000;margin-bottom:4px}
+  #printArea .sign small{font-size:10pt}
+  #printArea .pfoot{text-align:right}
+}
 /* ---------- Telas fixas: cada tela cabe na altura do celular; só o conteúdo que não cabe rola ---------- */
 html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 *{touch-action:manipulation}
@@ -1390,7 +1438,7 @@ document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible" && playing) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch {} }
 });
 /* ---------- Agenda: apresentações e repertórios fixos (servidor no Cloudflare) ---------- */
-const API = "https://estante-api.estante-api.workers.dev";
+const API = (() => { try { return localStorage.getItem("estante:api"); } catch {} })() || "https://estante-api.estante-api.workers.dev";
 const E = n => String.fromCodePoint(n); // emojis sem escrever o caractere no código
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 let AG = (() => { try { return JSON.parse(localStorage.getItem("estante:agenda")) || { events: [], sets: [] }; } catch { return { events: [], sets: [] }; } })();
@@ -1475,8 +1523,9 @@ function renderAgenda() {
       const d = dObj(ev), b = document.createElement("button");
       b.className = "ev" + (ev.cancelled ? " cancel" : "") + (isPast ? " past" : daysTo(ev) === 0 ? " today" : "");
       const w = !isPast && !ev.cancelled && whenTxt(ev);
+      const relB = isPast && !ev.cancelled ? (ev.reportAt ? '<span class="badge ok">RELATÓRIO ✓</span>' : '<span class="badge todo">SEM RELATÓRIO</span>') : "";
       b.innerHTML = `<span class="dt"><b>${d.getDate()}</b><span>${MES[d.getMonth()]}</span></span>
-        <span><span class="t">${esc(ev.title)}</span>${ev.cancelled ? '<span class="badge">CANCELADO</span>' : w ? `<span class="badge soon">${w}</span>` : ""}
+        <span><span class="t">${esc(ev.title)}</span>${ev.cancelled ? '<span class="badge">CANCELADO</span>' : w ? `<span class="badge soon">${w}</span>` : relB}
         <span class="s">${dateShort(ev)}${ev.arrive ? " · chegada " + hhmm(ev.arrive) : ""}${ev.place ? " · " + esc(ev.place) : ""}</span></span><span class="ms chev" aria-hidden="true">chevron_right</span>`;
       b.onclick = () => openEvent(ev.id);
       g.append(b);
@@ -1516,15 +1565,20 @@ function openEvent(id) {
       ${ev.place || ev.address ? `<div><span class="ms" aria-hidden="true">place</span><span><span class="k">Local</span><span class="v">${esc(ev.place)}${ev.place && ev.address ? "\n" : ""}${esc(ev.address)}</span>
         <span class="maps"><a href="https://www.google.com/maps/search/?api=1&query=${mapsQ}" target="_blank" rel="noopener"><span class="ms" aria-hidden="true">map</span>Google Maps</a><a href="https://waze.com/ul?q=${mapsQ}&navigate=yes" target="_blank" rel="noopener"><span class="ms" aria-hidden="true">navigation</span>Waze</a></span></span></div>` : ""}
       ${ev.uniform ? `<div><span class="ms" aria-hidden="true">checkroom</span><span><span class="k">Uniforme</span><span class="v">${esc(ev.uniform)}</span></span></div>` : ""}
-      ${ev.notes ? `<div><span class="ms" aria-hidden="true">description</span><span><span class="k">Observação</span><span class="v">${esc(ev.notes)}</span></span></div>` : ""}
+      ${ev.notes ? `<div><span class="ms" aria-hidden="true">notes</span><span><span class="k">Observação</span><span class="v">${esc(ev.notes)}</span></span></div>` : ""}
+      ${ev.requester || ev.oficio || (ev.files || []).length ? `<div><span class="ms" aria-hidden="true">description</span><span><span class="k">Solicitação</span><span class="v">${esc([ev.requester, ev.oficio && "Ofício nº " + ev.oficio].filter(Boolean).join(" · ") || "Ofício")}</span>${(ev.files || []).length ? `<div class="fls" id="evFiles">${filesHtml(ev.files, false)}</div>` : ""}</span></div>` : ""}
     </div>
     <div class="ag-sec">Repertório · ${ev.songs.length} ${ev.songs.length === 1 ? "música" : "músicas"}</div>
     ${songListHtml(ev.songs)}
-    <div class="btns"><button class="big-btn wa" id="evWa"><span class="ms" aria-hidden="true">share</span>Enviar no grupo do WhatsApp</button>
+    <div class="btns">${!ev.cancelled && daysTo(ev) <= 0 ? `<button class="big-btn soft" id="evRep"><span class="ms" aria-hidden="true">assignment</span>${ev.reportAt ? "Ver relatório" : "Fazer relatório da apresentação"}</button>` : ""}
+      <button class="big-btn wa" id="evWa"><span class="ms" aria-hidden="true">share</span>Enviar no grupo do WhatsApp</button>
       ${ev.cancelled ? "" : `<button class="big-btn danger" id="evCancel">Cancelar apresentação</button>`}</div>
     ${ev.by ? `<p class="foot-note">Última alteração por ${esc(ev.by)}.</p>` : ""}`;
   bindSongList($("evBox"), ev.songs, "evView");
   $("evWa").onclick = () => shareWa(waEvent(ev));
+  if ($("evFiles")) bindFiles($("evFiles"), ev.files, () => {});
+  $("evRep")?.addEventListener("click", () => openReport(ev));
+  $("evEdit").onclick = () => withPass(() => editEvent(ev)); evBack = () => { history.replaceState(null, "", location.pathname + location.search); openAgenda(); };
   $("evCancel")?.addEventListener("click", () => withPass(() => confirmSheet("Cancelar apresentação?", `“${esc(ev.title)}” fica riscada na agenda e toda a banda recebe o aviso de cancelamento.`, "Cancelar apresentação", async () => {
     const d = await api("DELETE", "/eventos/" + ev.id); upsert("events", d.event); openEvent(ev.id); afterSave(d.event, true);
   })));
@@ -1539,11 +1593,12 @@ function openSet(id) {
     <div class="btns"><button class="big-btn wa" id="evWa"><span class="ms" aria-hidden="true">share</span>Enviar no grupo do WhatsApp</button></div>
     ${s.by ? `<p class="foot-note">Última alteração por ${esc(s.by)}.</p>` : ""}`;
   bindSongList($("evBox"), s.songs, "evView");
+  $("evEdit").onclick = () => withPass(() => editSet(s)); evBack = () => openAgenda();
   $("evWa").onclick = () => shareWa(`${E(0x1F3BC)} *Repertório: ${s.name}*\n` + s.songs.map((id, i) => `${i + 1}. ${songName(id)}`).join("\n") + `\n\n${E(0x1F4F2)} No app: ${APP_URL}`);
   show("evView");
 }
-$("backEv").onclick = () => { history.replaceState(null, "", location.pathname + location.search); openAgenda(); };
-$("evEdit").onclick = () => withPass(() => curEv ? editEvent(curEv) : editSet(curSet));
+let evBack = () => openAgenda();
+$("backEv").onclick = () => evBack();
 
 /* ---- WhatsApp ---- */
 const APP_URL = location.origin + location.pathname;
@@ -1678,7 +1733,7 @@ function pickSongs(list, done) {
 const TITULOS = ["Tocata de Natal", "Dia das Mães", "Dia dos Pais", "Dia das Crianças", "Desfile de 2 de Julho", "Desfile de 7 de Setembro", "Formatura", "Solenidade", "Missa", "Ensaio"];
 function editEvent(ev) {
   const isNew = !ev;
-  const d = ev ? { ...ev, songs: ev.songs.slice() } : { title: "", date: "", arrive: "", start: "", leave: "", place: "", address: "", uniform: "", notes: "", songs: [], setId: "" };
+  const d = ev ? { ...ev, songs: ev.songs.slice(), files: (ev.files || []).slice() } : { title: "", date: "", arrive: "", start: "", leave: "", place: "", address: "", uniform: "", notes: "", songs: [], setId: "", requester: "", oficio: "", files: [] };
   const uniforms = [...new Set(AG.events.map(e => e.uniform).filter(Boolean))];
   $("formTitle").textContent = isNew ? "Nova apresentação" : "Editar";
   $("formBox").innerHTML = `<div class="fm">
@@ -1691,19 +1746,22 @@ function editEvent(ev) {
     <label>Uniforme<input id="fUni" list="dlUni" value="${esc(d.uniform)}" maxlength="60"></label>
     <datalist id="dlUni">${uniforms.map(u => `<option value="${esc(u)}">`).join("")}</datalist>
     <label>Observação<textarea id="fNotes" maxlength="1000" placeholder="Ex.: levar estante; concentração no portão 2">${esc(d.notes)}</textarea></label>
+    <div class="row2"><label>Solicitante<input id="fReq" value="${esc(d.requester || "")}" maxlength="120" placeholder="Órgão / pessoa"></label><label>Nº do ofício<input id="fOfi" value="${esc(d.oficio || "")}" maxlength="60" placeholder="Ex.: 123/2026"></label></div>
+    <div><div class="ag-sec" style="margin-top:4px">Ofício de solicitação</div><div id="fFiles"></div></div>
     ${AG.sets.length ? `<label>Usar um repertório fixo<select id="fSet"><option value="">— escolher —</option>${AG.sets.map(s => `<option value="${s.id}" ${s.id === d.setId ? "selected" : ""}>${esc(s.name)} (${s.songs.length})</option>`).join("")}</select></label>` : ""}
     <div><div class="ag-sec" style="margin-top:4px">Músicas, na ordem</div><div id="fSongs"></div></div>
     <button class="big-btn" data-save>Salvar apresentação</button>
     ${isNew ? "" : `<button class="big-btn danger" id="fDel">Apagar (criado por engano)</button>`}
   </div>`;
   const se = songsEditor($("fSongs"), d.songs);
+  attachField($("fFiles"), d.files, { accept: ".pdf,image/*", label: "Anexar ofício (PDF ou foto)", max: 5, multiple: true });
   $("fSet")?.addEventListener("change", e => { const s = AG.sets.find(x => x.id === e.target.value); if (s) { d.setId = s.id; se.set(s.songs.slice()); } });
   $("fDel")?.addEventListener("click", () => confirmSheet("Apagar de vez?", "Use só se foi criado por engano: some da agenda e ninguém recebe aviso. Para avisar a banda, use “Cancelar apresentação”.", "Apagar", async () => {
     await api("DELETE", "/eventos/" + ev.id + "?apagar=1"); AG.events = AG.events.filter(x => x.id !== ev.id); openAgenda();
   }));
   formBack = () => isNew ? show("agenda") : openEvent(ev.id);
   formSave = async () => {
-    const v = { title: $("fTitle").value, date: $("fDate").value, arrive: $("fArrive").value, start: $("fStart").value, leave: $("fLeave").value, place: $("fPlace").value, address: $("fAddr").value, uniform: $("fUni").value, notes: $("fNotes").value, songs: d.songs, setId: d.setId || "" };
+    const v = { title: $("fTitle").value, date: $("fDate").value, arrive: $("fArrive").value, start: $("fStart").value, leave: $("fLeave").value, place: $("fPlace").value, address: $("fAddr").value, uniform: $("fUni").value, notes: $("fNotes").value, songs: d.songs, setId: d.setId || "", requester: $("fReq").value, oficio: $("fOfi").value, files: d.files };
     if (!v.title.trim()) throw new Error("Escreva o nome da apresentação.");
     if (!v.date) throw new Error("Escolha a data.");
     const r = isNew ? await api("POST", "/eventos", v) : await api("PUT", "/eventos/" + ev.id, v);
@@ -1732,6 +1790,200 @@ function editSet(s) {
     upsert("sets", r.set); openSet(r.set.id);
   };
   show("evForm");
+}
+
+/* ---- Arquivos (ofício e fotos): só abrem com a senha da banda ---- */
+const kb = n => n > 1048576 ? (n / 1048576).toFixed(1).replace(".", ",") + " MB" : Math.max(1, Math.round(n / 1024)) + " KB";
+async function shrinkImage(file, max, q) {
+  const bmp = await createImageBitmap(file), k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return new Promise(r => c.toBlob(r, "image/jpeg", q));
+}
+async function uploadFile(file) {
+  let blob = file, type = file.type || "application/octet-stream", name = file.name || "arquivo";
+  if (/^image\//.test(type) && file.size > 700 * 1024) { blob = await shrinkImage(file, 1800, 0.82); type = "image/jpeg"; name = name.replace(/\.\w+$/, "") + ".jpg"; }
+  if (blob.size > 10 * 1048576) throw new Error(`“${name}” passa de 10 MB.`);
+  const r = await fetch(API + "/arquivos", { method: "POST", headers: { "Content-Type": type, "X-Banda": band.get().pass || "", "X-Nome": encodeURIComponent(name) }, body: blob });
+  const d = await r.json().catch(() => ({}));
+  if (r.status === 401) { band.set({ ...band.get(), pass: "" }); throw new Error("A senha da banda mudou ou está errada. Tente de novo."); }
+  if (!r.ok) throw new Error(d.error || "Erro " + r.status);
+  return d.file;
+}
+const blobCache = new Map();
+async function fileBlob(f) {
+  if (blobCache.has(f.id)) return blobCache.get(f.id);
+  const r = await fetch(API + "/arquivos/" + f.id, { headers: { "X-Banda": band.get().pass || "" } });
+  if (r.status === 401) { band.set({ ...band.get(), pass: "" }); throw new Error("Precisa da senha da banda."); }
+  if (!r.ok) throw new Error("Não foi possível abrir o arquivo.");
+  const b = await r.blob(); blobCache.set(f.id, b); return b;
+}
+const fileIcon = f => /^image\//.test(f.type) ? "image" : "description";
+function filesHtml(files, removable) {
+  return files.map((f, i) => `<div class="fl"><span class="ms" aria-hidden="true">${fileIcon(f)}</span><button class="fl-open" data-open="${i}"><span class="fl-n">${esc(f.name)}</span><span class="fl-s">${kb(f.size)}</span></button>${removable ? `<button class="fl-x" data-rm="${i}" aria-label="Tirar"><span class="ms" aria-hidden="true">close</span></button>` : ""}</div>`).join("");
+}
+// visualizador dentro do app (PDF página por página, ou foto)
+function openFile(f) {
+  withPass(async () => {
+    const ov = document.createElement("div"); ov.className = "doc-ov"; let url = "";
+    ov.innerHTML = `<div class="doc-bar"><button data-a="x">Fechar</button><span class="doc-t">${esc(f.name)}</span><a data-a="dl" download="${esc(f.name)}">Baixar</a></div><div class="doc-body"><p class="doc-msg">Abrindo…</p></div>`;
+    document.body.append(ov);
+    ov.querySelector('[data-a="x"]').onclick = () => { ov.remove(); if (url) URL.revokeObjectURL(url); };
+    const body = ov.querySelector(".doc-body");
+    try {
+      const b = await fileBlob(f); url = URL.createObjectURL(b); ov.querySelector('[data-a="dl"]').href = url;
+      if (/^image\//.test(f.type)) { body.innerHTML = `<img src="${url}" alt="${esc(f.name)}">`; return; }
+      if (/pdf/.test(f.type) || /\.pdf$/i.test(f.name)) {
+        const lib = await loadPdfjs(), doc = await lib.getDocument({ data: new Uint8Array(await b.arrayBuffer()) }).promise;
+        body.innerHTML = "";
+        const w = Math.min(body.clientWidth - 16, 900), dpr = Math.min(2, devicePixelRatio || 1);
+        for (let n = 1; n <= doc.numPages; n++) {
+          const page = await doc.getPage(n), vp = page.getViewport({ scale: w / page.getViewport({ scale: 1 }).width * dpr });
+          const c = document.createElement("canvas"); c.width = vp.width; c.height = vp.height; c.style.width = w + "px";
+          body.append(c); await page.render({ canvasContext: c.getContext("2d"), viewport: vp }).promise;
+        }
+        return;
+      }
+      body.innerHTML = `<p class="doc-msg">Toque em <b>Baixar</b> para abrir este arquivo.</p>`;
+    } catch (x) { body.innerHTML = `<p class="doc-msg">${esc(x.message)}</p>`; }
+  });
+}
+function bindFiles(root, files, onRemove) {
+  root.querySelectorAll("[data-open]").forEach(b => b.onclick = () => openFile(files[+b.dataset.open]));
+  root.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => onRemove(+b.dataset.rm));
+}
+// campo de anexos no formulário (ofício / fotos)
+function attachField(box, files, { accept, label, max, multiple }) {
+  const draw = (msg = "") => {
+    box.innerHTML = `${files.length ? `<div class="fls">${filesHtml(files, true)}</div>` : ""}
+      ${files.length < max ? `<label class="add-songs"><span class="ms" aria-hidden="true">attach_file</span>${label}<input type="file" accept="${accept}" ${multiple ? "multiple" : ""} hidden></label>` : ""}
+      ${msg ? `<p class="fl-msg">${msg}</p>` : ""}`;
+    bindFiles(box, files, i => { files.splice(i, 1); draw(); });
+    const inp = box.querySelector("input[type=file]");
+    if (inp) inp.onchange = async () => {
+      const list = [...inp.files].slice(0, max - files.length);
+      for (let i = 0; i < list.length; i++) {
+        draw(`Enviando ${list.length > 1 ? `${i + 1} de ${list.length}` : "o arquivo"}…`);
+        try { files.push(await uploadFile(list[i])); } catch (x) { draw(esc(x.message)); return; }
+      }
+      draw();
+    };
+  };
+  draw();
+}
+
+/* ---- Relatório da apresentação ---- */
+const AVALIA = ["Excelente", "Boa", "Regular", "Ruim"];
+async function getReport(ev) {
+  const r = await fetch(API + "/relatorios/" + ev.id, { headers: { "X-Banda": band.get().pass || "" } });
+  if (r.status === 401) { band.set({ ...band.get(), pass: "" }); throw new Error("Precisa da senha da banda."); }
+  if (!r.ok) throw new Error("Não foi possível abrir o relatório.");
+  return (await r.json()).report;
+}
+function openReport(ev) {
+  withPass(async () => {
+    const rep = await getReport(ev);
+    if (!rep) return editReport(ev, null);
+    curEv = ev;
+    $("evNavTitle").textContent = "Relatório"; $("evEdit").hidden = false;
+    $("evEdit").onclick = () => editReport(ev, rep); evBack = () => openEvent(ev.id);
+    const row = (ic, k, v) => v ? `<div><span class="ms" aria-hidden="true">${ic}</span><span><span class="k">${k}</span><span class="v">${esc(v)}</span></span></div>` : "";
+    $("evBox").innerHTML = `<div class="ev-hero"><h2>Relatório</h2><p>${esc(ev.title)} · ${dateShort(ev)}</p></div>
+      <div class="times"><div><b>${hhmm(rep.arrive) || "—"}</b><span>Chegada</span></div><div><b>${hhmm(rep.start) || "—"}</b><span>Início</span></div><div><b>${hhmm(rep.end) || "—"}</b><span>Término</span></div></div>
+      <div class="info">
+        ${row("place", "Local", [ev.place, ev.address].filter(Boolean).join(" – "))}
+        ${row("description", "Solicitante", [ev.requester, ev.oficio && "Ofício nº " + ev.oficio].filter(Boolean).join(" · "))}
+        ${row("person", "Regente", rep.regente)}
+        ${row("shield_person", "Comandante / responsável", rep.comandante)}
+        ${row("groups", "Efetivo", rep.efetivo ? rep.efetivo + " músicos" : "")}
+        ${row("checkroom", "Uniforme", ev.uniform)}
+        ${row("visibility", "Público estimado", rep.publico)}
+        ${row("star", "Avaliação", rep.avaliacao)}
+        ${row("notes", "Ocorrências / observações", rep.ocorrencias)}
+        ${row("badge", "Músicos presentes", rep.musicos)}
+      </div>
+      <div class="ag-sec">Repertório executado · ${rep.songs.length}</div>
+      ${rep.songs.length ? `<ol class="rep-songs">${rep.songs.map(id => `<li>${esc(songName(id))}</li>`).join("")}</ol>` : `<div class="empty">Nenhuma música marcada.</div>`}
+      ${rep.fotos.length ? `<div class="ag-sec">Fotos · ${rep.fotos.length}</div><div class="fotos" id="repFotos">${rep.fotos.map((f, i) => `<button data-open="${i}" aria-label="Abrir foto"></button>`).join("")}</div>` : ""}
+      <div class="btns"><button class="big-btn" id="repPdf"><span class="ms" aria-hidden="true">picture_as_pdf</span>Gerar PDF / imprimir</button>
+        <button class="big-btn wa" id="repWa"><span class="ms" aria-hidden="true">share</span>Enviar resumo no WhatsApp</button></div>
+      <p class="foot-note">Feito por ${esc(rep.by || "—")} em ${new Date(rep.updated).toLocaleDateString("pt-BR")}.</p>`;
+    const fotos = $("repFotos");
+    if (fotos) {
+      bindFiles(fotos, rep.fotos, () => {});
+      rep.fotos.forEach((f, i) => fileBlob(f).then(b => { fotos.children[i].style.backgroundImage = `url(${URL.createObjectURL(b)})`; }).catch(() => {}));
+    }
+    $("repPdf").onclick = () => printReport(ev, rep);
+    $("repWa").onclick = () => shareWa(waReport(ev, rep));
+    show("evView");
+  });
+}
+function editReport(ev, rep) {
+  const d = rep ? { ...rep, songs: rep.songs.slice(), fotos: rep.fotos.slice() } : { arrive: ev.arrive, start: ev.start, end: ev.leave, regente: "", comandante: "", efetivo: "", musicos: "", songs: ev.songs.slice(), publico: "", ocorrencias: "", avaliacao: "", fotos: [] };
+  $("formTitle").textContent = "Relatório";
+  $("formBox").innerHTML = `<div class="fm">
+    <p class="fm-intro"><b>${esc(ev.title)}</b><br>${dateLong(ev)}${ev.place ? " · " + esc(ev.place) : ""}</p>
+    <div class="row3"><label>Chegada<input id="rArrive" type="time" value="${d.arrive || ""}"></label><label>Início<input id="rStart" type="time" value="${d.start || ""}"></label><label>Término<input id="rEnd" type="time" value="${d.end || ""}"></label></div>
+    <label>Regente<input id="rReg" value="${esc(d.regente)}" maxlength="80" placeholder="Posto/graduação e nome"></label>
+    <label>Comandante / responsável<input id="rCmt" value="${esc(d.comandante)}" maxlength="80" placeholder="Posto/graduação e nome"></label>
+    <div class="row2"><label>Efetivo (nº de músicos)<input id="rEfe" type="number" inputmode="numeric" min="0" max="500" value="${d.efetivo || ""}"></label>
+      <label>Público estimado<input id="rPub" value="${esc(d.publico)}" maxlength="40" placeholder="Ex.: 300 pessoas"></label></div>
+    <label>Músicos presentes <span class="hint">(um por linha, opcional)</span><textarea id="rMus" maxlength="4000">${esc(d.musicos)}</textarea></label>
+    <div><div class="ag-sec" style="margin-top:4px">Repertório executado, na ordem</div><div id="rSongs"></div></div>
+    <label>Avaliação da apresentação<select id="rAval"><option value="">—</option>${AVALIA.map(a => `<option ${a === d.avaliacao ? "selected" : ""}>${a}</option>`).join("")}</select></label>
+    <label>Ocorrências / observações<textarea id="rOco" maxlength="4000" placeholder="Ex.: atraso do transporte; chuva; elogio do comandante…">${esc(d.ocorrencias)}</textarea></label>
+    <div><div class="ag-sec" style="margin-top:4px">Fotos (até 12)</div><div id="rFotos"></div></div>
+    <button class="big-btn" data-save>Salvar relatório</button>
+  </div>`;
+  songsEditor($("rSongs"), d.songs);
+  attachField($("rFotos"), d.fotos, { accept: "image/*", label: "Adicionar fotos", max: 12, multiple: true });
+  formBack = () => rep ? openReport(ev) : openEvent(ev.id);
+  formSave = async () => {
+    const v = { arrive: $("rArrive").value, start: $("rStart").value, end: $("rEnd").value, regente: $("rReg").value, comandante: $("rCmt").value, efetivo: $("rEfe").value,
+      musicos: $("rMus").value, songs: d.songs, publico: $("rPub").value, avaliacao: $("rAval").value, ocorrencias: $("rOco").value, fotos: d.fotos };
+    const r = await api("PUT", "/relatorios/" + ev.id, v);
+    upsert("events", r.event); openReport(r.event);
+  };
+  show("evForm");
+}
+function waReport(ev, rep) {
+  const L = [`${E(0x1F4CB)} *Relatório – ${ev.title}*`, `${E(0x1F4C5)} ${dateLong(ev).replace(/^./, c => c.toUpperCase())}`];
+  const h = [rep.start && "início " + hhmm(rep.start), rep.end && "término " + hhmm(rep.end)].filter(Boolean);
+  if (h.length) L.push(`${E(0x23F0)} ${h.join(" · ")}`);
+  if (ev.place) L.push(`${E(0x1F4CD)} ${ev.place}`);
+  const p = [rep.efetivo && rep.efetivo + " músicos", rep.regente && "Regente: " + rep.regente].filter(Boolean);
+  if (p.length) L.push(`${E(0x1F465)} ${p.join(" · ")}`);
+  if (rep.publico) L.push(`${E(0x1F5E3)} Público: ${rep.publico}`);
+  if (rep.songs.length) L.push(`${E(0x1F3BC)} *Repertório executado:*\n` + rep.songs.map((id, i) => `${i + 1}. ${songName(id)}`).join("\n"));
+  if (rep.ocorrencias) L.push(`${E(0x1F4DD)} ${rep.ocorrencias}`);
+  return L.join("\n");
+}
+// PDF: monta uma página de impressão e abre o "Imprimir" do celular (lá dá para salvar em PDF)
+async function printReport(ev, rep) {
+  let area = $("printArea");
+  if (!area) { area = document.createElement("div"); area.id = "printArea"; document.body.append(area); }
+  const fotos = await Promise.all(rep.fotos.map(f => fileBlob(f).then(b => URL.createObjectURL(b)).catch(() => "")));
+  const tr = (k, v) => v ? `<tr><th>${k}</th><td>${esc(v).replace(/\n/g, "<br>")}</td></tr>` : "";
+  area.innerHTML = `<header><img src="brasao.png" alt=""><div><b>POLÍCIA MILITAR DA BAHIA</b><span>Banda de Música Maestro ST Morais</span></div></header>
+    <h1>Relatório de Apresentação</h1>
+    <table>
+      ${tr("Evento", ev.title)}${tr("Data", dateLong(ev).replace(/^./, c => c.toUpperCase()) + " de " + ev.date.slice(0, 4))}
+      ${tr("Local", [ev.place, ev.address].filter(Boolean).join(" – "))}
+      ${tr("Solicitante", [ev.requester, ev.oficio && "Ofício nº " + ev.oficio].filter(Boolean).join(" – "))}
+      ${tr("Horários", [rep.arrive && "Chegada " + hhmm(rep.arrive), rep.start && "Início " + hhmm(rep.start), rep.end && "Término " + hhmm(rep.end)].filter(Boolean).join(" · "))}
+      ${tr("Uniforme", ev.uniform)}${tr("Regente", rep.regente)}${tr("Comandante / responsável", rep.comandante)}
+      ${tr("Efetivo", rep.efetivo ? rep.efetivo + " músicos" : "")}${tr("Público estimado", rep.publico)}${tr("Avaliação", rep.avaliacao)}
+    </table>
+    ${rep.songs.length ? `<h2>Repertório executado</h2><ol>${rep.songs.map(id => `<li>${esc(songName(id))}</li>`).join("")}</ol>` : ""}
+    ${rep.musicos ? `<h2>Músicos presentes</h2><p class="cols">${esc(rep.musicos).replace(/\n/g, "<br>")}</p>` : ""}
+    ${rep.ocorrencias ? `<h2>Ocorrências / observações</h2><p>${esc(rep.ocorrencias).replace(/\n/g, "<br>")}</p>` : ""}
+    ${fotos.filter(Boolean).length ? `<h2>Registro fotográfico</h2><div class="pfotos">${fotos.filter(Boolean).map(u => `<img src="${u}" alt="">`).join("")}</div>` : ""}
+    <div class="sign"><span></span>${esc(rep.by || "")}<small>Relator</small></div>
+    <p class="pfoot">Salvador, ${new Date(rep.updated).toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" })}.</p>`;
+  const imgs = [...area.querySelectorAll("img")];
+  await Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })));
+  const t = document.title; document.title = `Relatório – ${ev.title} – ${ev.date}`;
+  setTimeout(() => { window.print(); document.title = t; }, 100);
 }
 
 /* ---- Abrir pelo link (#evento=…) ou pelo "Compartilhar" do WhatsApp no Android ---- */
