@@ -2141,7 +2141,7 @@ const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platfor
 const isInstalled = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 const pushOk = "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
 const osReady = new Promise(res => {
-  if (!pushOk || !location.hostname.endsWith(".github.io")) return res(null);
+  if (!pushOk || location.protocol !== "https:") return res(null); // avisos só no site publicado (banda.conexsync.com.br)
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async OneSignal => {
     try {
