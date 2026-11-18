@@ -498,8 +498,9 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
 .mini .mtempo b{font:600 13px/1 var(--font);min-width:38px;text-align:center}
 .mini .mloop[aria-pressed="true"]{color:var(--in-tune)}
 /* Folha de escolha da parte */
-.sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(11,18,32,.38);display:flex;align-items:flex-end;justify-content:center}
-.sheet{width:100%;max-width:640px;max-height:78vh;display:flex;flex-direction:column;border-radius:20px 20px 0 0;background:#fff;padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+.sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(11,18,32,.38);display:flex;align-items:flex-end;justify-content:center;cursor:pointer}
+.sheet{position:relative;cursor:auto;overflow-y:auto;width:100%;max-width:640px;max-height:min(78vh,calc(100dvh - 24px));display:flex;flex-direction:column;border-radius:20px 20px 0 0;background:#fff;padding:10px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.2)}
+.sheet .sh-x{position:absolute;top:8px;right:10px;width:36px;height:36px;border:0;border-radius:50%;background:var(--fill);color:var(--ink-2);display:grid;place-items:center}
 .sheet .grab{width:38px;height:5px;border-radius:3px;background:#D5D9E2;margin:2px auto 10px}
 .sheet h3{font:700 18px/1.2 var(--font);margin:0 4px 4px}
 .sheet p{margin:0 4px 10px;font-size:14px;color:var(--muted)}
@@ -1499,7 +1500,8 @@ const whenTxt = ev => { const n = daysTo(ev); return n === 0 ? "Hoje" : n === 1 
 // músicas de um evento/repertório: id da biblioteca ou "txt:Nome" (música que ainda não está no app)
 const songById = id => LIB.songs.find(s => s.id === id);
 const songName = id => id.startsWith("txt:") ? id.slice(4) : (songById(id)?.title || "(música removida)");
-const libUnique = () => [...new Map(LIB.songs.map(s => [s.id, s])).values()].sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
+// músicas para montar repertórios (sem os toques de corneta)
+const libUnique = () => [...new Map(LIB.songs.filter(s => s.cat !== "toques").map(s => [s.id, s])).values()].sort((a, b) => a.title.localeCompare(b.title, "pt-BR"));
 
 /* ---- Início: próxima apresentação ---- */
 function renderNextEv() {
@@ -1676,13 +1678,15 @@ function waEvent(ev) {
   L.push(`${E(0x1F4F2)} Detalhes no app: ${APP_URL}#evento=${ev.id}`);
   return L.join("\n");
 }
-const shareWa = text => { location.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text); }; // o wa.me estraga os emojis
+// abre o WhatsApp fora do app (antes o app instalado no iPhone ficava preso na página do WhatsApp); o wa.me estraga os emojis
+const shareWa = text => { const u = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text); if (!window.open(u, "_blank", "noopener")) location.href = u; };
 
 /* ---- Folhas (senha, confirmação, aviso) ---- */
 function sheet(html, onReady) {
   const bg = document.createElement("div"); bg.className = "sheet-bg";
-  bg.innerHTML = `<div class="sheet" role="dialog"><div class="grab"></div>${html}</div>`;
+  bg.innerHTML = `<div class="sheet" role="dialog"><button class="sh-x" aria-label="Fechar"><span class="ms" aria-hidden="true">close</span></button><div class="grab"></div>${html}</div>`;
   bg.onclick = e => { if (e.target === bg) bg.remove(); };
+  bg.querySelector(".sh-x").onclick = () => bg.remove();
   document.body.append(bg); onReady?.(bg, () => bg.remove());
   return bg;
 }
@@ -1727,7 +1731,8 @@ function avisoSheet(text = "") {
       const er = bg.querySelector(".err"), txt = bg.querySelector("#avText").value.trim();
       if (!txt) { er.textContent = "Escreva a mensagem."; er.hidden = false; return; }
       e.target.disabled = true; e.target.textContent = "Enviando…";
-      try { await api("POST", "/aviso", { title: bg.querySelector("#avTitle").value, text: txt }); close(); alertSheet2("Aviso enviado", "Toda a banda recebe a notificação em alguns segundos."); }
+      const tit = bg.querySelector("#avTitle").value.trim() || "Banda PMBA";
+      try { await api("POST", "/aviso", { title: tit, text: txt }); close(); alertSheet2("Aviso enviado", "Toda a banda recebe a notificação no app em alguns segundos. Quer mandar também no grupo do WhatsApp?", ["Enviar no WhatsApp", () => shareWa(`${E(0x1F4E3)} *${tit}*\n${txt}`)]); }
       catch (x) { er.textContent = x.message; er.hidden = false; e.target.disabled = false; e.target.textContent = "Enviar aviso"; }
     };
   }));
@@ -2090,7 +2095,8 @@ async function bellState() {
 }
 function infoSheet(title, text, actions = []) {
   const bg = document.createElement("div"); bg.className = "sheet-bg";
-  bg.innerHTML = `<div class="sheet" role="dialog" aria-label="${title}"><div class="grab"></div><h3>${title}</h3><p>${text}</p><div class="foot"></div></div>`;
+  bg.innerHTML = `<div class="sheet" role="dialog" aria-label="${title}"><button class="sh-x" aria-label="Fechar"><span class="ms" aria-hidden="true">close</span></button><div class="grab"></div><h3>${title}</h3><p>${text}</p><div class="foot"></div></div>`;
+  bg.querySelector(".sh-x").onclick = () => bg.remove();
   const foot = bg.querySelector(".foot");
   for (const [label, fn] of [...actions, ["Fechar", null]]) {
     const b = document.createElement("button"); b.textContent = label;
