@@ -15,7 +15,7 @@
 <title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=add,arrow_back_ios_new,arrow_downward,arrow_upward,assignment,attach_file,auto_stories,badge,calendar_month,campaign,check,check_circle,checkroom,chevron_left,chevron_right,close,delete,description,download,event,expand_more,forward_5,graphic_eq,groups,image,library_music,map,mic,military_tech,music_note,navigation,notes,notifications,notifications_active,pause,person,piano,picture_as_pdf,place,play_arrow,push_pin,queue_music,repeat,replay_5,search,share,shield_person,speed,star,stop,timer,touch_app,tune,visibility,zoom_in,zoom_out&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=add,arrow_back_ios_new,arrow_downward,arrow_upward,assignment,attach_file,auto_stories,badge,calendar_month,campaign,check,check_circle,checkroom,chevron_left,chevron_right,close,delete,description,download,event,expand_more,forward_5,graphic_eq,groups,image,library_music,map,mic,military_tech,music_note,navigation,notes,notifications,notifications_active,pause,person,piano,picture_as_pdf,place,play_arrow,push_pin,queue_music,repeat,replay_5,search,settings,share,shield_person,speed,star,stop,timer,touch_app,tune,visibility,zoom_in,zoom_out&display=block">
 <style>
 /* Banda PMBA — visual de app profissional (padrão iOS/Android): fonte do sistema, barras fixas com vidro,
    blocos de cor por categoria, listas agrupadas e interruptores. Sempre claro. */
@@ -275,6 +275,8 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .badge.soon{background:var(--brass-soft);color:var(--brand)}
 .my-inst{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin:-6px 0 12px;min-height:36px;padding:0 14px 0 10px;border:0;border-radius:999px;background:var(--fill);color:var(--ink-2);font:500 14px/1.2 var(--font);text-align:left}
 .my-inst .ms{font-size:20px;color:var(--brand)}
+.home-pills{display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 12px}
+.home-pills .my-inst{margin:0;text-decoration:none}
 .my-inst b{color:var(--ink);font-weight:700}
 .my-inst.none{background:var(--brand);color:#fff}
 .my-inst.none .ms{color:#fff}
@@ -552,7 +554,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
     </header>
     <div class="content">
       <div class="large-title"><h1>Repertório</h1><p id="homeSub">Escolha uma categoria para estudar.</p></div>
-      <button class="my-inst" id="myInst"></button>
+      <div class="home-pills"><button class="my-inst" id="myInst"></button><a class="my-inst" id="manageBtn" href="admin.html" hidden><span class="ms" aria-hidden="true">settings</span>Gerenciar músicas</a></div>
       <button class="next-ev" id="nextEv" hidden></button>
       <div class="cats" id="cats"></div>
       <div class="group tools" hidden><!-- Afinador e Metrônomo ficam nas abas de baixo -->
@@ -1531,6 +1533,7 @@ const libUnique = () => [...new Map(LIB.songs.filter(s => s.cat !== "toques").ma
 
 /* ---- Início: próxima apresentação ---- */
 function renderNextEv() {
+  $("manageBtn").hidden = !band.get().pass; // só quem tem a senha da banda envia músicas e partituras
   const box = $("nextEv"); if (!box) return;
   const t = todayStr(), ev = AG.events.filter(e => !e.cancelled && e.date >= t).sort((a, b) => (a.date + a.arrive).localeCompare(b.date + b.arrive))[0];
   box.hidden = !ev || daysTo(ev) > 21;
@@ -1754,7 +1757,7 @@ function withPass(fn) {
       const r = await fetch(API + "/senha", { method: "POST", headers: { "X-Banda": pass } }).catch(() => null);
       if (!r) { er.textContent = "Sem internet. Tente de novo."; er.hidden = false; e.target.disabled = false; return; }
       if (!r.ok) { er.textContent = "Senha incorreta."; er.hidden = false; e.target.disabled = false; return; }
-      band.set({ pass, name }); close(); fn();
+      band.set({ pass, name }); close(); renderNextEv(); fn();
     };
     setTimeout(() => bg.querySelector("#bpPass").focus(), 50);
   });
