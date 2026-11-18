@@ -21,7 +21,8 @@ self.addEventListener("activate", e => {
 async function networkFirst(req, opts) {
   const cache = await caches.open(SHELL);
   try {
-    const res = await fetch(req);
+    // "no-cache": confere sempre com o site (senão o celular usa uma cópia de até 10 min e a versão nova demora a aparecer)
+    const res = await fetch(req.mode === "navigate" ? new Request(req.url, { cache: "no-cache", credentials: "same-origin" }) : new Request(req, { cache: "no-cache" }));
     if (res.ok) cache.put(opts && opts.key || req, res.clone());
     return res;
   } catch (err) {
