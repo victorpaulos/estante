@@ -15,7 +15,7 @@
 <title>Banda de Música PMBA</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=add,arrow_back_ios_new,arrow_downward,arrow_upward,assignment,attach_file,auto_stories,badge,campaign,check,check_circle,checkroom,chevron_right,close,description,download,event,expand_more,forward_5,graphic_eq,groups,image,library_music,map,mic,military_tech,music_note,navigation,notes,notifications,notifications_active,pause,person,piano,picture_as_pdf,place,play_arrow,queue_music,repeat,replay_5,search,share,shield_person,speed,star,stop,timer,touch_app,tune,visibility,zoom_in,zoom_out&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400..600,0..1,0&icon_names=add,arrow_back_ios_new,arrow_downward,arrow_upward,assignment,attach_file,auto_stories,badge,calendar_month,campaign,check,check_circle,checkroom,chevron_left,chevron_right,close,description,download,event,expand_more,forward_5,graphic_eq,groups,image,library_music,map,mic,military_tech,music_note,navigation,notes,notifications,notifications_active,pause,person,piano,picture_as_pdf,place,play_arrow,queue_music,repeat,replay_5,search,share,shield_person,speed,star,stop,timer,touch_app,tune,visibility,zoom_in,zoom_out&display=block">
 <style>
 /* Banda PMBA — visual de app profissional (padrão iOS/Android): fonte do sistema, barras fixas com vidro,
    blocos de cor por categoria, listas agrupadas e interruptores. Sempre claro. */
@@ -253,7 +253,7 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .ag-acts{display:flex;gap:8px;padding-top:14px}
 .ic-btn{display:grid;place-items:center;width:42px;height:42px;border:0;border-radius:50%;background:var(--fill);color:var(--brand)}
 .ic-btn.fill{background:var(--brand);color:#fff}
-.seg2{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:3px;border-radius:12px;background:var(--fill-2);margin-bottom:12px}
+.seg2{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:3px;border-radius:12px;background:var(--fill-2);margin-bottom:12px}
 .seg2 button{min-height:36px;border:0;border-radius:9px;background:transparent;font:600 14px/1 var(--font);color:var(--ink-2)}
 .seg2 button[aria-selected="true"]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(11,18,32,.12)}
 .ag-sec{margin:16px 4px 6px;font:600 13px/1 var(--font);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -339,6 +339,25 @@ body.scrolled #list .nav-title,body.scrolled #tuner .nav-title,body.scrolled #me
 .sheet .err{margin:0 4px 10px;color:var(--red);font-size:14px}
 .sheet .foot .primary{background:var(--brand);color:#fff}
 
+/* Calendário */
+.cal{padding:10px 8px 8px;border-radius:16px;background:var(--fill)}
+.cal-h{display:grid;grid-template-columns:auto 1fr auto auto;gap:6px;align-items:center;padding:0 4px 8px}
+.cal-h b{font:700 17px/1 var(--font);text-transform:capitalize}
+.cal-h button{display:grid;place-items:center;min-width:38px;height:38px;padding:0 10px;border:0;border-radius:10px;background:#fff;color:var(--brand);font:600 14px/1 var(--font)}
+.cal-w,.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cal-w span{padding:4px 0;font:600 11px/1 var(--font);color:var(--muted)}
+.cd{display:grid;justify-items:center;align-content:start;gap:3px;min-height:44px;padding:6px 0 4px;border:0;border-radius:10px;background:transparent;color:var(--ink)}
+.cd b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;font:500 15px/1 var(--font)}
+.cd.past b{color:var(--muted)}
+.cd.today b{color:var(--red);font-weight:800}
+.cd.sel b{background:var(--brand);color:#fff;font-weight:700}
+.cd.today.sel b{background:var(--red)}
+.cd .dots{display:flex;gap:3px;height:6px}
+.cd .dots i{width:6px;height:6px;border-radius:50%;background:var(--brand)}
+.cd .dots i.p{background:#9AA1B2}
+.cd .dots i.c{background:var(--red)}
+#calDay .ag-sec{margin-top:14px}
+#calDay .add-songs{margin-top:10px}
 /* Ofício, relatório e impressão */
 .fls{display:grid;gap:6px;margin-bottom:8px}
 .fl{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:8px 10px;border-radius:12px;background:var(--fill)}
@@ -544,7 +563,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none}
       <div class="ag-head"><div class="large-title"><h1>Agenda</h1><p id="agSub">Apresentações da banda</p></div>
         <div class="ag-acts"><button class="ic-btn" id="agAviso" aria-label="Mandar aviso para a banda"><span class="ms" aria-hidden="true">campaign</span></button>
         <button class="ic-btn fill" id="agNew" aria-label="Novo"><span class="ms" aria-hidden="true">add</span></button></div></div>
-      <div class="seg2" role="tablist"><button role="tab" id="agTabEv" aria-selected="true">Apresentações</button><button role="tab" id="agTabSet" aria-selected="false">Repertórios</button></div>
+      <div class="seg2" role="tablist"><button role="tab" id="agTabEv" aria-selected="true">Apresentações</button><button role="tab" id="agTabCal" aria-selected="false">Calendário</button><button role="tab" id="agTabSet" aria-selected="false">Repertórios</button></div>
       <p class="offline" id="agOff" hidden>Sem internet: mostrando a última agenda salva no celular.</p>
       <div id="agBox"></div>
     </div>
@@ -1495,9 +1514,10 @@ function renderNextEv() {
 /* ---- Lista ---- */
 function openAgenda() { renderAgenda(); show("agenda"); agLoad(); }
 function renderAgenda() {
-  $("agTabEv").setAttribute("aria-selected", agTab === "ev"); $("agTabSet").setAttribute("aria-selected", agTab === "set");
+  $("agTabEv").setAttribute("aria-selected", agTab === "ev"); $("agTabSet").setAttribute("aria-selected", agTab === "set"); $("agTabCal").setAttribute("aria-selected", agTab === "cal");
   $("agOff").hidden = !agOffline;
   const box = $("agBox"); box.innerHTML = "";
+  if (agTab === "cal") { $("agSub").textContent = "Calendário da banda"; renderCal(box); return; }
   if (agTab === "set") {
     $("agSub").textContent = "Repertórios fixos da banda";
     const sets = AG.sets.slice().sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
@@ -1519,22 +1539,63 @@ function renderAgenda() {
     if (!evs.length) return;
     const h = document.createElement("div"); h.className = "ag-sec"; h.textContent = title; box.append(h);
     const g = document.createElement("div"); g.className = "evs";
-    for (const ev of evs) {
-      const d = dObj(ev), b = document.createElement("button");
-      b.className = "ev" + (ev.cancelled ? " cancel" : "") + (isPast ? " past" : daysTo(ev) === 0 ? " today" : "");
-      const w = !isPast && !ev.cancelled && whenTxt(ev);
-      const relB = isPast && !ev.cancelled ? (ev.reportAt ? '<span class="badge ok">RELATÓRIO ✓</span>' : '<span class="badge todo">SEM RELATÓRIO</span>') : "";
-      b.innerHTML = `<span class="dt"><b>${d.getDate()}</b><span>${MES[d.getMonth()]}</span></span>
-        <span><span class="t">${esc(ev.title)}</span>${ev.cancelled ? '<span class="badge">CANCELADO</span>' : w ? `<span class="badge soon">${w}</span>` : relB}
-        <span class="s">${dateShort(ev)}${ev.arrive ? " · chegada " + hhmm(ev.arrive) : ""}${ev.place ? " · " + esc(ev.place) : ""}</span></span><span class="ms chev" aria-hidden="true">chevron_right</span>`;
-      b.onclick = () => openEvent(ev.id);
-      g.append(b);
-    }
+    for (const ev of evs) g.append(evRow(ev, isPast));
     box.append(g);
   };
   list("Próximas", next, false);
   list("Anteriores", past, true);
 }
+function evRow(ev, isPast) {
+  const d = dObj(ev), b = document.createElement("button");
+  b.className = "ev" + (ev.cancelled ? " cancel" : "") + (isPast ? " past" : daysTo(ev) === 0 ? " today" : "");
+  const w = !isPast && !ev.cancelled && whenTxt(ev);
+  const relB = isPast && !ev.cancelled ? (ev.reportAt ? '<span class="badge ok">RELATÓRIO ✓</span>' : '<span class="badge todo">SEM RELATÓRIO</span>') : "";
+  b.innerHTML = `<span class="dt"><b>${d.getDate()}</b><span>${MES[d.getMonth()]}</span></span>
+    <span><span class="t">${esc(ev.title)}</span>${ev.cancelled ? '<span class="badge">CANCELADO</span>' : w ? `<span class="badge soon">${w}</span>` : relB}
+    <span class="s">${dateShort(ev)}${ev.arrive ? " · chegada " + hhmm(ev.arrive) : ""}${ev.place ? " · " + esc(ev.place) : ""}</span></span><span class="ms chev" aria-hidden="true">chevron_right</span>`;
+  b.onclick = () => openEvent(ev.id);
+  return b;
+}
+// Calendário do mês: pontinhos nos dias com apresentação; tocar no dia mostra a lista dele
+let calMonth = null, calSel = null;
+const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+function renderCal(box) {
+  const t = todayStr(), now = new Date();
+  calMonth ||= new Date(now.getFullYear(), now.getMonth(), 1); calSel ||= t;
+  const y = calMonth.getFullYear(), m = calMonth.getMonth(), first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+  const key = d => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const byDay = {}; for (const e of AG.events) (byDay[e.date] ||= []).push(e);
+  let cells = "<span></span>".repeat(first);
+  for (let d = 1; d <= days; d++) {
+    const k = key(d), evs = (byDay[k] || []).slice(0, 3);
+    cells += `<button class="cd${k === t ? " today" : ""}${k === calSel ? " sel" : ""}${k < t ? " past" : ""}" data-d="${k}" aria-label="${d} de ${MESES[m]}${evs.length ? ", " + evs.length + " apresentação" + (evs.length > 1 ? "ões" : "") : ""}"><b>${d}</b><span class="dots">${evs.map(e => `<i class="${e.cancelled ? "c" : k < t ? "p" : ""}"></i>`).join("")}</span></button>`;
+  }
+  const isThis = y === now.getFullYear() && m === now.getMonth();
+  box.innerHTML = `<div class="cal"><div class="cal-h"><button data-m="-1" aria-label="Mês anterior"><span class="ms" aria-hidden="true">chevron_left</span></button><b>${MESES[m]} ${y}</b>${isThis ? "<span></span>" : `<button data-m="0">Hoje</button>`}<button data-m="1" aria-label="Próximo mês"><span class="ms" aria-hidden="true">chevron_right</span></button></div>
+    <div class="cal-w">${["D", "S", "T", "Q", "Q", "S", "S"].map(x => `<span>${x}</span>`).join("")}</div><div class="cal-g">${cells}</div></div><div id="calDay"></div>`;
+  box.querySelectorAll("[data-m]").forEach(b => b.onclick = () => {
+    const k = +b.dataset.m;
+    calMonth = k ? new Date(y, m + k, 1) : new Date(now.getFullYear(), now.getMonth(), 1);
+    if (!k) calSel = t;
+    renderCal(box);
+  });
+  box.querySelectorAll("[data-d]").forEach(b => b.onclick = () => { calSel = b.dataset.d; renderCal(box); });
+  // apresentações do dia escolhido (só se ele estiver no mês mostrado)
+  const day = $("calDay");
+  if (calSel.slice(0, 7) !== key(1).slice(0, 7)) return;
+  const sel = (byDay[calSel] || []).slice().sort((a, b) => (a.arrive || "").localeCompare(b.arrive || ""));
+  const dd = new Date(calSel + "T12:00:00");
+  day.innerHTML = `<div class="ag-sec">${DIA[dd.getDay()]}, ${dd.getDate()} de ${MESES[dd.getMonth()]}</div>`;
+  if (sel.length) { const g = document.createElement("div"); g.className = "evs"; sel.forEach(e => g.append(evRow(e, calSel < t))); day.append(g); }
+  else day.insertAdjacentHTML("beforeend", `<div class="empty">Nenhuma apresentação neste dia.</div>`);
+  if (calSel >= t) {
+    const add = document.createElement("button"); add.className = "add-songs";
+    add.innerHTML = `<span class="ms" aria-hidden="true">add</span>Nova apresentação neste dia`;
+    add.onclick = () => withPass(() => editEvent(null, calSel));
+    day.append(add);
+  }
+}
+$("agTabCal").onclick = () => { agTab = "cal"; renderAgenda(); };
 $("agTabEv").onclick = () => { agTab = "ev"; renderAgenda(); };
 $("agTabSet").onclick = () => { agTab = "set"; renderAgenda(); };
 
@@ -1682,7 +1743,7 @@ function afterSave(ev, cancelled) {
 const upsert = (key, item) => { const a = AG[key], i = a.findIndex(x => x.id === item.id); if (i < 0) a.push(item); else a[i] = item; try { localStorage.setItem("estante:agenda", JSON.stringify(AG)); } catch {} };
 
 /* ---- Editor ---- */
-$("agNew").onclick = () => withPass(() => agTab === "set" ? editSet(null) : editEvent(null));
+$("agNew").onclick = () => withPass(() => agTab === "set" ? editSet(null) : editEvent(null, agTab === "cal" && calSel >= todayStr() ? calSel : ""));
 let formSave = null, formBack = null;
 $("formCancel").onclick = () => formBack?.();
 $("formSave").onclick = async e => {
@@ -1731,9 +1792,9 @@ function pickSongs(list, done) {
   });
 }
 const TITULOS = ["Tocata de Natal", "Dia das Mães", "Dia dos Pais", "Dia das Crianças", "Desfile de 2 de Julho", "Desfile de 7 de Setembro", "Formatura", "Solenidade", "Missa", "Ensaio"];
-function editEvent(ev) {
+function editEvent(ev, presetDate) {
   const isNew = !ev;
-  const d = ev ? { ...ev, songs: ev.songs.slice(), files: (ev.files || []).slice() } : { title: "", date: "", arrive: "", start: "", leave: "", place: "", address: "", uniform: "", notes: "", songs: [], setId: "", requester: "", oficio: "", files: [] };
+  const d = ev ? { ...ev, songs: ev.songs.slice(), files: (ev.files || []).slice() } : { title: "", date: presetDate || "", arrive: "", start: "", leave: "", place: "", address: "", uniform: "", notes: "", songs: [], setId: "", requester: "", oficio: "", files: [] };
   const uniforms = [...new Set(AG.events.map(e => e.uniform).filter(Boolean))];
   $("formTitle").textContent = isNew ? "Nova apresentação" : "Editar";
   $("formBox").innerHTML = `<div class="fm">
