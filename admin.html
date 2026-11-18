@@ -55,7 +55,7 @@ ol.steps{margin:0;padding-left:20px;display:grid;gap:6px;font-size:15px}
 ol.steps b{font-weight:700}
 code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:1px 5px;border-radius:5px}
 
-.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:14px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-bottom:14px}
 .tabs button{min-height:44px;border:0;border-radius:10px;background:transparent;font-weight:700}
 .tabs button[aria-selected="true"]{background:var(--brass);color:var(--on-brass)}
 
@@ -121,30 +121,24 @@ code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:
 <main>
   <div class="head">
     <div style="display:flex;gap:12px;align-items:center"><img src="icone.png" alt="" width="52" height="52" style="border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--gold)"><div><span class="eyebrow">Banda de Música PMBA</span><h1>Painel</h1></div></div>
-    <a href="./" target="_blank" rel="noopener">Abrir a estante ↗</a>
+    <a href="./">← Voltar ao app</a>
   </div>
 
   <!-- Conectar -->
   <section class="card" id="connect" hidden>
-    <h2>Conectar este aparelho</h2>
-    <p class="muted">O painel salva as músicas no seu GitHub. Para isso ele precisa de uma chave de acesso, criada uma vez só. Ela fica guardada só neste aparelho.</p>
-    <ol class="steps">
-      <li>Abra <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a></li>
-      <li><b>Token name:</b> <code>estante</code> · <b>Expiration:</b> a mais longa que houver</li>
-      <li><b>Repository access:</b> <i>Only select repositories</i> → <code>estante</code></li>
-      <li><b>Permissions → Repository → Contents:</b> <i>Read and write</i></li>
-      <li>Clique em <b>Generate token</b>, copie e cole abaixo</li>
-    </ol>
-    <label class="f" for="token">Chave de acesso<input type="password" id="token" autocomplete="off" placeholder="github_pat_…"></label>
+    <h2>Entrar</h2>
+    <p class="muted">Use a <b>senha da banda</b> (a mesma da Agenda do app). Ela fica guardada neste aparelho.</p>
+    <label class="f" for="token">Senha da banda<input type="password" id="token" autocomplete="off" placeholder="Senha da banda"></label>
+    <label class="f" for="bandName">Seu nome<input type="text" id="bandName" maxlength="40" placeholder="Aparece nos recados"></label>
     <div class="msg bad" id="connectMsg" hidden></div>
-    <button class="btn" id="connectBtn">Conectar</button>
+    <button class="btn" id="connectBtn">Entrar</button>
   </section>
 
   <div id="panel" hidden>
     <div class="tabs" role="tablist">
       <button role="tab" id="tabSongs" aria-selected="true">Músicas</button>
       <button role="tab" id="tabCats" aria-selected="false">Categorias</button>
-      <button role="tab" id="tabPush" aria-selected="false">Avisos</button>
+      <button role="tab" id="tabPush" aria-selected="false" hidden>Avisos</button>
     </div>
 
     <!-- MÚSICAS -->
@@ -218,12 +212,14 @@ const CATS = [["dobrados", "Dobrados"], ["populares", "Populares"], ["cancoes", 
 const CAT_NAME = Object.fromEntries(CATS);
 const MAX = 50 * 1048576;
 
+const API = "https://estante-api.estante-api.workers.dev"; // o servidor grava no GitHub com a chave guardada lá
 let token = "", lib = { songs: [] }, pending = [], editing = null, confirmDel = null, curCat = "dobrados", catDraft = null, pdraft = null;
 
 const store = {
-  get() { try { return localStorage.getItem("estante-token") || ""; } catch { return ""; } },
-  set(v) { try { localStorage.setItem("estante-token", v); } catch {} },
-  clear() { try { localStorage.removeItem("estante-token"); } catch {} },
+  band() { try { return JSON.parse(localStorage.getItem("estante:banda")) || {}; } catch { return {}; } },
+  get() { return this.band().pass || ""; },
+  set(v, name) { try { localStorage.setItem("estante:banda", JSON.stringify({ ...this.band(), pass: v, ...(name ? { name } : {}) })); } catch {} },
+  clear() { try { localStorage.setItem("estante:banda", JSON.stringify({ ...this.band(), pass: "" })); } catch {} },
 };
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fmt = s => { if (!s) return ""; const m = Math.floor(s / 60); return m + ":" + String(Math.floor(s % 60)).padStart(2, "0"); };
@@ -332,15 +328,16 @@ function showMsg(el, text, bad) { el.textContent = text; el.className = "msg" + 
 
 /* ---------- GitHub ---------- */
 async function gh(path, opts = {}) {
-  const r = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}${path}`, {
+  const r = await fetch(`${API}/gh${path}`, {
     method: opts.method || "GET", cache: "no-store",
-    headers: { Authorization: "Bearer " + token, Accept: opts.accept || "application/vnd.github+json", ...(opts.body ? { "Content-Type": "application/json" } : {}) },
+    headers: { "X-Banda": token, Accept: opts.accept || "application/vnd.github+json", ...(opts.body ? { "Content-Type": "application/json" } : {}) },
     body: opts.body ? JSON.stringify(opts.body) : undefined,
   });
   if (r.status === 404 && opts.allow404) return null;
   if (!r.ok) {
     let m = ""; try { m = (await r.json()).message; } catch {}
-    const e = new Error(r.status === 401 ? "Chave inválida ou vencida." : r.status === 403 ? "A chave não tem permissão de escrita no repositório estante." : m || "Erro " + r.status);
+    if (!m) try { m = (await r.clone().json()).error; } catch {}
+    const e = new Error(r.status === 401 ? "Senha da banda incorreta." : r.status === 403 ? "O servidor não tem permissão para gravar as músicas (chave do GitHub)." : m || "Erro " + r.status);
     e.status = r.status; throw e;
   }
   return opts.accept === "application/vnd.github.raw" ? r.text() : r.json();
@@ -348,8 +345,8 @@ async function gh(path, opts = {}) {
 function blobUpload(b64, onProgress) {
   return new Promise((res, rej) => {
     const x = new XMLHttpRequest();
-    x.open("POST", `https://api.github.com/repos/${OWNER}/${REPO}/git/blobs`);
-    x.setRequestHeader("Authorization", "Bearer " + token);
+    x.open("POST", `${API}/gh/git/blobs`);
+    x.setRequestHeader("X-Banda", token);
     x.setRequestHeader("Accept", "application/vnd.github+json");
     x.setRequestHeader("Content-Type", "application/json");
     x.upload.onprogress = e => e.lengthComputable && onProgress(e.loaded / e.total);
@@ -378,22 +375,24 @@ async function loadLib() {
 }
 
 /* ---------- Conectar ---------- */
-async function connect(t) {
+async function connect(t, name) {
   token = t.trim();
-  await gh(""); // testa a chave
+  await gh(""); // testa a senha (e se o servidor consegue falar com o GitHub)
   await loadLib();
-  store.set(token);
+  store.set(token, name);
   $("connect").hidden = true; $("panel").hidden = false;
   renderAll();
 }
 $("connectBtn").onclick = async () => {
   showMsg($("connectMsg"), "");
   $("connectBtn").disabled = true;
-  try { await connect($("token").value); $("token").value = ""; }
+  if (!$("bandName").value.trim() && !store.band().name) { showMsg($("connectMsg"), "Escreva o seu nome.", true); $("connectBtn").disabled = false; return; }
+  try { await connect($("token").value, $("bandName").value.trim()); $("token").value = ""; }
   catch (e) { showMsg($("connectMsg"), e.message, true); }
   $("connectBtn").disabled = false;
 };
 $("disconnect").onclick = () => { store.clear(); token = ""; $("panel").hidden = true; $("connect").hidden = false; };
+$("disconnect").textContent = "Sair (esquecer a senha neste aparelho)";
 
 /* ---------- Abas ---------- */
 function tab(which) {
@@ -536,6 +535,11 @@ const pushStore = {
 };
 function pushView() { const has = !!pushStore.get(); $("pushSetup").hidden = has; $("pushForm").hidden = !has; }
 async function sendPush(title, text) {
+  const r = await fetch(API + "/mural", { method: "POST", headers: { "Content-Type": "application/json", "X-Banda": token }, body: JSON.stringify({ title, text, notify: true, by: store.band().name || "" }) });
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "Erro " + r.status);
+  return "Recado publicado no Mural e banda avisada.";
+}
+async function sendPushOld(title, text) {
   const key = pushStore.get();
   if (!key) throw new Error("Falta a chave do OneSignal (aba Avisos).");
   const send = seg => fetch("https://api.onesignal.com/notifications?c=push", {
@@ -555,9 +559,9 @@ function offerPush(el, text) {
   const b = document.createElement("button"); b.className = "btn-2"; b.style.cssText = "display:block;margin-top:8px";
   b.textContent = "Avisar a banda";
   b.onclick = async () => {
-    if (!pushStore.get()) { tab("push"); $("pushText").value = text; return; }
+
     b.disabled = true; b.textContent = "Enviando…";
-    try { b.textContent = await sendPush("Banda PMBA", text); } catch (e) { b.textContent = e.message; b.disabled = false; }
+    try { b.textContent = await sendPush("Novidade no repertório", text); } catch (e) { b.textContent = e.message; b.disabled = false; }
   };
   el.append(b);
 }
@@ -783,9 +787,9 @@ function renderAll() { renderNew(); renderLib(); catDraft = null; }
 
 (async () => {
   const t = store.get();
-  if (!t) { $("connect").hidden = false; return; }
+  if (!t) { $("connect").hidden = false; $("bandName").value = store.band().name || ""; return; }
   try { await connect(t); }
-  catch (e) { $("connect").hidden = false; showMsg($("connectMsg"), e.status === 401 ? "A chave salva venceu. Crie uma nova e cole abaixo." : e.message, true); }
+  catch (e) { $("connect").hidden = false; showMsg($("connectMsg"), e.status === 401 ? "A senha da banda mudou. Digite a nova." : e.message, true); }
 })();
 </script>
 </body>
