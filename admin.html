@@ -540,7 +540,7 @@ async function sendPush(title, text) {
   if (!key) throw new Error("Falta a chave do OneSignal (aba Avisos).");
   const send = seg => fetch("https://api.onesignal.com/notifications?c=push", {
     method: "POST", headers: { Authorization: "Key " + key, "Content-Type": "application/json" },
-    body: JSON.stringify({ app_id: PUSH_APP, target_channel: "push", included_segments: [seg], headings: { en: title, pt: title }, contents: { en: text, pt: text }, url: `https://${OWNER}.github.io/${REPO}/` }),
+    body: JSON.stringify({ app_id: PUSH_APP, target_channel: "push", included_segments: [seg], headings: { en: title, pt: title }, contents: { en: text, pt: text }, url: new URL("./", location.href).href }),
   }).then(async r => ({ ok: r.ok, status: r.status, d: await r.json().catch(() => ({})) }),
     () => { throw new Error("Não foi possível enviar. Confira a internet e a chave do OneSignal (toque em “Trocar a chave”)."); }); // chave errada também cai aqui (o OneSignal não libera a resposta)
   let r = await send("Total Subscriptions");
