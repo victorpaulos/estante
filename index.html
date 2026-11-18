@@ -1705,7 +1705,20 @@ function waEvent(ev) {
   return L.join("\n");
 }
 // abre o WhatsApp fora do app (antes o app instalado no iPhone ficava preso na página do WhatsApp); o wa.me estraga os emojis
-const shareWa = text => { const u = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text); if (!window.open(u, "_blank", "noopener")) location.href = u; };
+// No iPhone usa o "Compartilhar" do próprio sistema: o link abria um navegador por cima e, ao fechar, a tela voltava deslocada
+const shareWa = async text => {
+  const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  if (iOS && navigator.share) { try { await navigator.share({ text }); } catch {} fixView(); return; }
+  const u = "https://api.whatsapp.com/send?text=" + encodeURIComponent(text);
+  if (!window.open(u, "_blank", "noopener")) location.href = u;
+};
+// ao voltar de outro app, garante a tela no lugar (as telas são fixas; a página nunca deve ficar rolada)
+function fixView() {
+  if (document.activeElement?.matches?.("input,textarea,select")) return; // com o teclado aberto o iPhone desloca a tela de propósito
+  window.scrollTo(0, 0); document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
+}
+for (const ev of ["pageshow", "focus", "orientationchange"]) addEventListener(ev, () => setTimeout(fixView, 60));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") setTimeout(fixView, 60); });
 
 /* ---- Folhas (senha, confirmação, aviso) ---- */
 function sheet(html, onReady) {
